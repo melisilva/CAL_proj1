@@ -140,6 +140,7 @@ public:
     double getFlow(const T &sourc, const T &dest) const ;
     void fordFulkerson(T source, T target);
     double minCostFlow(T source, T target, double flow);
+    double aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d);
 };
 
 template <class T>
@@ -436,10 +437,12 @@ double Graph<T>::minCostFlow(T source, T sink, double flow) {
     return cost;
 }
 
+
 double heuristic(double x1, double x2, double y1, double y2){
     return sqrt( pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 
+template <class T>
 double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d) {
     std::unordered_map<Vertex<T>*, Vertex<T>*> cameFrom;
     std::unordered_map<Vertex<T>*, Vertex<T>*> costSoFar;
