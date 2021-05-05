@@ -1,2 +1,0 @@
-C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\ar.exe qc ..\..\..\lib\GraphViewerCpp\lib\libgraphviewer.a  CMakeFiles/graphviewer.dir/src/graphviewer.cpp.obj CMakeFiles/graphviewer.dir/src/node.cpp.obj CMakeFiles/graphviewer.dir/src/edge.cpp.obj CMakeFiles/graphviewer.dir/src/lines.cpp.obj CMakeFiles/graphviewer.dir/src/fpsmonitor.cpp.obj
-C:\PROGRA~1\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\ranlib.exe ..\..\..\lib\GraphViewerCpp\lib\libgraphviewer.a
