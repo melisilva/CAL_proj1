@@ -1,4 +1,6 @@
 ./*.idea
+.idea
+*.zip
 *.png
 Mapa da cidade do Porto-20210505/porto_full_edges.txt
 Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt
