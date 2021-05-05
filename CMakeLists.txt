@@ -25,7 +25,7 @@ add_executable(TP7_graphviewer
         ${TP7_GRAPHVIEWER_FILES}
         )
 
-add_executable(project main.cpp)
+add_executable(Project src/main.cpp)
 
 
 target_link_libraries(TP7_graphviewer graphviewer)
