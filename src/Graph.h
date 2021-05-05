@@ -436,6 +436,44 @@ double Graph<T>::minCostFlow(T source, T sink, double flow) {
     return cost;
 }
 
+double heuristic(double x1, double x2, double y1, double y2){
+    return sqrt( pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
+
+double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d) {
+    std::unordered_map<Vertex<T>*, Vertex<T>*> cameFrom;
+    std::unordered_map<Vertex<T>*, Vertex<T>*> costSoFar;
+
+    MutablePriorityQueue<Vertex<T>> frontier;
+    p->dist = 0;
+    frontier.push(p);
+
+    cameFrom[p] = p;
+    costSoFar[p] = 0;
+
+    while (!frontier.empty()){
+        T current = frontier.pop();
+
+        if (current == goal){
+            break;
+        }
+
+        for (auto v : graph.getVertexSet()){
+            for (auto next : v->adj){
+                double newCost = costSoFar[current] + next->cost;
+
+                if (costSoFar.find(next) == costSoFar.end() || newCost < costSoFar[next]){
+                    costSoFar[next] = newCost;
+                    double priority = newCost; // + heuristic(next, goal)
+                    next->cost = priority;
+                    frontier.push(next);
+                    cameFrom[next] = current;
+                }
+            }
+        }
+    }
+}
+
 
 
 #endif /* GRAPH_H_ */

@@ -101,3 +101,5 @@ cmake-build-debug/lib/GraphViewerCpp/SFML/Makefile
 cmake-build-debug/lib/GraphViewerCpp/CMakeFiles/graphviewer.dir/link.txt
 cmake-build-debug/lib/googletest-master/googlemock/Makefile
 cmake-build-debug/CMakeFiles/untitled.dir/link.txt
+cmake-build-debug/CMakeFiles/3.17.5/CompilerIdCXX/CMakeCXXCompilerId.cpp
+cmake-build-debug/CMakeFiles/3.17.5/CompilerIdC/CMakeCCompilerId.c
