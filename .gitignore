@@ -6,7 +6,6 @@ Mapa da cidade do Porto-20210505/porto_full_nodes_xy.txt
 Mapa da cidade do Porto-20210505/porto_strong_edges.txt
 Mapas-20210505/TagExamples.zip
 Mapas-20210505/PortugalMaps.zip
-*.txt
 Mapas-20210505/__MACOSX/PortugalMaps/._Ermesinde
 Mapas-20210505/__MACOSX/PortugalMaps/._Aveiro
 *.DS_Store
@@ -20,3 +19,31 @@ Mapas-20210505/__MACOSX/PortugalMaps/._Maia
 Mapas-20210505/__MACOSX/PortugalMaps/._Lisboa
 Mapas-20210505/__MACOSX/PortugalMaps/._Fafe
 Mapas-20210505/__MACOSX/PortugalMaps/._Coimbra
+Mapa da cidade do Porto-20210505/porto_strong_nodes_latlng.txt
+Mapa da cidade do Porto-20210505/porto_strong_nodes_xy.txt
+Mapas-20210505/__MACOSX/PortugalMaps/Porto/._nodes_lat_lon_porto.txt
+Mapas-20210505/__MACOSX/PortugalMaps/Porto/._edges_porto.txt
+Mapas-20210505/GridGraphs/16x16/edges.txt
+Mapas-20210505/__MACOSX/PortugalMaps/Porto/._nodes_x_y_porto.txt
+Mapas-20210505/GridGraphs/4x4/edges.txt
+Mapas-20210505/GridGraphs/16x16/nodes.txt
+Mapas-20210505/TagExamples/STCPRoutes/stcp_routes_porto.txt
+Mapas-20210505/TagExamples/STCPRoutes/exemplo.txt
+Mapas-20210505/TagExamples/STCPRoutes/metro_routes_porto.txt
+Mapas-20210505/TagExamples/Porto/t10_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t11_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t08_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t07_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t06_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t09_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t03_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t05_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t04_tags_porto.txt
+Mapas-20210505/TagExamples/Porto/t01_tags_porto.txt
+Mapas-20210505/PortugalMaps/Porto/nodes_x_y_porto.txt
+Mapas-20210505/TagExamples/Porto/t02_tags_porto.txt
+Mapas-20210505/PortugalMaps/Porto/nodes_lat_lon_porto.txt
+Mapas-20210505/PortugalMaps/Porto/edges_porto.txt
+Mapas-20210505/GridGraphs/8x8/nodes.txt
+Mapas-20210505/GridGraphs/8x8/edges.txt
+Mapas-20210505/GridGraphs/4x4/nodes.txt
