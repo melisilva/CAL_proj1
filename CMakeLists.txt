@@ -29,5 +29,7 @@ add_executable(TP7_graphviewer
 
 add_executable(Project src/main.cpp ${SRC_FILES})
 
+add_executable(parkingTags src/parkingsTags/main.cpp)
+
 
 target_link_libraries(TP7_graphviewer graphviewer)
