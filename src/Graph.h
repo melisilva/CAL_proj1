@@ -647,6 +647,24 @@ queue<Vertex<T>*> Graph<T>::aStarShortestPath(const int &origin, const int &dest
     return path;
 }
 
+class Node {
+public:
+    double lat, longi;
+    int id = -1;
+
+    Node(double lat, double longi) : lat(lat), longi(longi) {}
+
+    Node(int id, double lat, double longi) : id(id), lat(lat), longi(longi) {}
+
+    double getLatitude(){
+        return lat;
+    }
+
+    double getLongitude(){
+        return longi;
+    }
+};
+
 
 
 #endif /* GRAPH_H_ */

@@ -2,10 +2,8 @@
 // Created by 35191 on 10/05/2021.
 //
 #include "Interface.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include <iostream>
+#include "Graph.h"
 using namespace std;
 
 void begin(){
@@ -46,12 +44,41 @@ pair<double, double> getD(){
     return make_pair(x, y);
 }
 
-void findNodes(pair<double, double> P, pair<double, double> D){
-
+double calculateDistance(double x1, double y1, double x2, double y2){
+    return sqrt(pow(x2-x1, 2) + pow(y2 - y1, 2))
 }
 
+template <class T>
+pair<T, T> findNodes(Graph<T> graph, pair<double, double> P, pair<double, double> D){
+    T p = NULL, d = NULL;
+
+    for (int i = 0; i < graph.getVertexSet().size(); i++){
+        if (i == 0) {
+            p = graph.getVertexSet()[0];
+            d = graph.getVertexSet()[0];
+            continue;
+        }
+
+        double x1 = P.first, y1 = P.second, x2 = D.first, y2 = D.second;
+        double x3 = graph.getVertexSet()[i]->getInfo().first;
+        double y3 = graph.getVertexSet()[i]->getInfo().second;
+        double x4 = p.getInfo().getLatitude(), y4 = p.getInfo().getLongitude();
+        double x5 = d.getInfo().getLatitude(), y5 = d.getInfo().getLongitude();
+
+        if (abs(calculateDistance(x1, y1, x3, y3)) < abs(calculateDistance(x1, y1, x4, y4)){
+            p = graph.getVertexSet()[i];
+        } else if (abs(calculateDistance(x2, y2, x3, y3)) < abs(calculateDistance(x1, y1, x5, y5)){
+            d = graph.getVertexSet()[i];
+        }
+    }
+
+    return make_pair(p, d);
+}
+
+template <class T>
 void app(){
     begin();
-    findNodes(getP(), getD());
+    Graph<T> graph;
+    findNodes(graph, getP(), getD());
 }
 
