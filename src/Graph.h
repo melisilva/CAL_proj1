@@ -11,6 +11,10 @@
 #include <queue>
 #include <limits>
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <cmath>
+#include <unordered_map>
 #include "MutablePriorityQueue.h"
 
 using namespace std;
@@ -443,7 +447,7 @@ double heuristic(double x1, double x2, double y1, double y2){
 }
 
 template <class T>
-double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d) {
+double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d ) {
     std::unordered_map<Vertex<T>*, Vertex<T>*> cameFrom;
     std::unordered_map<Vertex<T>*, Vertex<T>*> costSoFar;
 
@@ -457,7 +461,7 @@ double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d) {
     while (!frontier.empty()){
         T current = frontier.pop();
 
-        if (current == goal){
+        if (current == d){
             break;
         }
 
