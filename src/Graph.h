@@ -21,9 +21,14 @@ using namespace std;
 
 constexpr auto INF = std::numeric_limits<double>::max();
 
-template <class T> class Vertex;
-template <class T> class Edge;
-template <class T> class Graph;
+template<class T>
+class Vertex;
+
+template<class T>
+class Edge;
+
+template<class T>
+class Graph;
 
 /*
  * ================================================================================================
@@ -31,7 +36,7 @@ template <class T> class Graph;
  * ================================================================================================
  */
 
-template <class T>
+template<class T>
 class Vertex {
     T info;
     vector<Edge<T> *> outgoing;
@@ -45,51 +50,59 @@ class Vertex {
     Vertex<T> *pathV = nullptr;
     Vertex<T> *pathI = nullptr;
 
-    Vertex(T in);
-    void addEdge(Edge<T> *e);
-    bool operator<(Vertex<T> & vertex) const; // required by MutablePriorityQueue
-
 public:
+    Vertex(T in);
+
+    void addEdge(Edge<T> *e);
+
+    bool operator<(Vertex<T> &vertex) const; // required by MutablePriorityQueue
     T getInfo() const;
+
     vector<Edge<T> *> getIncoming() const;
+
     vector<Edge<T> *> getOutgoing() const;
+
     friend class Graph<T>;
+
     friend class MutablePriorityQueue<Vertex<T>>;
+
+    double virtual getHeuristic(Vertex<T> *v) {return 0;};
+
     Vertex *getPath() const;
 };
 
 
-template <class T>
+template<class T>
 Vertex<T>::Vertex(T in): info(in) {}
 
-template <class T>
+template<class T>
 void Vertex<T>::addEdge(Edge<T> *e) {
     outgoing.push_back(e);
     e->dest->incoming.push_back(e);
 }
 
-template <class T>
-bool Vertex<T>::operator<(Vertex<T> & vertex) const {
+template<class T>
+bool Vertex<T>::operator<(Vertex<T> &vertex) const {
     return this->dist < vertex.dist;
 }
 
-template <class T>
+template<class T>
 T Vertex<T>::getInfo() const {
     return this->info;
 }
 
-template <class T>
-vector<Edge<T> *>  Vertex<T>::getIncoming() const {
+template<class T>
+vector<Edge<T> *> Vertex<T>::getIncoming() const {
     return this->incoming;
 }
 
-template <class T>
-vector<Edge<T> *>  Vertex<T>::getOutgoing() const {
+template<class T>
+vector<Edge<T> *> Vertex<T>::getOutgoing() const {
     return this->outgoing;
 }
 
-template <class T>
-Vertex<T> * Vertex<T>::getPath() const {
+template<class T>
+Vertex<T> *Vertex<T>::getPath() const {
     return this->path;
 }
 
@@ -98,28 +111,30 @@ Vertex<T> * Vertex<T>::getPath() const {
  * ================================================================================================
  */
 
-template <class T>
+template<class T>
 class Edge {
-    Vertex<T> * orig;
-    Vertex<T> * dest;
+    Vertex<T> *orig;
+    Vertex<T> *dest;
     double capacity;
     double cost;
     double flow;
 
-    Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost=0, double flow=0);
+    Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost = 0, double flow = 0);
 
 public:
     friend class Graph<T>;
+
     friend class Vertex<T>;
+
     double getFlow() const;
 };
 
-template <class T>
+template<class T>
 Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost, double flow):
-        orig(o), dest(d), capacity(capacity), cost(cost), flow(flow){}
+        orig(o), dest(d), capacity(capacity), cost(cost), flow(flow) {}
 
-template <class T>
-double  Edge<T>::getFlow() const {
+template<class T>
+double Edge<T>::getFlow() const {
     return this->flow;
 }
 
@@ -129,45 +144,68 @@ double  Edge<T>::getFlow() const {
  * ================================================================================================
  */
 
-template <class T>
+template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;
 
 
     void dijkstraShortestPath(Vertex<T> *s);
+
     void bellmanFordShortestPath(Vertex<T> *s);
+
     bool relax(Vertex<T> *v, Vertex<T> *w, Edge<T> *e, double residual, double cost);
 
     void resetFlows();
+
     bool findAugmentationPath(Vertex<T> *s, Vertex<T> *t);
-    void testAndVisit(queue< Vertex<T>*> &q, Edge<T> *e, Vertex<T> *w, double residual);
+
+    void testAndVisit(queue<Vertex<T> *> &q, Edge<T> *e, Vertex<T> *w, double residual);
+
     double findMinResidualAlongPath(Vertex<T> *s, Vertex<T> *t);
+
     void augmentFlowAlongPath(Vertex<T> *s, Vertex<T> *t, double flow);
 
     int **P = nullptr; //path
     vector<int> currentPoints;
 
 public:
-    Vertex<T>* findVertex(const T &inf) const;
+    Vertex<T> *findVertex(const T &inf) const;
+
     int findVertexIdx(const int &id) const;
+
     vector<Vertex<T> *> getVertexSet() const;
+
     Vertex<T> *addVertex(const T &in);
-    bool addBiEdge(const int &sourc, const int &dest, double w);
-    Edge<T> *addEdge(const T &sourc, const T &dest, double capacity, double cost, double flow=0);
-    double getFlow(const T &sourc, const T &dest) const ;
+
+    Vertex<T> *addVertex(Vertex<T> *v);
+
+    bool addBiEdge(const T &sourc, const T &dest, double w);
+
+    Edge<T> *addEdge(const T &sourc, const T &dest, double capacity, double cost, double flow = 0);
+
+    double getFlow(const T &sourc, const T &dest) const;
+
     void fordFulkerson(T source, T target);
+
     double minCostFlow(T source, T target, double flow);
-    double aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d);
+
+    double aStar(Graph<T> graph, Vertex<T> *p, Vertex<T> *d);
+
     int getPath(const int &orig, const int &dest) const;
+
     void initializeForShortestPath();
-    double distancePath(queue<Vertex<T>*> path);
-    double heuristic(Vertex<T>*v1, Vertex<T>* v2);
-    queue<Vertex<T>*> dijkstraShortestPath(const int &origin, const int &dest);
-    queue<Vertex<T>*> aStarShortestPath(const int &origin, const int &dest);
+
+    double distancePath(queue<Vertex<T> *> path);
+
+    double heuristic(Vertex<T> *v1, Vertex<T> *v2);
+
+    queue<Vertex<T> *> dijkstraShortestPath(const int &origin, const int &dest);
+
+    queue<Vertex<T> *> aStarShortestPath(const int &origin, const int &dest);
 };
 
-template <class T>
-Vertex<T> * Graph<T>::addVertex(const T &in) {
+template<class T>
+Vertex<T> *Graph<T>::addVertex(const T &in) {
     Vertex<T> *v = findVertex(in);
     if (v != nullptr)
         return v;
@@ -176,7 +214,14 @@ Vertex<T> * Graph<T>::addVertex(const T &in) {
     return v;
 }
 
-template <class T>
+template<class T>
+Vertex<T> *Graph<T>::addVertex(Vertex<T> *v) {
+    vertexSet.push_back(v);
+    return v;
+}
+
+
+template<class T>
 int Graph<T>::findVertexIdx(const int &id) const {
     for (unsigned i = 0; i < currentPoints.size(); i++)
         if (currentPoints.at(i) == id)
@@ -184,15 +229,15 @@ int Graph<T>::findVertexIdx(const int &id) const {
     return -1;
 }
 
-template <class T>
-int Graph<T>::getPath(const int &orig, const int &dest) const{
+template<class T>
+int Graph<T>::getPath(const int &orig, const int &dest) const {
     int i = findVertexIdx(orig);
     int j = findVertexIdx(dest);
     return P[i][j];
 }
 
-template <class T>
-Edge<T> * Graph<T>::addEdge(const T &sourc, const T &dest, double capacity, double cost, double flow) {
+template<class T>
+Edge<T> *Graph<T>::addEdge(const T &sourc, const T &dest, double capacity, double cost, double flow) {
     auto s = findVertex(sourc);
     auto d = findVertex(dest);
     if (s == nullptr || d == nullptr)
@@ -202,8 +247,8 @@ Edge<T> * Graph<T>::addEdge(const T &sourc, const T &dest, double capacity, doub
     return e;
 }
 
-template <class T>
-bool Graph<T>::addBiEdge(const int &sourc, const int &dest, double w){
+template<class T>
+bool Graph<T>::addBiEdge(const T &sourc, const T &dest, double w) {
     auto v1 = findVertex(sourc);
     auto v2 = findVertex(dest);
 
@@ -211,37 +256,38 @@ bool Graph<T>::addBiEdge(const int &sourc, const int &dest, double w){
         return false;
 
     bool found = false;
-    for(Edge<T>* e: v1->getAdj()){
-        if(e->getDest()->getId() == dest) {
+    for (Edge<T> *e: v1->getOutgoing()) {
+        if (e->dest->getInfo() == dest) {
             found = true;
             break;
         }
     }
 
-    if(!found)
-        v1->addEdge(v2,w);
+    if (!found) {
+        v1->addEdge(new Edge<T>(v1, v2, 0, w, 0));
+    }
 
 
-    for(Edge<T>* e: v2->getAdj()){
-        if(e->getDest()->getId() == sourc)
+    for (Edge<T> *e: v2->getOutgoing()) {
+        if (e->dest->getInfo() == sourc)
             return true;
     }
 
-    v2->addEdge(v1, w);
+    v2->addEdge(new Edge<T>(v1, v2, 0, w, 0));
 
     return true;
 }
 
 
-template <class T>
-Vertex<T>* Graph<T>::findVertex(const T & inf) const {
+template<class T>
+Vertex<T> *Graph<T>::findVertex(const T &inf) const {
     for (auto v : vertexSet)
         if (v->info == inf)
             return v;
     return nullptr;
 }
 
-template <class T>
+template<class T>
 double Graph<T>::getFlow(const T &sourc, const T &dest) const {
     auto s = findVertex(sourc);
     auto d = findVertex(dest);
@@ -253,25 +299,25 @@ double Graph<T>::getFlow(const T &sourc, const T &dest) const {
     return 0.0;
 }
 
-template <class T>
+template<class T>
 vector<Vertex<T> *> Graph<T>::getVertexSet() const {
     return vertexSet;
 }
 
-template <class T>
-double Graph<T>::distancePath(queue<Vertex<T>*> path) {
-    if(path.empty())
+template<class T>
+double Graph<T>::distancePath(queue<Vertex<T> *> path) {
+    if (path.empty())
         return 0;
 
     double res = 0;
-    Vertex<T> * v1 = path.front();
+    Vertex<T> *v1 = path.front();
     path.pop();
-    Vertex<T>* v2;
+    Vertex<T> *v2;
 
-    while(!path.empty()) {
+    while (!path.empty()) {
         v2 = path.front();
         path.pop();
-        for(Edge<T> *e: v2->getAdj()) {
+        for (Edge<T> *e: v2->getAdj()) {
             if (e->getDest() == v1) {
                 res += e->getWeight();
                 break;
@@ -293,23 +339,23 @@ double Graph<T>::distancePath(queue<Vertex<T>*> path) {
  * Receives as arguments the source and target vertices (identified by their contents).
  * The result is defined by the "flow" field of each edge.
  */
-template <class T>
+template<class T>
 void Graph<T>::fordFulkerson(T source, T target) {
     // Obtain the source (s) and target (t) vertices
-    Vertex<T>* s = findVertex(source);
-    Vertex<T>* t = findVertex(target);
+    Vertex<T> *s = findVertex(source);
+    Vertex<T> *t = findVertex(target);
     if (s == nullptr || t == nullptr || s == t)
         throw "Invalid source and/or target vertex";
 
     // Apply algorithm as in slides
     resetFlows();
-    while( findAugmentationPath(s, t) ) {
+    while (findAugmentationPath(s, t)) {
         double f = findMinResidualAlongPath(s, t);
         augmentFlowAlongPath(s, t, f);
     }
 }
 
-template <class T>
+template<class T>
 void Graph<T>::resetFlows() {
     for (auto v : vertexSet)
         for (auto e: v->outgoing)
@@ -318,17 +364,17 @@ void Graph<T>::resetFlows() {
 
 template<class T>
 bool Graph<T>::findAugmentationPath(Vertex<T> *s, Vertex<T> *t) {
-    for(auto v : vertexSet)
+    for (auto v : vertexSet)
         v->visited = false;
     s->visited = true;
-    queue< Vertex<T>* > q;
+    queue<Vertex<T> *> q;
     q.push(s);
-    while( ! q.empty() && ! t->visited) {
+    while (!q.empty() && !t->visited) {
         auto v = q.front();
         q.pop();
-        for(auto e: v->outgoing)
+        for (auto e: v->outgoing)
             testAndVisit(q, e, e->dest, e->capacity - e->flow);
-        for(auto e: v->incoming)
+        for (auto e: v->incoming)
             testAndVisit(q, e, e->orig, e->flow);
     }
     return t->visited;
@@ -338,9 +384,9 @@ bool Graph<T>::findAugmentationPath(Vertex<T> *s, Vertex<T> *t) {
  * Auxiliary function used by findAugmentationPath.
  */
 template<class T>
-void Graph<T>::testAndVisit(queue< Vertex<T>*> &q, Edge<T> *e, Vertex<T> *w, double residual) {
+void Graph<T>::testAndVisit(queue<Vertex<T> *> &q, Edge<T> *e, Vertex<T> *w, double residual) {
     // TODO: adapt in order to use only edges with null cost
-    if (! w-> visited && residual > 0) {
+    if (!w->visited && residual > 0) {
         w->visited = true;
         w->path = e;
         q.push(w);
@@ -350,13 +396,12 @@ void Graph<T>::testAndVisit(queue< Vertex<T>*> &q, Edge<T> *e, Vertex<T> *w, dou
 template<class T>
 double Graph<T>::findMinResidualAlongPath(Vertex<T> *s, Vertex<T> *t) {
     double f = INF;
-    for (auto v = t; v != s; ) {
+    for (auto v = t; v != s;) {
         auto e = v->path;
         if (e->dest == v) {
             f = min(f, e->capacity - e->flow);
             v = e->orig;
-        }
-        else {
+        } else {
             f = min(f, e->flow);
             v = e->dest;
         }
@@ -366,13 +411,12 @@ double Graph<T>::findMinResidualAlongPath(Vertex<T> *s, Vertex<T> *t) {
 
 template<class T>
 void Graph<T>::augmentFlowAlongPath(Vertex<T> *s, Vertex<T> *t, double f) {
-    for (auto v = t; v != s; ) {
+    for (auto v = t; v != s;) {
         auto e = v->path;
         if (e->dest == v) {
             e->flow += f;
             v = e->orig;
-        }
-        else {
+        } else {
             e->flow -= f;
             v = e->dest;
         }
@@ -390,18 +434,18 @@ void Graph<T>::augmentFlowAlongPath(Vertex<T> *s, Vertex<T> *t, double f) {
  * The result is indicated by the field "dist" of each vertex.
  */
 template<class T>
-void Graph<T>::dijkstraShortestPath(Vertex<T> *s ) {
-    for(auto v : vertexSet)
+void Graph<T>::dijkstraShortestPath(Vertex<T> *s) {
+    for (auto v : vertexSet)
         v->dist = INF;
     s->dist = 0;
     MutablePriorityQueue<Vertex<T>> q;
     q.insert(s);
-    while( ! q.empty() ) {
+    while (!q.empty()) {
         auto v = q.extractMin();
         for (auto e : v->outgoing) {
             auto oldDist = e->dest->dist;
-            if (relax(v, e->dest, e, e->capacity - e->flow, e->cost)){
-                if (oldDist==INF)
+            if (relax(v, e->dest, e, e->capacity - e->flow, e->cost)) {
+                if (oldDist == INF)
                     q.insert(e->dest);
                 else
                     q.decreaseKey(e->dest);
@@ -426,8 +470,8 @@ void Graph<T>::dijkstraShortestPath(Vertex<T> *s ) {
  * The result is indicated by the field "dist" of each vertex.
  */
 template<class T>
-void Graph<T>::bellmanFordShortestPath(Vertex<T> *s ) {
-    for(auto v : vertexSet)
+void Graph<T>::bellmanFordShortestPath(Vertex<T> *s) {
+    for (auto v : vertexSet)
         v->dist = INF;
     s->dist = 0;
     for (unsigned i = 1; i < vertexSet.size(); i++)
@@ -451,8 +495,7 @@ bool Graph<T>::relax(Vertex<T> *v, Vertex<T> *w, Edge<T> *e, double residual, do
         w->path = e;
         w->pathV = v;
         return true;
-    }
-    else
+    } else
         return false;
 }
 
@@ -465,7 +508,7 @@ bool Graph<T>::relax(Vertex<T> *v, Vertex<T> *w, Edge<T> *e, double residual, do
  * The calculated flow in each edge can be consulted with the "getFlow" function.
  * Notice: Currently, the costs of the edges are modified by the algorithm.
  */
-template <class T>
+template<class T>
 double Graph<T>::minCostFlow(T source, T sink, double flow) {
     // TODO: implement based on slides and the given implementation of Ford-Fulkerson algorithm
     Vertex<T> *vSource = findVertex(source);
@@ -474,11 +517,11 @@ double Graph<T>::minCostFlow(T source, T sink, double flow) {
     double dt = 0;
 
     //Reset the flows
-    for(auto v: vertexSet){
-        for(auto e: v->outgoing){
+    for (auto v: vertexSet) {
+        for (auto e: v->outgoing) {
             e->flow = 0;
         }
-        for(auto e: v->incoming){
+        for (auto e: v->incoming) {
             e->flow = 0;
         }
     }
@@ -487,44 +530,44 @@ double Graph<T>::minCostFlow(T source, T sink, double flow) {
     bellmanFordShortestPath(vSource);
 
     //2 Replace the initial costs by the reduced costs
-    for(auto v: vertexSet){
-        for(auto e: v->outgoing){
+    for (auto v: vertexSet) {
+        for (auto e: v->outgoing) {
             e->cost = e->cost + e->orig->dist - e->dest->dist;
         }
     }
 
     //3 Selecionar um caminho de custo minimo de s para t no grafo de residuos
     double increment = findMinResidualAlongPath(vSource, vSink);
-    if(increment > flow){
+    if (increment > flow) {
         increment = flow;
     }
     dt += vSink->dist;
-    cost += dt*increment;
+    cost += dt * increment;
 
     //4 Apply the augmentation path
     augmentFlowAlongPath(vSource, vSink, increment);
     flow -= increment;
 
     //6 Repeat the process
-    while(flow > 0){
+    while (flow > 0) {
         //5 new reduction on the residue graph
         dijkstraShortestPath(vSource);
 
-        for(auto v: vertexSet){
-            for(auto e: v->outgoing){
+        for (auto v: vertexSet) {
+            for (auto e: v->outgoing) {
                 e->cost = e->cost + e->orig->dist - e->dest->dist;
             }
         }
         increment = findMinResidualAlongPath(vSource, vSink);
-        if(increment == 0){
+        if (increment == 0) {
             //All possible paths have been exhausted
             break;
         }
-        if(increment > flow){
+        if (increment > flow) {
             increment = flow;
         }
         dt += vSink->dist;
-        cost += dt*increment;
+        cost += dt * increment;
         augmentFlowAlongPath(vSource, vSink, increment);
         flow -= increment;
     }
@@ -532,18 +575,16 @@ double Graph<T>::minCostFlow(T source, T sink, double flow) {
     return cost;
 }
 
-template <class T>
-double Graph<T>::heuristic(Vertex<T> * v1, Vertex<T> * v2)  {
-    T p1 = v1->getInfo();
-    T p2 = v2->getInfo();
-    return sqrt(pow((p1.first - p2.first), 2) + pow((p1.second - p2.second), 2));
+template<class T>
+double Graph<T>::heuristic(Vertex<T> *v1, Vertex<T> *v2) {
+    return v1->getHeuristic(v2);
 }
 
 
-template <class T>
-double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d ) {
-    std::unordered_map<Vertex<T>*, Vertex<T>*> cameFrom;
-    std::unordered_map<Vertex<T>*, Vertex<T>*> costSoFar;
+template<class T>
+double Graph<T>::aStar(Graph<T> graph, Vertex<T> *p, Vertex<T> *d) {
+    std::unordered_map<Vertex<T> *, Vertex<T> *> cameFrom;
+    std::unordered_map<Vertex<T> *, Vertex<T> *> costSoFar;
 
     MutablePriorityQueue<Vertex<T>> frontier;
     p->dist = 0;
@@ -552,18 +593,18 @@ double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d ) {
     cameFrom[p] = p;
     costSoFar[p] = 0;
 
-    while (!frontier.empty()){
+    while (!frontier.empty()) {
         T current = frontier.pop();
 
-        if (current == d){
+        if (current == d) {
             break;
         }
 
-        for (auto v : graph.getVertexSet()){
-            for (auto next : v->adj){
+        for (auto v : graph.getVertexSet()) {
+            for (auto next : v->adj) {
                 double newCost = costSoFar[current] + next->cost;
 
-                if (costSoFar.find(next) == costSoFar.end() || newCost < costSoFar[next]){
+                if (costSoFar.find(next) == costSoFar.end() || newCost < costSoFar[next]) {
                     costSoFar[next] = newCost;
                     double priority = newCost; // + heuristic(next, goal)
                     next->cost = priority;
@@ -573,12 +614,13 @@ double Graph<T>::aStar(Graph<T> graph, Vertex<T>* p, Vertex<T>* d ) {
             }
         }
     }
+    return 0;
 }
 
 
-template <class T>
-void Graph<T>::initializeForShortestPath(){
-    for(Vertex<T>* v: vertexSet) {
+template<class T>
+void Graph<T>::initializeForShortestPath() {
+    for (Vertex<T> *v: vertexSet) {
         v->dist = INT_MAX;
         v->path = NULL;
         v->queueIndex = 0;
@@ -586,41 +628,41 @@ void Graph<T>::initializeForShortestPath(){
 }
 
 
-template <class T>
-queue<Vertex<T>*> Graph<T>::dijkstraShortestPath(const int &origin, const int &dest){
+template<class T>
+queue<Vertex<T> *> Graph<T>::dijkstraShortestPath(const int &origin, const int &dest) {
 
-    queue<Vertex<T>*> path;
-    if(origin == dest) return path;
+    queue<Vertex<T> *> path;
+    if (origin == dest) return path;
 
     initializeForShortestPath();
-    Vertex<T> * orig = findVertex(origin);
-    Vertex<T> * final = findVertex(dest);
+    Vertex<T> *orig = findVertex(origin);
+    Vertex<T> *final = findVertex(dest);
 
     orig->dist = 0;
     MutablePriorityQueue<Vertex<T>> q;
     q.insert(orig);
 
 
-    while(!q.empty()) {
-        Vertex<T>* temp = q.extractMin();
+    while (!q.empty()) {
+        Vertex<T> *temp = q.extractMin();
 
-        if(temp == final) break;
+        if (temp == final) break;
 
-        for(Edge<T>* edge: temp->getAdj()) {
-            Vertex<T> * v = edge->getDest();
+        for (Edge<T> *edge: temp->getAdj()) {
+            Vertex<T> *v = edge->getDest();
             bool notFound = (v->getDist() == INT_MAX);
 
-            if(relax(temp, v, edge->getWeight())){
-                if(notFound) q.insert(v);
+            if (relax(temp, v, edge->getWeight())) {
+                if (notFound) q.insert(v);
                 else q.decreaseKey(v);
             }
         }
     }
 
     path.push(final);
-    Vertex<T>* previous = final->getPath();
+    Vertex<T> *previous = final->getPath();
     path.push(previous);
-    while(previous != orig) {
+    while (previous != orig) {
         previous = previous->getPath();
         path.push(previous);
     }
@@ -628,50 +670,49 @@ queue<Vertex<T>*> Graph<T>::dijkstraShortestPath(const int &origin, const int &d
     return path;
 }
 
-template <class T>
-queue<Vertex<T>*> Graph<T>::aStarShortestPath(const int &origin, const int &dest){
+template<class T>
+queue<Vertex<T> *> Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
-    queue<Vertex<T>*> path;
-    if(origin == dest) return path;
+    queue<Vertex<T> *> path;
+    if (origin == dest) return path;
 
     initializeForShortestPath();
-    Vertex<T> * orig = findVertex(origin);
-    Vertex<T> * final = findVertex(dest);
+    Vertex<T> *orig = findVertex(origin);
+    Vertex<T> *final = findVertex(dest);
 
     orig->dist = 0;
     MutablePriorityQueue<Vertex<T>> q;
     q.insert(orig);
 
 
-    while(!q.empty()) {
-        Vertex<T>* temp = q.extractMin();
+    while (!q.empty()) {
+        Vertex<T> *temp = q.extractMin();
 
-        if(temp == final) break;
+        if (temp == final) break;
 
-        for(Edge<T>* edge: temp->getAdj()) {
+        for (Edge<T> *edge: temp->getAdj()) {
 
-            Vertex<T> * v = edge->getDest();
+            Vertex<T> *v = edge->getDest();
 
             double f = temp->getDist() - heuristic(temp, final) + heuristic(v, final) + edge->getWeight();
 
             bool notFound = (v->getDist() == INT_MAX);
 
-            if(f < v->getDist()){
+            if (f < v->getDist()) {
                 v->dist = f;
                 v->path = temp;
 
-                if(notFound) q.insert(v);
+                if (notFound) q.insert(v);
                 else q.decreaseKey(v);
             }
         }
     }
 
 
-
     path.push(final);
-    Vertex<T>* previous = final->getPath();
+    Vertex<T> *previous = final->getPath();
     path.push(previous);
-    while(previous != orig) {
+    while (previous != orig) {
         previous = previous->getPath();
         path.push(previous);
     }
@@ -679,24 +720,39 @@ queue<Vertex<T>*> Graph<T>::aStarShortestPath(const int &origin, const int &dest
     return path;
 }
 
-class Node {
-public:
+template<class T>
+class Node : public Vertex<T> {
+
     double lat, longi;
-    int id = -1;
+    bool isParking = false;
+public:
+    Node(int id, double lat, double longi) : Vertex<T>(id), lat(lat), longi(longi) {}
 
-    Node(double lat, double longi) : lat(lat), longi(longi) {}
-
-    Node(int id, double lat, double longi) : id(id), lat(lat), longi(longi) {}
-
-    double getLatitude(){
+    double getLatitude() const {
         return lat;
     }
 
-    double getLongitude(){
+    double getLongitude() const {
         return longi;
     }
-};
 
+    bool getParking() const {
+        return isParking;
+    }
+
+    void setParking() {
+        isParking = true;
+    }
+
+    void setParking(bool isParking) {
+        this->isParking = isParking;
+    }
+
+    double getHeuristic(Vertex<T> *v) {
+        Node<T> *node = dynamic_cast<Node*>(v);
+        return sqrt(pow((getLatitude() - node->getLatitude()), 2) + pow((getLongitude() - node->getLongitude()), 2));
+    }
+};
 
 
 #endif /* GRAPH_H_ */
