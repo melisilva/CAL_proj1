@@ -45,7 +45,7 @@ pair<double, double> getD(){
 }
 
 double calculateDistance(double x1, double y1, double x2, double y2){
-    return sqrt(pow(x2-x1, 2) + pow(y2 - y1, 2))
+    return sqrt(pow(x2-x1, 2) + pow(y2 - y1, 2));
 }
 
 template <class T>
@@ -65,9 +65,9 @@ pair<T, T> findNodes(Graph<T> graph, pair<double, double> P, pair<double, double
         double x4 = p.getInfo().getLatitude(), y4 = p.getInfo().getLongitude();
         double x5 = d.getInfo().getLatitude(), y5 = d.getInfo().getLongitude();
 
-        if (abs(calculateDistance(x1, y1, x3, y3)) < abs(calculateDistance(x1, y1, x4, y4)){
+        if (abs(calculateDistance(x1, y1, x3, y3)) < abs(calculateDistance(x1, y1, x4, y4))) {
             p = graph.getVertexSet()[i];
-        } else if (abs(calculateDistance(x2, y2, x3, y3)) < abs(calculateDistance(x1, y1, x5, y5)){
+        } else if (abs(calculateDistance(x2, y2, x3, y3)) < abs(calculateDistance(x1, y1, x5, y5))) {
             d = graph.getVertexSet()[i];
         }
     }

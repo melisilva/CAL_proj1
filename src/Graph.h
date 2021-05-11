@@ -152,6 +152,7 @@ public:
     int findVertexIdx(const int &id) const;
     vector<Vertex<T> *> getVertexSet() const;
     Vertex<T> *addVertex(const T &in);
+    bool addBiEdge(const int &sourc, const int &dest, double w);
     Edge<T> *addEdge(const T &sourc, const T &dest, double capacity, double cost, double flow=0);
     double getFlow(const T &sourc, const T &dest) const ;
     void fordFulkerson(T source, T target);
@@ -200,6 +201,37 @@ Edge<T> * Graph<T>::addEdge(const T &sourc, const T &dest, double capacity, doub
     s->addEdge(e);
     return e;
 }
+
+template <class T>
+bool Graph<T>::addBiEdge(const int &sourc, const int &dest, double w){
+    auto v1 = findVertex(sourc);
+    auto v2 = findVertex(dest);
+
+    if (v1 == nullptr || v2 == nullptr)
+        return false;
+
+    bool found = false;
+    for(Edge<T>* e: v1->getAdj()){
+        if(e->getDest()->getId() == dest) {
+            found = true;
+            break;
+        }
+    }
+
+    if(!found)
+        v1->addEdge(v2,w);
+
+
+    for(Edge<T>* e: v2->getAdj()){
+        if(e->getDest()->getId() == sourc)
+            return true;
+    }
+
+    v2->addEdge(v1, w);
+
+    return true;
+}
+
 
 template <class T>
 Vertex<T>* Graph<T>::findVertex(const T & inf) const {
