@@ -1,7 +1,7 @@
 //
 // Created by 35191 on 10/05/2021.
 //
-
+/*
 #include <iostream>
 #include <algorithm>
 #include <random>
@@ -186,3 +186,4 @@ void Interface<T>::startAlgo() {
     intermediary.pop_back();
 }
 
+*/
