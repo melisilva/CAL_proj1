@@ -9,16 +9,19 @@
 
 class Interface{
     Algorithm algo;
+    Node<int> *start, *end;
+    vector<Node<int>*> intermediary;
 public:
     Interface(Algorithm algo): algo(algo){}
     void begin();
     void app();
     void execute();
     void displayOptions() const;
-    void chooseWeights() const;
+    void chooseWeights();
     Node<int>*chooseStart() const;
-    vector<Node<int>*> chooseIntermediary() const;
+    vector<pair<bool, Node<int>*>> chooseIntermediary() const;
     Node<int>*chooseEnd() const;
+    void startAlgo();
 };
 
 

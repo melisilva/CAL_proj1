@@ -94,14 +94,16 @@ void Interface::execute() {
                 chooseWeights();
                 break;
             case 2:
-                chooseStart();
+                start = chooseStart();
                 break;
             case 3:
-                chooseIntermediary();
+                intermediary = chooseIntermediary();
                 break;
             case 4:
-                chooseEnd();
+                end = chooseEnd();
                 break;
+            case 5:
+                startAlgo();
             default:
                 cout << "Please choose a viable option\n";
         }
@@ -118,8 +120,17 @@ void Interface::displayOptions() const {
     cout << "5: Calculate Path\n";
 }
 
-void Interface::chooseWeights() const {
-
+void Interface::chooseWeights() {
+    float a, b, c;
+    cout << "Choose weights\n";
+    cout << "Driving distance\n";
+    cin >> a;
+    cout << "Parking price\n";
+    cin >> b;
+    cout << "Walking distance\n";
+    cin >> c;
+    float sum = a + b + c;
+    algo.setWeights(a/sum, b/sum, c/sum);
 }
 
 Node<int> * Interface::chooseStart() const {
@@ -132,5 +143,11 @@ vector<Node<int> *> Interface::chooseIntermediary() const {
 
 Node<int> * Interface::chooseEnd() const {
 
+}
+
+void Interface::startAlgo() {
+    intermediary.push_back(end);
+    algo.execute(start, intermediary);
+    intermediary.pop_back();
 }
 
