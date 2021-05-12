@@ -2,6 +2,7 @@
 // Created by 35191 on 10/05/2021.
 //
 
+
 #ifndef PROJECT_Interface_H
 #define PROJECT_Interface_H
 /*
@@ -57,14 +58,14 @@ public:
     void execute();
     void displayOptions() const;
     void chooseWeights();
-    Node<T>* chooseNode() const;
-    vector<pair<int, Node<T>*>> chooseIntermediary() const;
+    Node<T>* chooseNode();
+    vector<pair<int, Node<T>*>> chooseIntermediary();
     int getNodeOption();
     void showNodeOptions() const;
-    double calcNodeDistance(Node<T> a, Node<T> b);
-    Node<T>* getNodeID() const;
+    double calcNodeDistance(Node<T> *a, Node<T> *b);
+    Node<T>* getNodeID();
     Node<T>* getNodeCoordinates();
-    Node<T>* getRandomNode() const;
+    Node<T>* getRandomNode();
 
     void startAlgo();
 };
@@ -91,19 +92,20 @@ void Interface<T>::execute() {
             case 0:
                 exit(0);
             case 1:
-                //chooseWeights();
+                chooseWeights();
                 break;
             case 2:
-              //  start = chooseNode();
+                start = chooseNode();
                 break;
             case 3:
-                //intermediary = chooseIntermediary();
+                intermediary = chooseIntermediary();
                 break;
             case 4:
-                //end = chooseNode();
+                end = chooseNode();
                 break;
             case 5:
-             //   startAlgo();
+                startAlgo();
+                break;
             default:
                 cout << "Please choose a viable option\n";
         }
@@ -112,7 +114,7 @@ void Interface<T>::execute() {
 }
 
 template<class T>
-Node<T>* Interface<T>::getRandomNode() const {
+Node<T>* Interface<T>::getRandomNode() {
     int size = algo.getGraph().getVertexSet().size();
     return dynamic_cast<Node<T>*>(algo.getGraph().getVertexSet().at(rand()%size));
 }
@@ -163,8 +165,8 @@ void Interface<T>::chooseWeights() {
 }
 
 template <class T>
-double Interface<T>::calcNodeDistance(Node<T> a, Node<T> b){
-    return sqrt(pow(a.getLatitude() - b.getLatitude(), 2) + pow(a.getLongitude() - b.getLongitude(), 2));
+double Interface<T>::calcNodeDistance(Node<T> *a, Node<T> *b){
+    return sqrt(pow(a->getLatitude() - b->getLatitude(), 2) + pow(a->getLongitude() - b->getLongitude(), 2));
 }
 
 template <class T>
@@ -180,22 +182,24 @@ Node<T>* Interface<T>::getNodeCoordinates(){
         cin >> y;
     }
 
-    Node<T> parkingNode(-1, x, y);
+    Node<T> p(-1, x, y);
+    Node<T> *parkingNode;
+    *parkingNode = p;
     vector<Vertex<T>*> realNodes = algo.getGraph().getVertexSet();
     sort(realNodes.begin(),
          realNodes.end(),
          [parkingNode, this](Vertex<T> *aRealParkingNodeA, Vertex<T> *aRealParkingNodeB) {
-             return calcNodeDistance(dynamic_cast<Node<T>*>(&aRealParkingNodeA), parkingNode) < calcNodeDistance(dynamic_cast<Node<T>*>(&aRealParkingNodeB), parkingNode);
+             return calcNodeDistance(dynamic_cast<Node<T>*>(aRealParkingNodeA),parkingNode) < calcNodeDistance(dynamic_cast<Node<T>*>(aRealParkingNodeB), parkingNode);
          });
 
-    return realNodes.at(0);
+    return dynamic_cast<Node<T>*>(realNodes[0]);
 }
 
 template <class T>
-Node<T>* Interface<T>::getNodeID() const{
+Node<T>* Interface<T>::getNodeID() {
     int x = 0;
     while (!cin.fail()){
-        cout << "Please provide an : ";
+        cout << "Please provide an ID: ";
         cin >> x;
     }
 
@@ -203,7 +207,7 @@ Node<T>* Interface<T>::getNodeID() const{
 }
 
 template <class T>
-Node<T> * Interface<T>::chooseNode() const {
+Node<T> * Interface<T>::chooseNode() {
     showNodeOptions();
     int option = getNodeOption();
 
@@ -223,10 +227,10 @@ Node<T> * Interface<T>::chooseNode() const {
 }
 
 template <class T>
-vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() const {
+vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
     string temp = "";
     int answer = 2;
-    vector<Node<T>*> midStops;
+    vector<pair<int, Node<T>*>> midStops;
     do {
         cout << "If you wish to add an intermediary, input NEW. Otherwise, input DONE.\n";
         cin >> temp;
