@@ -171,14 +171,14 @@ double Interface<T>::calcNodeDistance(Node<T> *a, Node<T> *b){
 
 template <class T>
 Node<T>* Interface<T>::getNodeCoordinates(){
-    double x = 0.0, y = 0.0;
-    while (!cin.fail()){
+    double x = -1.0, y = -1.0;
+    while (cin.fail() || x == -1.0){
         cout << "Please provide an X coordinate for P: ";
         cin >> x;
     }
 
-    while (!cin.fail()){
-        cout << "Please provide an X coordinate for P: ";
+    while (cin.fail() || y== -1.0){
+        cout << "Please provide a Y coordinate for P: ";
         cin >> y;
     }
 
@@ -197,13 +197,14 @@ Node<T>* Interface<T>::getNodeCoordinates(){
 
 template <class T>
 Node<T>* Interface<T>::getNodeID() {
-    int x = 0;
-    while (!cin.fail()){
+    int x = -1;
+    while (cin.fail() || x==-1){
         cout << "Please provide an ID: ";
         cin >> x;
     }
-
     return dynamic_cast<Node<T> *>(algo.getGraph().findVertex(x));
+
+
 }
 
 template <class T>
@@ -242,7 +243,7 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
         }
 
         midStops.push_back(make_pair(answer, newStop));
-    } while (!cin.fail() && temp != "DONE");
+    } while (cin.fail() && temp != "DONE");
     return midStops;
 }
 
