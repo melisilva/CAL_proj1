@@ -1,106 +1,45 @@
 //
 // Created by 35191 on 10/05/2021.
 //
-#include "Interface.h"
-#include <iostream>
-#include "Graph.h"
 
+#include <iostream>
+#include <algorithm>
+#include <random>
+#include "Graph.h"
+#include "Interface.h"
 using namespace std;
 
-void Interface::begin() {
+template <class T>
+void Interface<T>::begin() {
     cout << "WELCOME TO PARKING FINDER v1.0\n";
     cout << "This app is here to help you find the best path to take from a start point P to a destination D.\n";
     cout << "For that, we need you to provide your desired P and D.\n";
-    cout << "To help you, know that point (x1, y1) is at the upper left corner and (x2, y2) at the lower right corner.\n";
-    cout << "Use this information to provide an estimated coordinates of your desired points - we'll take care of the rest.\n";
+    cout << "Here are the desired options to do that.\n";
+    cout << endl << endl;
 }
 
-pair<double, double> getP() {
-    double x = 0.0, y = 0.0;
-    while (!cin.fail()) {
-        cout << "Please provide an X coordinate for P: ";
-        cin >> x;
-    }
-
-    while (!cin.fail()) {
-        cout << "Please provide an X coordinate for P: ";
-        cin >> y;
-    }
-
-    return make_pair(x, y);
-}
-
-pair<double, double> getD() {
-    double x = 0.0, y = 0.0;
-    while (!cin.fail()) {
-        cout << "Please provide an X coordinate for D: ";
-        cin >> x;
-    }
-
-    while (!cin.fail()) {
-        cout << "Please provide an X coordinate for D: ";
-        cin >> y;
-    }
-
-    return make_pair(x, y);
-}
-
-double calculateDistance(double x1, double y1, double x2, double y2) {
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-}
-
-template<class T>
-pair<T, T> findNodes(Graph<T> graph, pair<double, double> P, pair<double, double> D) {
-    T p = NULL, d = NULL;
-
-    for (int i = 0; i < graph.getVertexSet().size(); i++) {
-        if (i == 0) {
-            p = graph.getVertexSet()[0];
-            d = graph.getVertexSet()[0];
-            continue;
-        }
-
-        double x1 = P.first, y1 = P.second, x2 = D.first, y2 = D.second;
-        double x3 = graph.getVertexSet()[i]->getInfo().first;
-        double y3 = graph.getVertexSet()[i]->getInfo().second;
-        double x4 = p.getInfo().getLatitude(), y4 = p.getInfo().getLongitude();
-        double x5 = d.getInfo().getLatitude(), y5 = d.getInfo().getLongitude();
-
-        if (abs(calculateDistance(x1, y1, x3, y3)) < abs(calculateDistance(x1, y1, x4, y4))) {
-            p = graph.getVertexSet()[i];
-        } else if (abs(calculateDistance(x2, y2, x3, y3)) < abs(calculateDistance(x1, y1, x5, y5))) {
-            d = graph.getVertexSet()[i];
-        }
-    }
-
-    return make_pair(p, d);
-}
-
-void Interface::app() {
-    begin();
-    execute();
-}
-
-void Interface::execute() {
+template <class T>
+void Interface<T>::execute() {
     int option;
     while (1) {
         displayOptions();
         cin >> option;
         switch (option) {
-
             case 0:
-                return;
+                exit(0);
             case 1:
                 chooseWeights();
                 break;
             case 2:
-                chooseStart();
+                chooseNode();
                 break;
             case 3:
                 chooseIntermediary();
                 break;
             case 4:
-                chooseEnd();
+                chooseNode();
+                break;
+            case 5:
                 break;
             default:
                 cout << "Please choose a viable option\n";
@@ -109,28 +48,130 @@ void Interface::execute() {
     }
 }
 
-void Interface::displayOptions() const {
-    cout << "0: Exit\n";
-    cout << "1: Choose Weights\n";
-    cout << "2: Choose Start\n";
-    cout << "3: Choose Intermediary\n";
-    cout << "4: Choose End\n";
-    cout << "5: Calculate Path\n";
+template<class T>
+void Interface<T>::getRandomNode() const {
+    int size = algo.getGraph().getVertexSet().size();
+    return dynamic_cast<Node<T>*>(algo.getGraph().getVertexSet().at(rand()%size));
 }
 
-void Interface::chooseWeights() const {
+template <class T>
+void Interface<T>::displayOptions() const {
+    cout << "INPUT YOUR DESIRED OPTION\n";
+    cout << "0 - Exit\n";
+    cout << "1 - Choose Weights\n";
+    cout << "2 - Choose Start\n";
+    cout << "3 - Choose Intermediary\n";
+    cout << "4 - Choose End\n";
+    cout << "5 - Calculate Path\n";
+}
+
+template <class T>
+void Interface<T>::chooseWeights() const {
 
 }
 
-Node<int> * Interface::chooseStart() const {
-
+template <class T>
+void Interface<T>::showNodeOptions() const {
+    cout << "CHOOSE HOW YOU'LL DO YOUR INPUT\n";
+    cout << "1 - Node IDs.\n";
+    cout << "2 - (x, y) style coordinates.\n";
+    cout << "3 - Random.\n\n";
 }
 
-vector<Node<int> *> Interface::chooseIntermediary() const {
+template <class T>
+int Interface<T>::getNodeOption(){
+    int option = -1;
 
+    while (option != 1 && option != 2 && option != 3){
+        cout << "Input your choice: ";
+        cin >> option;
+    }
+
+    return option;
 }
 
-Node<int> * Interface::chooseEnd() const {
-
+template <class T>
+double Interface<T>::calcNodeDistance(Node<T> a, Node<T> b){
+    return sqrt(pow(a.getLatitude() - b.getLatitude(), 2) + pow(a.getLongitude() - b.getLongitude(), 2));
 }
+
+template <class T>
+Node<T>* Interface<T>::getNodeCoordinates(){
+    double x = 0.0, y = 0.0;
+    while (!cin.fail()){
+        cout << "Please provide an X coordinate for P: ";
+        cin >> x;
+    }
+
+    while (!cin.fail()){
+        cout << "Please provide an X coordinate for P: ";
+        cin >> y;
+    }
+
+    Node<T> parkingNode(-1, x, y);
+    vector<Vertex<T>*> realNodes = algo.getGraph().getVertexSet();
+    sort(realNodes.begin(),
+         realNodes.end(),
+         [parkingNode, this](Vertex<T> *aRealParkingNodeA, Vertex<T> *aRealParkingNodeB) {
+            return calcNodeDistance(dynamic_cast<Node<T>*>(&aRealParkingNodeA), parkingNode) < calcNodeDistance(dynamic_cast<Node<T>*>(&aRealParkingNodeB), parkingNode);
+         });
+
+    return realNodes.at(0);
+}
+
+template <class T>
+Node<T>* Interface<T>::getNodeID() const{
+    int x = 0;
+    while (!cin.fail()){
+        cout << "Please provide an : ";
+        cin >> x;
+    }
+
+    return dynamic_cast<Node<T> *>(algo.getGraph().findVertex(x));
+}
+
+template <class T>
+Node<T> * Interface<T>::chooseNode() const {
+    showNodeOptions();
+    int option = getNodeOption();
+
+    switch (option){
+        case 1:
+            return getNodeID();
+            break;
+        case 2:
+            return getNodeCoordinates();
+            break;
+        case 3:
+            return getRandomNode();
+            break;
+        default:
+            return NULL;
+    }
+}
+
+template <class T>
+vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() const {
+    string temp = "";
+    int answer = 2;
+    vector<Node<T>*> midStops;
+    do {
+        cout << "If you wish to add an intermediary, input NEW. Otherwise, input DONE.\n";
+        cin >> temp;
+        Node<T>* newStop = chooseNode();
+
+        while (answer != 0 && answer != 1){
+            cout << "Do you wish to PASS BY (0) in this stop or PARK AND STOP BY (1):";
+            cin >> answer;
+        }
+
+        midStops.push_back(make_pair(answer, newStop));
+    } while (!cin.fail() && temp != "DONE");
+    return midStops;
+}
+
+
+
+
+
 
