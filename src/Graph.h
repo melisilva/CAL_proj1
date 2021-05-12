@@ -49,18 +49,19 @@ class Graph {
     void augmentFlowAlongPath(Vertex<T> *s, Vertex<T> *t, double flow);
 
     int **P = nullptr; //path
-    vector<int> currentPoints;
 
 public:
     Vertex<T> *findVertex(const T &inf) const;
 
-    int findVertexIdx(const int &id) const;
+    int findVertexIdx(const T &id) const;
 
     vector<Vertex<T> *> getVertexSet() const;
 
     Vertex<T> *addVertex(const T &in);
 
     Vertex<T> *addVertex(Vertex<T> *v);
+
+    bool replaceVertex(Vertex<T> *v);
 
     bool addBiEdge(const T &sourc, const T &dest, double w);
 
@@ -84,7 +85,7 @@ public:
 
     queue<Vertex<T> *> dijkstraShortestPath(const int &origin, const int &dest);
 
-    Path getNextClosestParking(Vertex<T>*v, bool reset = false);
+    Path *getNextClosestParking(Vertex<T> *v, bool reset = false);
 
     queue<Vertex<T> *> aStarShortestPath(const int &origin, const int &dest);
 };
@@ -105,12 +106,23 @@ Vertex<T> *Graph<T>::addVertex(Vertex<T> *v) {
     return v;
 }
 
+template<class T>
+bool Graph<T>::replaceVertex(Vertex<T> *v) {
+    int id = findVertexIdx(v->info);
+    if (id == -1) {
+        return false;
+    }
+    vertexSet[id] = v;
+    return true;
+}
 
 template<class T>
-int Graph<T>::findVertexIdx(const int &id) const {
-    for (unsigned i = 0; i < currentPoints.size(); i++)
-        if (currentPoints.at(i) == id)
+int Graph<T>::findVertexIdx(const T &id) const {
+    for (int i = 0; i < vertexSet.size(); i++) {
+        if (vertexSet[i]->info == id) {
             return i;
+        }
+    }
     return -1;
 }
 
@@ -556,15 +568,17 @@ queue<Vertex<T> *> Graph<T>::dijkstraShortestPath(const int &origin, const int &
 }
 
 template<class T>
-Path Graph<T>::getNextClosestParking(Vertex<T>*v, bool reset) {
+Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
     static MutablePriorityQueue<Vertex<T>> q;
-    static Vertex<T>*final;
+    static Vertex<T> *final;
     queue<Vertex<T> *> path;
-    Path nodePath;
+    Path *nodePath = new Path();
+    Node<T> *node = dynamic_cast<Node<T> *>(v);
 
 
-    if (dynamic_cast<Node<T> *>(v)->getParking()) {
-        return path;
+    if (node->getParking()) {
+        nodePath->appendPath(node);
+        return nodePath;
     }
 
     if (reset) {
@@ -580,29 +594,34 @@ Path Graph<T>::getNextClosestParking(Vertex<T>*v, bool reset) {
             if (dynamic_cast<Node<T> *>(temp)->getParking()) {
                 final = temp;
                 break;
-            };
+            }
 
-            for (Edge<T> *edge: temp->getAdj()) {
+            for (Edge<T> *edge: temp->getOutgoing()) {
                 Vertex<T> *v = edge->getDest();
                 bool notFound = (v->getDist() == INT_MAX);
 
-                if (relax(temp, v, edge->getWeight())) {
-                    if (notFound) q.insert(v);
-                    else q.decreaseKey(v);
+                if (temp->getDist() + edge->cost < v->getDist()) {
+                    // SHOULD TEST
                 }
+                v->dist = temp->getDist() + edge->cost;
+                v->path = edge;
+                v->pathV = v;
+                if (notFound) q.insert(v);
+                else q.decreaseKey(v);
             }
         }
-
-        path.push(final);
-        Vertex<T> *previous = final->getPath();
-        path.push(previous);
-        while (previous != v) {
-            previous = previous->getPath();
-            path.apeendPath(previous);
-        }
-        path.setLength(final->dist);
-        return path;
     }
+
+    path.push(final);
+    Vertex<T> *previous = final->getPath();
+    path.push(previous);
+    while (previous != v) {
+        previous = previous->getPath();
+        nodePath->appendPath(dynamic_cast<Node<T>*>(previous));
+    }
+    nodePath->setLength(final->dist);
+    return nodePath;
+
 }
 
 template<class T>

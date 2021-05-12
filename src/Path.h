@@ -12,7 +12,7 @@ using namespace std;
 
 class Path : public GeneralPath {
     vector<Node<int> *> path;
-
+public:
     void displayPath() const;
 
     void appendPath(Node<int> *path, double weight);

@@ -40,6 +40,8 @@ public:
     bool operator<(Vertex<T> &vertex) const; // required by MutablePriorityQueue
     T getInfo() const;
 
+    double getDist() const;
+
     vector<Edge<T> *> getIncoming() const;
 
     vector<Edge<T> *> getOutgoing() const;
@@ -74,6 +76,11 @@ T Vertex<T>::getInfo() const {
 }
 
 template<class T>
+double Vertex<T>::getDist() const {
+    return dist;
+}
+
+template<class T>
 vector<Edge<T> *> Vertex<T>::getIncoming() const {
     return this->incoming;
 }
@@ -85,7 +92,7 @@ vector<Edge<T> *> Vertex<T>::getOutgoing() const {
 
 template<class T>
 Vertex<T> *Vertex<T>::getPath() const {
-    return this->path;
+    return this->pathV;
 }
 
 

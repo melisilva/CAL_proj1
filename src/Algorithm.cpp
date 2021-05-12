@@ -62,6 +62,8 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
 
 
 GeneralPath * Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int time) {
+    GeneralPath *pathToP1 = graph.getNextClosestParking(from, true);
+    GeneralPath *pathToP3 = graph.getNextClosestParking(to, true);
     //    find p1, p2 and p3
     //execute point 1
 }

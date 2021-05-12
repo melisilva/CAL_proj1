@@ -7,8 +7,12 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+#include <stdlib.h>
 #include "Node.h"
 #include "Graph.h"
+#include "Parking.h"
+#include "FixedPriceParking.h"
+#include "DynamicPriceParking.h"
 using namespace std;
 template<class T>
 void readNodesFile(Graph<T> &graph, string nodesfile) {
@@ -89,9 +93,21 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
     for (int i = 0; i < noParkings; i++) {
         parkingsFile >> id;
         Node<T> *node = dynamic_cast<Node<T> *>(graph.findVertex(id));
+
         if (node != nullptr) {
-            node->setParking();
-            parkingNodes.push_back(node);
+            Vertex<T> * park;
+            int fixedPrice = rand()%2;
+            if(fixedPrice){
+                park = new FixedPriceParking<T>(*node);
+            }
+            else{
+                park = new DynamicPriceParking<T>(*node);
+            }
+            dynamic_cast<Node<T> *>(park)->setParking();
+            if(!graph.replaceVertex(park)){
+                exit(1);
+            }
+            delete node;
         }
     }
     parkingsFile.close();
