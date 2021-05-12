@@ -2,8 +2,8 @@
 // Created by 35191 on 10/05/2021.
 //
 
-#ifndef PROJECT_Interface<T>_H
-#define PROJECT_Interface<T>_H
+#ifndef PROJECT_Interface_H
+#define PROJECT_Interface_H
 
 #include "Node.h"
 #include "Algorithm.h"
@@ -15,12 +15,11 @@ class Interface{
     bool parkAtEnd;
     vector<pair<int, Node<int> *>> intermediary;
 public:
-    Interface<T>(Algorithm algo): algo(algo){}
+    Interface(Algorithm algo): algo(algo){}
     void begin();
-    void app();
-    void execute()
+    void execute();
     void displayOptions() const;
-    void chooseWeights() const;
+    void chooseWeights();
     Node<T>* chooseNode() const;
     vector<pair<int, Node<T>*>> chooseIntermediary() const;
     int getNodeOption();

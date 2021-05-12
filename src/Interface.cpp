@@ -31,14 +31,13 @@ void Interface<T>::execute() {
                 chooseWeights();
                 break;
             case 2:
-
                 start = chooseNode();
                 break;
             case 3:
                 intermediary = chooseIntermediary();
                 break;
             case 4:
-                end = chooseEnd();
+                end = chooseNode();
                 break;
             case 5:
                 startAlgo();
@@ -87,7 +86,7 @@ int Interface<T>::getNodeOption(){
 }
 
 template <class T>
-void Interface<T>::chooseWeights() const {
+void Interface<T>::chooseWeights() {
     float a, b, c;
     cout << "Choose weights\n";
     cout << "Driving distance\n";
