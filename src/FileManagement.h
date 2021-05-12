@@ -94,7 +94,7 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
         }
     }
     parkingsFile.close();
-    return parkingNodes;
+                        return parkingNodes;
 }
 //
 //template <class T>

@@ -5,7 +5,21 @@
 #ifndef PROJECT_INTERFACE_H
 #define PROJECT_INTERFACE_H
 
-void begin();
+#include "Algorithm.h"
+
+class Interface{
+    Algorithm algo;
+public:
+    Interface(Algorithm algo): algo(algo){}
+    void begin();
+    void app();
+    void execute();
+    void displayOptions() const;
+    void chooseWeights() const;
+    Node<int>*chooseStart() const;
+    vector<Node<int>*> chooseIntermediary() const;
+    Node<int>*chooseEnd() const;
+};
 
 
 #endif //PROJECT_INTERFACE_H

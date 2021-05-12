@@ -16,6 +16,8 @@ class Algorithm {
     vector<Node<int> *> parkingNodes;
 public:
         Algorithm(string nodesFile, string edgesFile, string parkingFiles);
+        Graph<int> getGraph() const;
+        vector<Node<int>*> getParking() const;
 };
 
 

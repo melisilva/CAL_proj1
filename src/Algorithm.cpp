@@ -10,3 +10,11 @@ Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readEdgesFile(graph, false, edgesFile);
     parkingNodes = readParkingFile(graph, parkingFile);
 }
+
+Graph<int> Algorithm::getGraph() const {
+    return graph;
+}
+
+vector<Node<int> *> Algorithm::getParking() const {
+    return parkingNodes;
+}

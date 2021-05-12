@@ -4,9 +4,10 @@
 #include "Interface.h"
 #include <iostream>
 #include "Graph.h"
+
 using namespace std;
 
-void begin(){
+void Interface::begin() {
     cout << "WELCOME TO PARKING FINDER v1.0\n";
     cout << "This app is here to help you find the best path to take from a start point P to a destination D.\n";
     cout << "For that, we need you to provide your desired P and D.\n";
@@ -14,14 +15,14 @@ void begin(){
     cout << "Use this information to provide an estimated coordinates of your desired points - we'll take care of the rest.\n";
 }
 
-pair<double, double> getP(){
+pair<double, double> getP() {
     double x = 0.0, y = 0.0;
-    while (!cin.fail()){
+    while (!cin.fail()) {
         cout << "Please provide an X coordinate for P: ";
         cin >> x;
     }
 
-    while (!cin.fail()){
+    while (!cin.fail()) {
         cout << "Please provide an X coordinate for P: ";
         cin >> y;
     }
@@ -29,14 +30,14 @@ pair<double, double> getP(){
     return make_pair(x, y);
 }
 
-pair<double, double> getD(){
+pair<double, double> getD() {
     double x = 0.0, y = 0.0;
-    while (!cin.fail()){
+    while (!cin.fail()) {
         cout << "Please provide an X coordinate for D: ";
         cin >> x;
     }
 
-    while (!cin.fail()){
+    while (!cin.fail()) {
         cout << "Please provide an X coordinate for D: ";
         cin >> y;
     }
@@ -44,15 +45,15 @@ pair<double, double> getD(){
     return make_pair(x, y);
 }
 
-double calculateDistance(double x1, double y1, double x2, double y2){
-    return sqrt(pow(x2-x1, 2) + pow(y2 - y1, 2));
+double calculateDistance(double x1, double y1, double x2, double y2) {
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 
-template <class T>
-pair<T, T> findNodes(Graph<T> graph, pair<double, double> P, pair<double, double> D){
+template<class T>
+pair<T, T> findNodes(Graph<T> graph, pair<double, double> P, pair<double, double> D) {
     T p = NULL, d = NULL;
 
-    for (int i = 0; i < graph.getVertexSet().size(); i++){
+    for (int i = 0; i < graph.getVertexSet().size(); i++) {
         if (i == 0) {
             p = graph.getVertexSet()[0];
             d = graph.getVertexSet()[0];
@@ -75,10 +76,61 @@ pair<T, T> findNodes(Graph<T> graph, pair<double, double> P, pair<double, double
     return make_pair(p, d);
 }
 
-template <class T>
-void app(){
+void Interface::app() {
     begin();
-    Graph<T> graph;
-    findNodes(graph, getP(), getD());
+    execute();
+}
+
+void Interface::execute() {
+    int option;
+    while (1) {
+        displayOptions();
+        cin >> option;
+        switch (option) {
+
+            case 0:
+                return;
+            case 1:
+                chooseWeights();
+                break;
+            case 2:
+                chooseStart();
+                break;
+            case 3:
+                chooseIntermediary();
+                break;
+            case 4:
+                chooseEnd();
+                break;
+            default:
+                cout << "Please choose a viable option\n";
+        }
+
+    }
+}
+
+void Interface::displayOptions() const {
+    cout << "0: Exit\n";
+    cout << "1: Choose Weights\n";
+    cout << "2: Choose Start\n";
+    cout << "3: Choose Intermediary\n";
+    cout << "4: Choose End\n";
+    cout << "5: Calculate Path\n";
+}
+
+void Interface::chooseWeights() const {
+
+}
+
+Node<int> * Interface::chooseStart() const {
+
+}
+
+vector<Node<int> *> Interface::chooseIntermediary() const {
+
+}
+
+Node<int> * Interface::chooseEnd() const {
+
 }
 
