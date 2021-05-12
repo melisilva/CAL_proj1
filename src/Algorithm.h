@@ -7,9 +7,11 @@
 
 
 #include <string>
-#include "graph.h"
+#include "Graph.h"
 
 using namespace std;
+class GeneralPath;
+class MultiplePath;
 
 
 class Algorithm {
@@ -25,9 +27,15 @@ public:
 
     void setWeights(float a, float b, float c);
 
-    void execute(Node<int> *start, vector<pair<bool, Node<int>*>>);
+    void execute(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit);
 
-    Node<int> *calculateBestPark(Node<int>* from, Node<int> *to);
+    GeneralPath *calculateBestPark(Node<int> *from, Node<int> *to);
+
+    GeneralPath *calculatePath(Node<int> *from, Node<int> *to);
+
+    MultiplePath *calculateBestParkEachStop(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit);
+
+    MultiplePath *calculateFinalPath(GeneralPath * stops);
 };
 
 

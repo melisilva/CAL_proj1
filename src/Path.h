@@ -14,7 +14,7 @@ class Path: public GeneralPath {
     vector<Node<int> *> path;
 
     void displayPath() const;
-    void appendToPath(Node<int>* node);
+    void appendPath(Node<int>* node);
 };
 
 
