@@ -35,13 +35,6 @@ void Algorithm::execute(Node<int> *start, vector<pair<bool, Node<int> *>> toVisi
 
 }
 
-GeneralPath * Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int time) {
-
-}
-
-GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
-
-}
 
 MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
     MultiplePath *stops;
@@ -64,5 +57,15 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
 }
 
 MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
+    //execute obtencao do melhor percurso
+}
+
+
+GeneralPath * Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int time) {
+    //    find p1, p2 and p3
+    //execute point 1
+}
+
+GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
 
 }

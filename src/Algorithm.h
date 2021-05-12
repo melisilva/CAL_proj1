@@ -29,13 +29,13 @@ public:
 
     void execute(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit);
 
-    GeneralPath *calculateBestPark(Node<int> *from, Node<int> *to, int time);
-
-    GeneralPath *calculatePath(Node<int> *from, Node<int> *to);
-
     MultiplePath *calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
 
     MultiplePath *calculateFinalPath(GeneralPath * stops);
+
+    GeneralPath *calculateBestPark(Node<int> *from, Node<int> *to, int time);
+
+    GeneralPath *calculatePath(Node<int> *from, Node<int> *to);
 };
 
 
