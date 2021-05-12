@@ -11,15 +11,14 @@
 
 using namespace std;
 
-class MultiplePath: public GeneralPath {
-    vector<Path> fullPath;
+class MultiplePath : public GeneralPath {
+    vector<GeneralPath *> fullPath;
 public:
-    void displayPath() const{};
-    virtual void appendPath(GeneralPath* path) const { };
-    virtual Node<int>* getFirst() const { };
-    virtual Node<int>* getLast() const { };
-    virtual Node<int>* getCarOnly() const { };
-    virtual Node<int>* getWalkOnly() const { };
+    MultiplePath();
+
+    void displayPath() const;
+
+    void appendPath(GeneralPath *path);
 
 };
 

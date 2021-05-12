@@ -38,6 +38,7 @@ class Graph;
 
 template<class T>
 class Vertex {
+protected:
     T info;
     vector<Edge<T> *> outgoing;
     vector<Edge<T> *> incoming;
@@ -66,7 +67,7 @@ public:
 
     friend class MutablePriorityQueue<Vertex<T>>;
 
-    double virtual getHeuristic(Vertex<T> *v) {return 0;};
+    double virtual getHeuristic(Vertex<T> *v) { return 0; };
 
     Vertex *getPath() const;
 };
@@ -127,6 +128,10 @@ public:
     friend class Vertex<T>;
 
     double getFlow() const;
+
+    Vertex<T> *getOrig();
+
+    Vertex<T> *getDest();
 };
 
 template<class T>
@@ -136,6 +141,16 @@ Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost, double f
 template<class T>
 double Edge<T>::getFlow() const {
     return this->flow;
+}
+
+template<class T>
+Vertex<T> *Edge<T>::getOrig() {
+    return this->orig;
+}
+
+template<class T>
+Vertex<T> *Edge<T>::getDest() {
+    return this->dest;
 }
 
 
@@ -273,7 +288,7 @@ bool Graph<T>::addBiEdge(const T &sourc, const T &dest, double w) {
             return true;
     }
 
-    v2->addEdge(new Edge<T>(v1, v2, 0, w, 0));
+    v2->addEdge(new Edge<T>(v2, v1, 0, w, 0));
 
     return true;
 }
@@ -728,6 +743,10 @@ class Node : public Vertex<T> {
 public:
     Node(int id, double lat, double longi) : Vertex<T>(id), lat(lat), longi(longi) {}
 
+    void displayNode() const {
+        cout << Vertex<T>::info << ' ' << lat << ' ' << longi << '\n';
+    }
+
     double getLatitude() const {
         return lat;
     }
@@ -749,7 +768,7 @@ public:
     }
 
     double getHeuristic(Vertex<T> *v) {
-        Node<T> *node = dynamic_cast<Node*>(v);
+        Node<T> *node = dynamic_cast<Node *>(v);
         return sqrt(pow((getLatitude() - node->getLatitude()), 2) + pow((getLongitude() - node->getLongitude()), 2));
     }
 };

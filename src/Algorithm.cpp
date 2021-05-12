@@ -44,21 +44,23 @@ GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
 }
 
 MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit) {
-    MultiplePath stops;
+    MultiplePath *stops;
     Node<int> *last = start;
     for (int i = 0; i < toVisit.size(); i++) {
         auto pair = toVisit[i];
         if (pair.first) {
             //will visit this node
-            stops.appendPath(calculatePath(last, pair.second));
+            stops->appendPath(calculatePath(last, pair.second));
             last = pair.second;
         } else {
             GeneralPath *toParkInterPark = calculateBestPark(last, pair.second);
-            stops.appendPath(toParkInterPark);
+            stops->appendPath(toParkInterPark);
+
+            //Another strategy might take last = pair.second and use multithreading
             last = toParkInterPark->getLast();
         }
     }
-
+    return stops;
 }
 
 MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {

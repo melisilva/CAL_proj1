@@ -10,7 +10,8 @@
 class Interface{
     Algorithm algo;
     Node<int> *start, *end;
-    vector<Node<int>*> intermediary;
+    bool parkAtEnd;
+    vector<pair<bool, Node<int>*>> intermediary;
 public:
     Interface(Algorithm algo): algo(algo){}
     void begin();

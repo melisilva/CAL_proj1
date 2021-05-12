@@ -137,7 +137,7 @@ Node<int> * Interface::chooseStart() const {
 
 }
 
-vector<Node<int> *> Interface::chooseIntermediary() const {
+vector<pair<bool, Node<int>*>> Interface::chooseIntermediary() const {
 
 }
 
@@ -146,7 +146,7 @@ Node<int> * Interface::chooseEnd() const {
 }
 
 void Interface::startAlgo() {
-    intermediary.push_back(end);
+    intermediary.push_back(pair<bool, Node<int>*>(parkAtEnd, end));
     algo.execute(start, intermediary);
     intermediary.pop_back();
 }
