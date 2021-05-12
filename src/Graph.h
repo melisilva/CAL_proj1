@@ -15,6 +15,7 @@
 #include <sstream>
 #include <unordered_map>
 #include "Edge.h"
+#include "Path.h"
 #include "MutablePriorityQueue.h"
 
 using namespace std;
@@ -83,6 +84,8 @@ public:
 
     queue<Vertex<T> *> dijkstraShortestPath(const int &origin, const int &dest);
 
+    Path getNextClosestParking(Vertex<T>*v, bool reset = false);
+
     queue<Vertex<T> *> aStarShortestPath(const int &origin, const int &dest);
 };
 
@@ -109,6 +112,11 @@ int Graph<T>::findVertexIdx(const int &id) const {
         if (currentPoints.at(i) == id)
             return i;
     return -1;
+}
+
+template<class T>
+vector<Vertex<T> *> Graph<T>::getVertexSet() const {
+    return vertexSet;
 }
 
 template<class T>
@@ -179,11 +187,6 @@ double Graph<T>::getFlow(const T &sourc, const T &dest) const {
         if (e->dest == d)
             return e->flow;
     return 0.0;
-}
-
-template<class T>
-vector<Vertex<T> *> Graph<T>::getVertexSet() const {
-    return vertexSet;
 }
 
 template<class T>
@@ -550,6 +553,56 @@ queue<Vertex<T> *> Graph<T>::dijkstraShortestPath(const int &origin, const int &
     }
 
     return path;
+}
+
+template<class T>
+Path Graph<T>::getNextClosestParking(Vertex<T>*v, bool reset) {
+    static MutablePriorityQueue<Vertex<T>> q;
+    static Vertex<T>*final;
+    queue<Vertex<T> *> path;
+    Path nodePath;
+
+
+    if (dynamic_cast<Node<T> *>(v)->getParking()) {
+        return path;
+    }
+
+    if (reset) {
+        initializeForShortestPath();
+        q = MutablePriorityQueue<Vertex<T>>();
+        v->dist = 0;
+        q.insert(v);
+    } else {
+
+        while (!q.empty()) {
+            Vertex<T> *temp = q.extractMin();
+
+            if (dynamic_cast<Node<T> *>(temp)->getParking()) {
+                final = temp;
+                break;
+            };
+
+            for (Edge<T> *edge: temp->getAdj()) {
+                Vertex<T> *v = edge->getDest();
+                bool notFound = (v->getDist() == INT_MAX);
+
+                if (relax(temp, v, edge->getWeight())) {
+                    if (notFound) q.insert(v);
+                    else q.decreaseKey(v);
+                }
+            }
+        }
+
+        path.push(final);
+        Vertex<T> *previous = final->getPath();
+        path.push(previous);
+        while (previous != v) {
+            previous = previous->getPath();
+            path.apeendPath(previous);
+        }
+        path.setLength(final->dist);
+        return path;
+    }
 }
 
 template<class T>

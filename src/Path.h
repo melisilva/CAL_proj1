@@ -7,7 +7,6 @@
 
 #include <vector>
 #include "GeneralPath.h"
-#include "Graph.h"
 
 using namespace std;
 
@@ -17,6 +16,10 @@ class Path : public GeneralPath {
     void displayPath() const;
 
     void appendPath(Node<int> *path, double weight);
+
+    void appendPath(Node<int> *path);
+
+    void setLength(double length);
 
     void setCarOnly(bool isCarOnly);
 

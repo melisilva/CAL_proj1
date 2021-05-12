@@ -11,8 +11,18 @@ void Path::displayPath() const {
 }
 
 void Path::appendPath(Node<int> *node, double weight) {
+    path.push_back(node);
     last = node;
     length += weight;
+}
+
+void Path::appendPath(Node<int> *node) {
+    path.push_back(node);
+    last = node;
+}
+
+void Path::setLength(double length) {
+    this->length = length;
 }
 
 void Path::setCarOnly(bool isCarOnly) {
