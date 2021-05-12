@@ -66,6 +66,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
     GeneralPath *pathToP1 = graph.getNextClosestParking(from, true);
     GeneralPath *pathToP2 = calculatePath(from, calculateCheapestPark(time));
     GeneralPath *pathToP3 = graph.getNextClosestParking(to, true);
+    graph.initializeForShortestPath();
     //    find p1, p2 and p3
     cout <<"working till here";
     //execute point 1
