@@ -36,6 +36,8 @@ public:
 
     GeneralPath *calculateBestPark(Node<int> *from, Node<int> *to, int time);
 
+    Node<int> * calculateCheapestPark(int time);
+
     GeneralPath *calculatePath(Node<int> *from, Node<int> *to);
 };
 
