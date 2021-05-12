@@ -5,7 +5,7 @@
 #ifndef PROJECT_GENERALPATH_H
 #define PROJECT_GENERALPATH_H
 
-#include "Graph.h"
+#include "Node.h"
 
 class GeneralPath {
 protected:

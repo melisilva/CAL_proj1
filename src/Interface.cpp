@@ -137,7 +137,7 @@ Node<int> * Interface::chooseStart() const {
 
 }
 
-vector<pair<bool, Node<int>*>> Interface::chooseIntermediary() const {
+vector<pair<int, Node<int> *>> Interface::chooseIntermediary() const {
 
 }
 

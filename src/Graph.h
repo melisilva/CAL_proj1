@@ -13,8 +13,8 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <cmath>
 #include <unordered_map>
+#include "Edge.h"
 #include "MutablePriorityQueue.h"
 
 using namespace std;
@@ -25,144 +25,11 @@ template<class T>
 class Vertex;
 
 template<class T>
-class Edge;
-
-template<class T>
 class Graph;
-
-/*
- * ================================================================================================
- * Class Vertex
- * ================================================================================================
- */
-
-template<class T>
-class Vertex {
-protected:
-    T info;
-    vector<Edge<T> *> outgoing;
-    vector<Edge<T> *> incoming;
-
-    bool visited;  // for path finding
-    Edge<T> *path; // for path finding
-    double dist;   // for path finding
-    int queueIndex = 0; // required by MutablePriorityQueue
-
-    Vertex<T> *pathV = nullptr;
-    Vertex<T> *pathI = nullptr;
-
-public:
-    Vertex(T in);
-
-    void addEdge(Edge<T> *e);
-
-    bool operator<(Vertex<T> &vertex) const; // required by MutablePriorityQueue
-    T getInfo() const;
-
-    vector<Edge<T> *> getIncoming() const;
-
-    vector<Edge<T> *> getOutgoing() const;
-
-    friend class Graph<T>;
-
-    friend class MutablePriorityQueue<Vertex<T>>;
-
-    double virtual getHeuristic(Vertex<T> *v) { return 0; };
-
-    Vertex *getPath() const;
-};
-
-
-template<class T>
-Vertex<T>::Vertex(T in): info(in) {}
-
-template<class T>
-void Vertex<T>::addEdge(Edge<T> *e) {
-    outgoing.push_back(e);
-    e->dest->incoming.push_back(e);
-}
-
-template<class T>
-bool Vertex<T>::operator<(Vertex<T> &vertex) const {
-    return this->dist < vertex.dist;
-}
-
-template<class T>
-T Vertex<T>::getInfo() const {
-    return this->info;
-}
-
-template<class T>
-vector<Edge<T> *> Vertex<T>::getIncoming() const {
-    return this->incoming;
-}
-
-template<class T>
-vector<Edge<T> *> Vertex<T>::getOutgoing() const {
-    return this->outgoing;
-}
-
-template<class T>
-Vertex<T> *Vertex<T>::getPath() const {
-    return this->path;
-}
-
-/* ================================================================================================
- * Class Edge
- * ================================================================================================
- */
-
-template<class T>
-class Edge {
-    Vertex<T> *orig;
-    Vertex<T> *dest;
-    double capacity;
-    double cost;
-    double flow;
-
-    Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost = 0, double flow = 0);
-
-public:
-    friend class Graph<T>;
-
-    friend class Vertex<T>;
-
-    double getFlow() const;
-
-    Vertex<T> *getOrig();
-
-    Vertex<T> *getDest();
-};
-
-template<class T>
-Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost, double flow):
-        orig(o), dest(d), capacity(capacity), cost(cost), flow(flow) {}
-
-template<class T>
-double Edge<T>::getFlow() const {
-    return this->flow;
-}
-
-template<class T>
-Vertex<T> *Edge<T>::getOrig() {
-    return this->orig;
-}
-
-template<class T>
-Vertex<T> *Edge<T>::getDest() {
-    return this->dest;
-}
-
-
-/* ================================================================================================
- * Class Graph
- * ================================================================================================
- */
 
 template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;
-
 
     void dijkstraShortestPath(Vertex<T> *s);
 
@@ -734,45 +601,6 @@ queue<Vertex<T> *> Graph<T>::aStarShortestPath(const int &origin, const int &des
 
     return path;
 }
-
-template<class T>
-class Node : public Vertex<T> {
-
-    double lat, longi;
-    bool isParking = false;
-public:
-    Node(int id, double lat, double longi) : Vertex<T>(id), lat(lat), longi(longi) {}
-
-    void displayNode() const {
-        cout << Vertex<T>::info << ' ' << lat << ' ' << longi << '\n';
-    }
-
-    double getLatitude() const {
-        return lat;
-    }
-
-    double getLongitude() const {
-        return longi;
-    }
-
-    bool getParking() const {
-        return isParking;
-    }
-
-    void setParking() {
-        isParking = true;
-    }
-
-    void setParking(bool isParking) {
-        this->isParking = isParking;
-    }
-
-    double getHeuristic(Vertex<T> *v) {
-        Node<T> *node = dynamic_cast<Node *>(v);
-        return sqrt(pow((getLatitude() - node->getLatitude()), 2) + pow((getLongitude() - node->getLongitude()), 2));
-    }
-};
-
 
 #endif /* GRAPH_H_ */
 

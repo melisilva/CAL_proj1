@@ -27,7 +27,7 @@ void Algorithm::setWeights(float a, float b, float c) {
     walkWeight = c;
 }
 
-void Algorithm::execute(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit) {
+void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
 
     MultiplePath *stops = dynamic_cast<MultiplePath *>(calculateBestParkEachStop(start, toVisit));
     stops = calculateFinalPath(stops);

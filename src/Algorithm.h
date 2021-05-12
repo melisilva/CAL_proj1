@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include "Node.h"
 #include "Graph.h"
 
 using namespace std;
@@ -27,7 +28,7 @@ public:
 
     void setWeights(float a, float b, float c);
 
-    void execute(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit);
+    void execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
 
     MultiplePath *calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
 

@@ -7,6 +7,7 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+#include "Node.h"
 #include "Graph.h"
 using namespace std;
 template<class T>
