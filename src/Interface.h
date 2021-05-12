@@ -5,16 +5,20 @@
 #ifndef PROJECT_Interface<T>_H
 #define PROJECT_Interface<T>_H
 
+#include "Node.h"
 #include "Algorithm.h"
 
 template <class T>
 class Interface{
     Algorithm algo;
+    Node<int> *start, *end;
+    bool parkAtEnd;
+    vector<pair<int, Node<int> *>> intermediary;
 public:
     Interface<T>(Algorithm algo): algo(algo){}
     void begin();
     void app();
-    void execute();
+    void execute()
     void displayOptions() const;
     void chooseWeights() const;
     Node<T>* chooseNode() const;
@@ -24,8 +28,9 @@ public:
     double calcNodeDistance(Node<T> a, Node<T> b);
     Node<T>* getNodeID() const;
     Node<T>* getNodeCoordinates();
+    Node<T>* getRandomNode() const;
 
-    void getRandomNode() const;
+    void startAlgo();
 };
 
 

@@ -7,17 +7,36 @@
 
 
 #include <string>
-#include "graph.h"
+#include "Node.h"
+#include "Graph.h"
+
 using namespace std;
+class GeneralPath;
+class MultiplePath;
 
 
 class Algorithm {
     Graph<int> graph;
     vector<Node<int> *> parkingNodes;
+    float driveWeight, parkWeight, walkWeight;
 public:
-        Algorithm(string nodesFile, string edgesFile, string parkingFiles);
-        Graph<int> getGraph() const;
-        vector<Node<int>*> getParking() const;
+    Algorithm(string nodesFile, string edgesFile, string parkingFiles);
+
+    Graph<int> getGraph() const;
+
+    vector<Node<int> *> getParking() const;
+
+    void setWeights(float a, float b, float c);
+
+    void execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
+
+    MultiplePath *calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
+
+    MultiplePath *calculateFinalPath(GeneralPath * stops);
+
+    GeneralPath *calculateBestPark(Node<int> *from, Node<int> *to, int time);
+
+    GeneralPath *calculatePath(Node<int> *from, Node<int> *to);
 };
 
 

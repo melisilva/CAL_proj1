@@ -31,16 +31,17 @@ void Interface<T>::execute() {
                 chooseWeights();
                 break;
             case 2:
-                chooseNode();
+
+                start = chooseNode();
                 break;
             case 3:
-                chooseIntermediary();
+                intermediary = chooseIntermediary();
                 break;
             case 4:
-                chooseNode();
+                end = chooseEnd();
                 break;
             case 5:
-                break;
+                startAlgo();
             default:
                 cout << "Please choose a viable option\n";
         }
@@ -49,7 +50,7 @@ void Interface<T>::execute() {
 }
 
 template<class T>
-void Interface<T>::getRandomNode() const {
+Node<T>* Interface<T>::getRandomNode() const {
     int size = algo.getGraph().getVertexSet().size();
     return dynamic_cast<Node<T>*>(algo.getGraph().getVertexSet().at(rand()%size));
 }
@@ -63,11 +64,6 @@ void Interface<T>::displayOptions() const {
     cout << "3 - Choose Intermediary\n";
     cout << "4 - Choose End\n";
     cout << "5 - Calculate Path\n";
-}
-
-template <class T>
-void Interface<T>::chooseWeights() const {
-
 }
 
 template <class T>
@@ -88,6 +84,20 @@ int Interface<T>::getNodeOption(){
     }
 
     return option;
+}
+
+template <class T>
+void Interface<T>::chooseWeights() const {
+    float a, b, c;
+    cout << "Choose weights\n";
+    cout << "Driving distance\n";
+    cin >> a;
+    cout << "Parking price\n";
+    cin >> b;
+    cout << "Walking distance\n";
+    cin >> c;
+    float sum = a + b + c;
+    algo.setWeights(a/sum, b/sum, c/sum);
 }
 
 template <class T>
@@ -170,8 +180,10 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() const {
     return midStops;
 }
 
-
-
-
-
+template <class T>
+void Interface<T>::startAlgo() {
+    intermediary.push_back(pair<bool, Node<int>*>(parkAtEnd, end));
+    algo.execute(start, intermediary);
+    intermediary.pop_back();
+}
 
