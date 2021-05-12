@@ -21,6 +21,7 @@ file(GLOB TP7_GRAPHVIEWER_FILES CONFIGURE_DEPENDS
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS
         "src/*.cpp"
+        "src/*.h"
         )
 
 add_executable(TP7_graphviewer
