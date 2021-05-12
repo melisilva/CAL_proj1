@@ -35,7 +35,7 @@ void Algorithm::execute(Node<int> *start, vector<pair<bool, Node<int> *>> toVisi
 
 }
 
-GeneralPath * Algorithm::calculateBestPark(Node<int> *from, Node<int> *to) {
+GeneralPath * Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int time) {
 
 }
 
@@ -43,7 +43,7 @@ GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
 
 }
 
-MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<bool, Node<int> *>> toVisit) {
+MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
     MultiplePath *stops;
     Node<int> *last = start;
     for (int i = 0; i < toVisit.size(); i++) {
@@ -53,7 +53,7 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
             stops->appendPath(calculatePath(last, pair.second));
             last = pair.second;
         } else {
-            GeneralPath *toParkInterPark = calculateBestPark(last, pair.second);
+            GeneralPath *toParkInterPark = calculateBestPark(last, pair.second, pair.first);
             stops->appendPath(toParkInterPark);
 
             //Another strategy might take last = pair.second and use multithreading

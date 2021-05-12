@@ -11,7 +11,7 @@ class Interface{
     Algorithm algo;
     Node<int> *start, *end;
     bool parkAtEnd;
-    vector<pair<bool, Node<int>*>> intermediary;
+    vector<pair<int, Node<int>*>> intermediary;
 public:
     Interface(Algorithm algo): algo(algo){}
     void begin();
@@ -20,7 +20,7 @@ public:
     void displayOptions() const;
     void chooseWeights();
     Node<int>*chooseStart() const;
-    vector<pair<bool, Node<int>*>> chooseIntermediary() const;
+    vector<pair<int, Node<int>*>> chooseIntermediary() const;
     Node<int>*chooseEnd() const;
     void startAlgo();
 };
