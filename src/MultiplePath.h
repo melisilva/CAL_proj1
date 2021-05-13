@@ -14,11 +14,21 @@ using namespace std;
 class MultiplePath : public GeneralPath {
     vector<GeneralPath *> fullPath;
 public:
-    MultiplePath();
+    MultiplePath(Node<int> *n);
+
+    vector<Node<int> *> getAllNodes();
 
     void displayPath() const;
 
     void appendPath(GeneralPath *path);
+
+    void removeLastSubPath();
+
+    vector<GeneralPath*> getPath();
+
+    GeneralPath *getFirstSubPath();
+
+    GeneralPath *getLastSubPath();
 
 };
 

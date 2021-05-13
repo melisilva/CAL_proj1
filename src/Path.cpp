@@ -4,11 +4,18 @@
 
 #include "Path.h"
 
+Path::Path(Node<int> *n): GeneralPath(n){}
+
+vector<Node<int> *> Path::getAllNodes() {
+    return path;
+}
+
 void Path::displayPath() const {
-    for(auto node: path){
+    for (auto node: path) {
         node->displayNode();
     }
 }
+
 
 void Path::appendPath(Node<int> *node, double weight) {
     path.push_back(node);

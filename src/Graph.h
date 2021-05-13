@@ -587,7 +587,7 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
     static MutablePriorityQueue<Vertex<T>> q;
     static Vertex<T> *final;
     queue<Vertex<T> *> path;
-    Path *nodePath = new Path();
+    Path *nodePath;
     Node<T> *node = dynamic_cast<Node<T> *>(v);
 
 
@@ -630,6 +630,7 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
     path.push(final);
     Vertex<T> *previous = final->getPath();
     path.push(previous);
+    nodePath = new Path(dynamic_cast<Node<int>*>(final));
     while (previous != v) {
         previous = previous->getPath();
         nodePath->appendPath(dynamic_cast<Node<T>*>(previous));
