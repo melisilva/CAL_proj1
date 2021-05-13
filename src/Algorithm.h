@@ -38,8 +38,6 @@ public:
 
     Node<int> * calculateCheapestPark(int time);
 
-    GeneralPath *calculatePath(Node<int> *from, Node<int> *to);
-
     GeneralPath *calculateDrivePath(Node<int> *from, Node<int> *to);
 
     GeneralPath *calculateWalkPath(Node<int> *from, Node<int> *to);

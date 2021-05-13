@@ -3,6 +3,7 @@
 //
 
 #include <algorithm>
+#include <unordered_set>
 #include "Algorithm.h"
 #include "FileManagement.h"
 #include "MultiplePath.h"
@@ -43,9 +44,9 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
     Node<int> *last = start;
     for (int i = 0; i < toVisit.size(); i++) {
         auto pair = toVisit[i];
-        if (pair.first) {
-            //will visit this node
-            stops->appendPath(calculatePath(last, pair.second));
+        if (!pair.first) {
+            //will just pass by this node
+            stops->appendPath(calculateDrivePath(last, pair.second));
             last = pair.second;
         } else {
             GeneralPath *toParkInterPark = calculateBestPark(last, pair.second, pair.first);
@@ -110,10 +111,10 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         //Now need to calculate the actual pathDist
         double thirdCost = 0, parksDistCost = 0;
         GeneralPath *parksPath;
-        GeneralPath *destiniesPath = calculatePath(lastTrueDestiny, thisTrueDestiny);
-        GeneralPath *thisDestinyToLastParkPath = calculatePath(thisTrueDestiny, lastPark);
+        GeneralPath *destiniesPath = calculateWalkPath(lastTrueDestiny, thisTrueDestiny);
+        GeneralPath *thisDestinyToLastParkPath = calculateWalkPath(thisTrueDestiny, lastPark);
         if (i < pathStops.size() - 1) {
-            parksPath = calculatePath(lastPark, pathStops[i + 1]->getLast());
+            parksPath = calculateDrivePath(lastPark, pathStops[i + 1]->getLast());
             parksDistCost = getDistancesCost(parksPath);
         }
         thirdCost = getDistancesCost(destiniesPath) + getDistancesCost(thisDestinyToLastParkPath) + parkCost + parksDistCost;
@@ -150,11 +151,11 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         } else if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*to->calcNodeDistance(parkingNodes[j]) > 0 /*minimum*/ ) {
             // podemos saltar
             continue;
-        } else if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*calculatePath(parkingNodes[j], to)->getLength() > 0 /*minimum*/ ){
+        } else if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*calculateWalkPath(parkingNodes[j], to)->getLength() > 0 /*minimum*/ ){
             // podemos saltar
             continue;
         } else {
-            if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*calculatePath(parkingNodes[j], to)->getLength() < 0 /*minimum*/){
+            if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*calculateWalkPath(parkingNodes[j], to)->getLength() < 0 /*minimum*/){
                 //o que está na esquerda torna-se o novo mínimo.
             }
         }
@@ -173,18 +174,14 @@ Node<int> *Algorithm::calculateCheapestPark(int time) {
     );
 }
 
-GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
-   return graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to));
-}
-
 GeneralPath *Algorithm::calculateDrivePath(Node<int> *from, Node<int> *to) {
-    Path *p = dynamic_cast<Path *>(calculatePath(from, to));
+    Path *p = dynamic_cast<Path *>(graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to)));
     p->setCarOnly(true);
     return p;
 }
 
 GeneralPath *Algorithm::calculateWalkPath(Node<int> *from, Node<int> *to) {
-    Path *p = dynamic_cast<Path *>(calculatePath(from, to));
+    Path *p = dynamic_cast<Path *>(graph.aStarShortestPathwalking(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to)));
     p->setWalkOnly(true);
     return p;
 }
