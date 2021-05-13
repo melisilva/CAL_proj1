@@ -85,5 +85,5 @@ Node<int> *Algorithm::calculateCheapestPark(int time) {
 }
 
 GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
-   return graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to));
+   return graph.aStarShortestPath(from->getInfo(), to->getInfo());
 }

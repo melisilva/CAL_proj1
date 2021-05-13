@@ -21,6 +21,8 @@ public:
 
     void setLength(double length);
 
+    double getLength();
+
     void setCarOnly(bool isCarOnly);
 
     void setWalkOnly(bool isWalkOnly);

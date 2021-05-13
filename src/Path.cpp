@@ -25,6 +25,10 @@ void Path::setLength(double length) {
     this->length = length;
 }
 
+double Path::getLength() {
+    return this->length;
+}
+
 void Path::setCarOnly(bool isCarOnly) {
     carOnly = isCarOnly;
 }
