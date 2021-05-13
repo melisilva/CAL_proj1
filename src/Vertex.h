@@ -27,7 +27,9 @@ protected:
     bool visited;  // for path finding
     Edge<T> *path; // for path finding
     double dist;   // for path finding
+    double distI;
     int queueIndex = 0; // required by MutablePriorityQueue
+    int queueIndexI = 0;
 
     Vertex<T> *pathV = nullptr;
     Vertex<T> *pathI = nullptr;
@@ -41,8 +43,6 @@ public:
     T getInfo() const;
 
     double getDist() const;
-
-    vector<Edge<T> *> getAdj() const;
 
     vector<Edge<T> *> getIncoming() const;
 
@@ -82,11 +82,6 @@ double Vertex<T>::getDist() const {
     return dist;
 }
 
-
-template <class T>
-vector<Edge<T> *> Vertex<T>::getAdj() const{
-    return this->outgoing;
-}
 
 template<class T>
 vector<Edge<T> *> Vertex<T>::getIncoming() const {

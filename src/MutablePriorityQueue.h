@@ -20,12 +20,13 @@ using namespace std;
 
 template <class T>
 class MutablePriorityQueue {
-	vector<T *> H;
-	void heapifyUp(unsigned i);
-	void heapifyDown(unsigned i);
-	inline void set(unsigned i, T * x);
+    bool inv = false;
+    vector<T *> H;
+    void heapifyUp(unsigned i);
+    void heapifyDown(unsigned i);
+    inline void set(unsigned i, T * x);
 public:
-	MutablePriorityQueue();
+	MutablePriorityQueue(bool inv = false);
 	void insert(T * x);
 	void insertOrDecreaseKey(T * x);
 	T * extractMin();
@@ -38,10 +39,10 @@ public:
 #define leftChild(i) ((i) * 2)
 
 template <class T>
-MutablePriorityQueue<T>::MutablePriorityQueue() {
-	H.push_back(nullptr);
-	// indices will be used starting in 1
-	// to facilitate parent/child calculations
+MutablePriorityQueue<T>::MutablePriorityQueue(bool inv): inv(inv) {
+    H.push_back(nullptr);
+    // indices will be used starting in 1
+    // to facilitate parent/child calculations
 }
 
 template <class T>
@@ -107,8 +108,8 @@ void MutablePriorityQueue<T>::heapifyDown(unsigned i) {
 
 template <class T>
 void MutablePriorityQueue<T>::set(unsigned i, T * x) {
-	H[i] = x;
-	x->queueIndex = i;
+    H[i] = x;
+    (inv)? (x->queueIndexI = i) : (x->queueIndex = i);
 }
 
 #endif /* SRC_MUTABLEPRIORITYQUEUE_H_ */

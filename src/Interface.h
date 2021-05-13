@@ -8,7 +8,6 @@
 /*
 #include "Node.h"
 #include "Algorithm.h"
-
 template <class T>
 class Interface{
     Algorithm algo;
@@ -29,7 +28,6 @@ public:
     Node<T>* getNodeID() const;
     Node<T>* getNodeCoordinates();
     Node<T>* getRandomNode() const;
-
     void startAlgo();
 };
 */

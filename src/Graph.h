@@ -79,6 +79,8 @@ public:
 
     void initializeForShortestPath();
 
+    void initializeForShortestPathwalking();
+
     double distancePath(queue<Vertex<T> *> path);
 
     double heuristic(Vertex<T> *v1, Vertex<T> *v2);
@@ -88,6 +90,8 @@ public:
     Path *getNextClosestParking(Vertex<T> *v, bool reset = false);
 
     Path* aStarShortestPath(const int &origin, const int &dest);
+
+    Path* aStarShortestPathwalking(const int &origin, const int &dest);
 };
 
 template<class T>
@@ -518,8 +522,20 @@ template<class T>
 void Graph<T>::initializeForShortestPath() {
     for (Vertex<T> *v: vertexSet) {
         v->dist = INT_MAX;
-        v->path = NULL;
+        v->pathV = NULL;
         v->queueIndex = 0;
+    }
+}
+
+template<class T>
+void Graph<T>::initializeForShortestPathwalking() {
+    for (Vertex<T> *v: vertexSet) {
+        v->dist = INT_MAX;
+        v->distI = INT_MAX;
+        v->queueIndex = 0;
+        v->queueIndexI = 0;
+        v->pathV = NULL;
+        v->pathI = NULL;
     }
 }
 
@@ -623,6 +639,7 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
 
 }
 
+
 template<class T>
 Path * Graph<T>::aStarShortestPath(const int &origin,  const int &dest) {
 
@@ -643,7 +660,7 @@ Path * Graph<T>::aStarShortestPath(const int &origin,  const int &dest) {
 
         if (temp == final) break;
 
-        for (Edge<T> *edge: temp->getAdj()) {
+        for (Edge<T> *edge: temp->getOutgoing()) {
 
             Vertex<T> *v = edge->getDest();
 
@@ -675,6 +692,135 @@ Path * Graph<T>::aStarShortestPath(const int &origin,  const int &dest) {
 
     return path;
 }
+
+
+template <class T>
+Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
+
+    Path* path;
+    if(origin == dest) return path;
+
+    initializeForShortestPathwalking();
+
+    //Maps to keep track of visited vertices
+    unordered_map<int, bool> fVisited;
+    unordered_map<int, bool> iVisited;
+
+    //Creating forward and reverse priority queues
+    MutablePriorityQueue<Vertex<T>> fQueue;
+    MutablePriorityQueue<Vertex<T>> iQueue(true);
+
+
+    //Starting values
+    Vertex<T> *src = findVertex(origin), *final = findVertex(dest), *mid;
+    src->dist = 0;
+    final->distI = 0;
+
+    fQueue.insert(src);
+    iQueue.insert(final);
+
+    while(!fQueue.empty() && !iQueue.empty()){
+        //Forward search
+        //Starting by extracting the minimum from forward queue and set vertex as visited by forward search
+        Vertex<T>* fV = fQueue.extractMin();
+        fVisited.emplace(fV->getInfo(), true);
+
+        //Checks if it has been visited by reverse search, if so the path has been found
+        if(iVisited.count(fV->getInfo())>0){
+            mid = fV;
+            break;
+        }
+
+        //Explore edges in regular graph
+        for (Edge<T>* e: fV->outgoing){
+            Vertex<T> * v = e->getDest();
+            double temp = fV->getDist() + e->getCost() - heuristic(fV, final) + heuristic(v, final);
+            bool notFound = (v->getDist() == INT_MAX);
+            if(v->getDist() > temp){
+                v->dist = temp;
+                v->pathV = fV;
+                if(notFound) fQueue.insert(v);
+                else
+                    fQueue.decreaseKey(v);
+            }
+        }
+
+        //Reverse seacrh
+        //Starting by extracting the minimum from reverse queue and set vertex as visited by reverse search
+        Vertex<T>* iV = iQueue.extractMin();
+        iVisited.emplace(iV->getInfo(), true);
+
+        //Checks if it has been visited by forward search, if so the path has been found
+        if(fVisited.count(iV->getInfo())>0){
+            mid = iV;
+            break;
+        }
+
+
+        //Explore edges in reverse graph
+        for (Edge<T> *e: iV->incoming){
+            Vertex<T> * v = e->getOrig();
+
+            double temp = iV->distI + e->getCost() - heuristic(iV, src) + heuristic(v, src);
+            bool notFound = (v->distI == INT_MAX);
+            if(v->distI > temp){
+                v->distI = temp;
+                v->pathI = iV;
+                if(notFound) iQueue.insert(v);
+                else
+                    iQueue.decreaseKey(v);
+            }
+        }
+    }
+
+    //Verify if alternatives paths are better, not passing through mid vertex
+    queue<Vertex<T>*> aux;
+    double f = mid->dist - heuristic(mid, final) + heuristic(mid, src) + mid->distI;
+
+    for (auto node : fVisited){
+        Vertex<T>* temp = findVertex(node.first);
+
+        for(Edge<T>* e: temp->outgoing){
+
+            Vertex<T>* tent = e->getDest();
+            if(iVisited.count(tent->getInfo()) > 0){
+
+                double f_temp = temp->getDist() + tent->getDist() + e->getCost() - heuristic(temp, final) - heuristic(tent, src);
+
+                if(f_temp < f){
+                    tent->pathV = temp;
+                    mid = tent;
+                    f = f_temp;
+                }
+
+            }
+        }
+    }
+
+    //Start to build the final path from mid
+    vector<Vertex<T>*> t;
+    t.push_back(mid);
+    Vertex<T>* v = mid;
+
+    while(v->path != NULL){
+        v = v->pathV;
+        t.emplace(t.begin(),v);
+    }
+
+    v = mid;
+
+    while(v->pathI != NULL){
+        v = v->pathI;
+        t.push_back(v);
+    }
+
+    for (unsigned i = t.size(); i-- > 0; ){
+        path->appendPath(dynamic_cast<Node<T>*>(t.at(i)));
+    }
+
+    return path;
+}
+
 
 #endif /* GRAPH_H_ */
 
