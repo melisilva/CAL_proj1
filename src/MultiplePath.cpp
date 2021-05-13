@@ -44,6 +44,9 @@ vector<GeneralPath *> MultiplePath::getPath() {
     return fullPath;
 }
 
+GeneralPath * MultiplePath::getFirstSubPath() {
+    return fullPath.front();
+}
 GeneralPath *MultiplePath::getLastSubPath() {
     return fullPath.back();
 }

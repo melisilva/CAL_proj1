@@ -26,6 +26,8 @@ public:
 
     vector<GeneralPath*> getPath();
 
+    GeneralPath *getFirstSubPath();
+
     GeneralPath *getLastSubPath();
 
 };

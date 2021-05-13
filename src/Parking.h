@@ -28,6 +28,8 @@ public:
     void setUserTime(int newTime) { userTime = newTime; }
 
     double getUserCost() { return getPrice(userTime); }
+
+    double getUserCost(int time) { return getPrice(time); }
 };
 
 

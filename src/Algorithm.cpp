@@ -62,30 +62,71 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
 MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
     MultiplePath *final = new MultiplePath(stops->getFirst());
     vector<GeneralPath *> pathStops = dynamic_cast<MultiplePath *>(stops)->getPath();
-    for (auto stopPath: pathStops) {
+    final->appendPath(pathStops[0]);
+    for (int i = 1; i < pathStops.size(); i++) {
+        auto stopPath = pathStops[i];
         if (stopPath->isCarOnly()) {
             //We didn't stop at this intermediary point, we can just go there
             final->appendPath(stopPath);
             continue;
         }
-        if (final->isEmpty()) {
-            //Path was empty, park improvement is absurd
+
+        Node<int> *lastTrueDestiny, *thisTrueDestiny;
+        Parking<int> *lastPark, *thisPark;
+        GeneralPath *lastSubPath = final->getLastSubPath();
+        lastPark = dynamic_cast<Parking<int> *>(final->getLast());
+        lastTrueDestiny = lastSubPath->getFirst();
+        thisPark = dynamic_cast<Parking<int> *>(stopPath->getLast());
+        thisTrueDestiny = dynamic_cast<MultiplePath *>(stopPath)->getLastSubPath()->getFirst();
+
+
+        //COST TO PARK IN stopPath PARK TOO
+        double firstCost = 0;
+        GeneralPath *lastPathFromLastTrueDestinyToPark = dynamic_cast<MultiplePath *>(lastSubPath)->getLastSubPath();
+        firstCost += getDistancesCost(dynamic_cast<MultiplePath *>(lastPathFromLastTrueDestinyToPark));
+        firstCost += getCost(dynamic_cast<MultiplePath *>(stopPath));
+        if (i < pathStops.size() - 1) {
+            GeneralPath *pathFromThisParkToNextPark = dynamic_cast<MultiplePath *>(pathStops[i + 1])->getFirstSubPath();
+            firstCost += getDistancesCost((dynamic_cast<MultiplePath *>(pathFromThisParkToNextPark)));
+        }
+
+
+        //COST NOT TO PARK IN stopPath (straight path)
+        double secondCost = 0, parksDist = 0;
+        double destiniesDist = lastTrueDestiny->getHeuristic(thisTrueDestiny);
+        double thisDestinyToLastParkDist = thisTrueDestiny->getHeuristic(lastPark);
+        double parkCost = lastPark->getUserCost(lastPark->getUserTime() + thisPark->getUserTime());
+        if (i < pathStops.size() - 1) {
+            parksDist = lastPark->getHeuristic(pathStops[i + 1]->getLast());
+        }
+        secondCost = walkWeight * (destiniesDist + thisDestinyToLastParkDist) + parkWeight * parkCost + driveWeight * parksDist;
+
+        if (firstCost < secondCost) {
+            //Going on foot doesn't pay off (even with straight distances)
             final->appendPath(stopPath);
             continue;
         }
 
-        Node<int> *lastTrueDestiny;
-        GeneralPath *lastSubPath = final->getLastSubPath();
-        lastTrueDestiny = lastSubPath->getFirst();
-
-
-        //COST TO PARK IN stopPath PARK TOO
-        Parking<int> *lastPark = dynamic_cast<Parking<int> *>(lastSubPath->getLast());
-        int lastParkTime = lastPark->getUserTime();
-
         //COST NOT TO PARK IN stopPath
+        //Now need to calculate the actual pathDist
+        double thirdCost = 0, parksDistCost = 0;
+        GeneralPath *parksPath;
+        GeneralPath *destiniesPath = calculatePath(lastTrueDestiny, thisTrueDestiny);
+        GeneralPath *thisDestinyToLastParkPath = calculatePath(thisTrueDestiny, lastPark);
+        if (i < pathStops.size() - 1) {
+            parksPath = calculatePath(lastPark, pathStops[i + 1]->getLast());
+            parksDistCost = getDistancesCost(parksPath);
+        }
+        thirdCost = getDistancesCost(destiniesPath) + getDistancesCost(thisDestinyToLastParkPath) + parkCost + parksDistCost;
+
+        if(thirdCost < firstCost){
+            MultiplePath* multipleLastSubPath = dynamic_cast<MultiplePath*>(lastSubPath);
+            multipleLastSubPath->removeLastSubPath();
+            multipleLastSubPath->appendPath(destiniesPath);
+            multipleLastSubPath->appendPath(thisDestinyToLastParkPath);
+        }
     }
-    //execute obtencao do melhor percurso
+    return final;
 
 }
 
@@ -159,8 +200,8 @@ double Algorithm::getParkingCost(GeneralPath *path) {
     for (auto parkingNode: parkingNodes) {
         parkingNodesSet.insert(parkingNode);
     }
-    for(auto parkingNode: parkingNodesSet){
-        total += dynamic_cast<Parking<int>*>(parkingNode)->getUserCost();
+    for (auto parkingNode: parkingNodesSet) {
+        total += dynamic_cast<Parking<int> *>(parkingNode)->getUserCost();
     }
-    return total;
+    return total * parkWeight;
 }
