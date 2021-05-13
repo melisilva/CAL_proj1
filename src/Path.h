@@ -13,7 +13,12 @@ using namespace std;
 class Path : public GeneralPath {
     vector<Node<int> *> path;
 public:
+
+    Path(Node<int> *n);
+
     void displayPath() const;
+
+    vector<Node<int> *> getAllNodes();
 
     void appendPath(Node<int> *path, double weight);
 

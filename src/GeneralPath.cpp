@@ -4,22 +4,31 @@
 
 #include "GeneralPath.h"
 
+
+GeneralPath::GeneralPath(Node<int> *n) {
+    first = n;
+}
+
+bool GeneralPath::isEmpty() const {
+    return last == nullptr;
+}
+
 double GeneralPath::getLength() const {
     return length;
 }
 
-Node<int> * GeneralPath::getFirst() const {
+Node<int> *GeneralPath::getFirst() const {
     return first;
 }
 
-Node<int> * GeneralPath::getLast() const {
+Node<int> *GeneralPath::getLast() const {
     return last;
 }
 
-bool GeneralPath::getCarOnly() const {
+bool GeneralPath::isCarOnly() const {
     return carOnly;
 }
 
-bool GeneralPath::getWalkOnly() const {
+bool GeneralPath::isWalkOnly() const {
     return walkOnly;
 }

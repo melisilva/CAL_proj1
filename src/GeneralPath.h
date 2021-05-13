@@ -9,13 +9,20 @@
 
 class GeneralPath {
 protected:
-    double length;
-    bool carOnly;
-    bool walkOnly;
-    Node<int> *first;
-    Node<int> *last;
+    double length = 0;
+    bool carOnly = false;
+    bool walkOnly = false;
+    Node<int> *first = nullptr;
+    Node<int> *last = nullptr;
 public:
+
+    GeneralPath(Node<int> *n);
+
+    bool isEmpty() const;
+
     virtual void displayPath() const = 0;
+
+    virtual vector<Node<int>*> getAllNodes() = 0;
 
     double getLength() const;
 
@@ -23,9 +30,9 @@ public:
 
     Node<int> *getLast() const;
 
-    bool getCarOnly() const;
+    bool isCarOnly() const;
 
-    bool getWalkOnly() const;
+    bool isWalkOnly() const;
 };
 
 
