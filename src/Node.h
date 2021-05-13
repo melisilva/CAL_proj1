@@ -47,6 +47,10 @@ public:
         Node<T> *node = dynamic_cast<Node *>(v);
         return sqrt(pow((getLatitude() - node->getLatitude()), 2) + pow((getLongitude() - node->getLongitude()), 2));
     }
+
+    double calcNodeDistance(Node<T> *a){
+        return sqrt(pow(a->lat - lat, 2) + pow(a->longi - longi, 2));
+    }
 };
 
 

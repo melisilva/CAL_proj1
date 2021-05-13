@@ -68,9 +68,29 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
     GeneralPath *pathToP2 = calculatePath(from, calculateCheapestPark(time));
     GeneralPath *pathToP3 = graph.getNextClosestParking(to, true);
     graph.initializeForShortestPath();
-    //    find p1, p2 and p3
-    cout <<"working till here";
-    //execute point 1
+    sort(parkingNodes.begin(), parkingNodes.end(), [to](Node<int> *n1, Node<int> *n2){
+        return to->calcNodeDistance(n1) < to->calcNodeDistance(n2);
+    });
+
+    cout << "Working till here." << endl;
+
+    for (int j = 0; j < parkingNodes.size(); j++){
+        if (driveWeight*pathToP2->getLength() + parkWeight*dynamic_cast<Parking<int>*>(pathToP3->getLast())->getPrice(time) + walkWeight*2*to->calcNodeDistance(parkingNodes[j]) > 0 /*minimum*/ ){
+            //parar algoritmo
+            break;
+        } else if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*to->calcNodeDistance(parkingNodes[j]) > 0 /*minimum*/ ) {
+            // podemos saltar
+            continue;
+        } else if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*calculatePath(parkingNodes[j], to)->getLength() > 0 /*minimum*/ ){
+            // podemos saltar
+            continue;
+        } else {
+            if (driveWeight*(from->calcNodeDistance(parkingNodes[j])) + parkWeight*dynamic_cast<Parking<int>*>(parkingNodes[j])->getPrice(time) + walkWeight*2*calculatePath(parkingNodes[j], to)->getLength() < 0 /*minimum*/){
+                //o que está na esquerda torna-se o novo mínimo.
+            }
+        }
+    }
+
 }
 
 Node<int> *Algorithm::calculateCheapestPark(int time) {
@@ -85,5 +105,5 @@ Node<int> *Algorithm::calculateCheapestPark(int time) {
 }
 
 GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
-   return graph.aStarShortestPath(from->getInfo(), to->getInfo());
+   return graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to));
 }

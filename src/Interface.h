@@ -62,7 +62,7 @@ public:
     vector<pair<int, Node<T>*>> chooseIntermediary();
     int getNodeOption();
     void showNodeOptions() const;
-    double calcNodeDistance(Node<T> *a, Node<T> *b);
+
     Node<T>* getNodeID();
     Node<T>* getNodeCoordinates();
     Node<T>* getRandomNode();
@@ -164,11 +164,6 @@ void Interface<T>::chooseWeights() {
 }
 
 template <class T>
-double Interface<T>::calcNodeDistance(Node<T> *a, Node<T> *b){
-    return sqrt(pow(a->getLatitude() - b->getLatitude(), 2) + pow(a->getLongitude() - b->getLongitude(), 2));
-}
-
-template <class T>
 Node<T>* Interface<T>::getNodeCoordinates(){
     double x = -1.0, y = -1.0;
     while (cin.fail() || x == -1.0){
@@ -188,7 +183,7 @@ Node<T>* Interface<T>::getNodeCoordinates(){
     sort(realNodes.begin(),
          realNodes.end(),
          [parkingNode, this](Vertex<T> *aRealParkingNodeA, Vertex<T> *aRealParkingNodeB) {
-             return calcNodeDistance(dynamic_cast<Node<T>*>(aRealParkingNodeA),parkingNode) < calcNodeDistance(dynamic_cast<Node<T>*>(aRealParkingNodeB), parkingNode);
+             return parkingNode->calcNodeDistance(dynamic_cast<Node<T>*>(aRealParkingNodeA)) < parkingNode->calcNodeDistance(dynamic_cast<Node<T>*>(aRealParkingNodeB));
          });
 
     return dynamic_cast<Node<T>*>(realNodes[0]);
