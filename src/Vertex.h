@@ -42,6 +42,8 @@ public:
 
     double getDist() const;
 
+    vector<Edge<T> *> getAdj() const;
+
     vector<Edge<T> *> getIncoming() const;
 
     vector<Edge<T> *> getOutgoing() const;
@@ -78,6 +80,12 @@ T Vertex<T>::getInfo() const {
 template<class T>
 double Vertex<T>::getDist() const {
     return dist;
+}
+
+
+template <class T>
+vector<Edge<T> *> Vertex<T>::getAdj() const{
+    return this->outgoing;
 }
 
 template<class T>

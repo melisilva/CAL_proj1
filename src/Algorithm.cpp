@@ -6,6 +6,7 @@
 #include "Algorithm.h"
 #include "FileManagement.h"
 #include "MultiplePath.h"
+#include "Graph.h"
 
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readNodesFile(graph, nodesFile);
@@ -84,5 +85,5 @@ Node<int> *Algorithm::calculateCheapestPark(int time) {
 }
 
 GeneralPath *Algorithm::calculatePath(Node<int> *from, Node<int> *to) {
-//TODO
+   return graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to));
 }

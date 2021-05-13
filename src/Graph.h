@@ -407,7 +407,6 @@ bool Graph<T>::relax(Vertex<T> *v, Vertex<T> *w, Edge<T> *e, double residual, do
  */
 template<class T>
 double Graph<T>::minCostFlow(T source, T sink, double flow) {
-    // TODO: implement based on slides and the given implementation of Ford-Fulkerson algorithm
     Vertex<T> *vSource = findVertex(source);
     Vertex<T> *vSink = findVertex(sink);
     double cost = 0;
@@ -625,10 +624,9 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
 }
 
 template<class T>
-Path * Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
+Path * Graph<T>::aStarShortestPath(const int &origin,  const int &dest) {
 
     Path *path;
-    //queue<Vertex<T> *> path;
     if (origin == dest) return path;
 
     initializeForShortestPath();
@@ -649,13 +647,13 @@ Path * Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
             Vertex<T> *v = edge->getDest();
 
-            double f = temp->getDist() - heuristic(temp, final) + heuristic(v, final) + edge->getWeight();
+            double f = temp->getDist() - heuristic(temp, final) + heuristic(v, final) + edge->getCost();
 
             bool notFound = (v->getDist() == INT_MAX);
 
             if (f < v->getDist()) {
                 v->dist = f;
-                v->path = temp;
+                v->pathV = temp;
 
                 if (notFound) q.insert(v);
                 else q.decreaseKey(v);
@@ -664,18 +662,15 @@ Path * Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
     }
 
 
-    path->appendPath(final);
-    //path->appendPath(final, final->dist);
+    path->appendPath(dynamic_cast<Node<T>*>(final));
 
     Vertex<T> *previous = final->getPath();
-    path->appendPath(previous);
+    path->appendPath(dynamic_cast<Node<T>*>(previous));
 
-    //path->appendPath(previous,previous->dist);
 
     while (previous != orig) {
         previous = previous->getPath();
-        path->appendPath(previous);
-        //path->appendPath(previous,previous->dist);
+        path->appendPath(dynamic_cast<Node<T>*>(previous));
     }
 
     return path;
