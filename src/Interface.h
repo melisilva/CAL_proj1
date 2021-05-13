@@ -85,7 +85,6 @@ template <class T>
 void Interface<T>::execute() {
     int option;
     while (1) {
-        cout<<"I'm here?"<<endl;
         displayOptions();
         cin >> option;
         switch (option) {

@@ -87,7 +87,7 @@ public:
 
     Path *getNextClosestParking(Vertex<T> *v, bool reset = false);
 
-    queue<Vertex<T> *> aStarShortestPath(const int &origin, const int &dest);
+    Path* aStarShortestPath(const int &origin, const int &dest);
 };
 
 template<class T>
@@ -625,9 +625,10 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
 }
 
 template<class T>
-queue<Vertex<T> *> Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
+Path * Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
-    queue<Vertex<T> *> path;
+    Path *path;
+    //queue<Vertex<T> *> path;
     if (origin == dest) return path;
 
     initializeForShortestPath();
@@ -663,12 +664,18 @@ queue<Vertex<T> *> Graph<T>::aStarShortestPath(const int &origin, const int &des
     }
 
 
-    path.push(final);
+    path->appendPath(final);
+    //path->appendPath(final, final->dist);
+
     Vertex<T> *previous = final->getPath();
-    path.push(previous);
+    path->appendPath(previous);
+
+    //path->appendPath(previous,previous->dist);
+
     while (previous != orig) {
         previous = previous->getPath();
-        path.push(previous);
+        path->appendPath(previous);
+        //path->appendPath(previous,previous->dist);
     }
 
     return path;
