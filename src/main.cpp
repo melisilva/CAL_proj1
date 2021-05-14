@@ -3,6 +3,7 @@
 #include "time.h"
 #include "Algorithm.h"
 #include "Interface.h"
+#include "ViewGraph.h"
 
 
 
@@ -15,5 +16,6 @@ int main() {
 
     Interface<int> interface(algo);
     interface.execute();
+    testMeli();
     return 0;
 }
