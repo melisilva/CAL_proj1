@@ -43,3 +43,11 @@ void Path::setCarOnly(bool isCarOnly) {
 void Path::setWalkOnly(bool isWalkOnly) {
     walkOnly = isWalkOnly;
 }
+
+GeneralPath * Path::reverse() {
+    Path *newPath = new Path(last);
+    for(int i = path.size()-1; i >= 0; i--){
+        newPath->appendPath(path[i]);
+    }
+    return newPath;
+}

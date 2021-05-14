@@ -50,3 +50,11 @@ GeneralPath * MultiplePath::getFirstSubPath() {
 GeneralPath *MultiplePath::getLastSubPath() {
     return fullPath.back();
 }
+
+GeneralPath * MultiplePath::reverse() {
+    MultiplePath* newPath = new MultiplePath(last);
+    for(int i = fullPath.size()-1; i>=0; i--){
+        newPath->appendPath(fullPath[i]->reverse());
+    }
+    return newPath;
+}

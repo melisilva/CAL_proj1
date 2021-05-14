@@ -33,6 +33,8 @@ public:
     bool isCarOnly() const;
 
     bool isWalkOnly() const;
+
+    virtual GeneralPath* reverse() = 0;
 };
 
 

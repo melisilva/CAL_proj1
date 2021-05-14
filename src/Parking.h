@@ -29,7 +29,7 @@ public:
 
     double getUserCost() { return getPrice(userTime); }
 
-    double getUserCost(int time) { return getPrice(time); }
+//    double getUserCost(int time) { return getPrice(time); }
 };
 
 

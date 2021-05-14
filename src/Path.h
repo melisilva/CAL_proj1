@@ -31,6 +31,8 @@ public:
     void setCarOnly(bool isCarOnly);
 
     void setWalkOnly(bool isWalkOnly);
+
+    GeneralPath * reverse();
 };
 
 

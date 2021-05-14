@@ -30,6 +30,8 @@ public:
 
     GeneralPath *getLastSubPath();
 
+    GeneralPath * reverse();
+
 };
 
 
