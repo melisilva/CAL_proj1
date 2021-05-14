@@ -34,3 +34,4 @@ add_executable(parkingTags src/parkingsTags/main.cpp)
 
 
 target_link_libraries(TP7_graphviewer graphviewer)
+target_link_libraries(Project graphviewer)
