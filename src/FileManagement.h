@@ -96,7 +96,7 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
         Node<T> *node = dynamic_cast<Node<T> *>(graph.findVertex(id));
 
         if (node != nullptr) {
-            Vertex<T> * park;
+            Node<T> * park;
             int fixedPrice = rand()%2;
             if(fixedPrice){
                 park = new FixedPriceParking<T>(*node);
@@ -108,7 +108,7 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
             if(!graph.replaceVertex(park)){
                 exit(1);
             }
-            parkingNodes.push_back(node);
+            parkingNodes.push_back(park);
             delete node;
         }
     }
