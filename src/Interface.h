@@ -241,7 +241,10 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
 
 template <class T>
 void Interface<T>::startAlgo() {
-    intermediary.push_back(pair<bool, Node<int>*>(parkAtEnd, end));
+    parkAtEnd = 1;
+    cout<<"end ";
+    end->displayNode();
+    intermediary.push_back(pair<int, Node<int>*>(parkAtEnd, end));
     algo.execute(start, intermediary);
     intermediary.pop_back();
 }

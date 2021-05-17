@@ -31,6 +31,7 @@ protected:
     int queueIndex = 0; // required by MutablePriorityQueue
     int queueIndexI = 0;
 
+
     Vertex<T> *pathV = nullptr;
     Vertex<T> *pathI = nullptr;
 
@@ -43,6 +44,8 @@ public:
     T getInfo() const;
 
     double getDist() const;
+
+    void displayVertex();
 
     vector<Edge<T> *> getIncoming() const;
 
@@ -60,6 +63,8 @@ public:
 
 template<class T>
 Vertex<T>::Vertex(T in): info(in) {}
+
+
 
 template<class T>
 void Vertex<T>::addEdge(Edge<T> *e) {

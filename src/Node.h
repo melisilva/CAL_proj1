@@ -51,6 +51,14 @@ public:
     double calcNodeDistance(Node<T> *a){
         return sqrt(pow(a->lat - lat, 2) + pow(a->longi - longi, 2));
     }
+
+    bool operator==(Node<T> *a){
+        if(lat == a->getLatitude() && longi == a->getLongitude()){
+            return true;
+        }
+        return false;
+    }
+
 };
 
 

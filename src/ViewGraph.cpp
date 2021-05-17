@@ -4,50 +4,68 @@
 
 #include "ViewGraph.h"
 #include "graphviewer.h"
+#include "Path.h"
+#include "Graph.h"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
 using namespace std;
-using Node = GraphViewer::Node;
-using Edge = GraphViewer::Edge;
+using N = GraphViewer::Node;
+using E = GraphViewer::Edge;
 
-void testMeli() {
+void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
     // Instantiate GraphViewer
     GraphViewer gv;
     //Set coordinates of window center
-    gv.setCenter(sf::Vector2f(300, 300));
+    //gv->setCenter(sf::Vector2f(450, 450));
+    float min_lon = -8.6889783;
+    float min_lat=41.1385607;
+    float max_lon=-8.5545839;
+    float max_lat=41.1858236;
 
-    //blue vertex id 0 at (200,300)
-    Node &node0 = gv.addNode(0, sf::Vector2f(200, 300));// Create node
-    node0.setColor(GraphViewer::BLUE); // Change color
-    //blue vertex id 1 at (400,300)
-    Node &node1 = gv.addNode(1, sf::Vector2f(400, 300));// Create node
-    node0.setColor(GraphViewer::BLUE); // Change color
 
-    // for bidirectional edges
-    Edge &edge0 = gv.addEdge(0,node0,node1,GraphViewer::Edge::EdgeType::DIRECTED);
-    //for directed edgesEdge
-    // &edge1 =gv.addEdge(idEdge,idSource,idDestination,GraphViewer::Edge::EdgeType::DIRECTED);
+    for (Vertex<int> *vertex: graph.getVertexSet()) { //graph's nodes/vertexes
+        Node<int> *node = dynamic_cast<Node<int> *>(vertex);
+        N &vertex_node = gv.addNode(node->getInfo(),
+                                     sf::Vector2f((node->getLongitude()-min_lon)/(max_lon-min_lon)*900,(node->getLatitude()-min_lat)/(max_lat-min_lat)*900)); //add nodes from path
 
-    //Remove vertex 1
-    gv.removeNode(1);
 
-    //Add new vertex with ID 2 at (500,300)
-    Node &node2 = gv.addNode(2, sf::Vector2f(500, 300));// Create node
-    Edge &edge1 = gv.addEdge(1,node0,node2,GraphViewer::Edge::EdgeType::DIRECTED);
-    node2.setLabel("This is a vertex");
+        /*if (find(parkingNodes.begin(), parkingNodes.end(), vertex_node) != parkingNodes.end()) {
+            vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
+        } else {
+            vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
+        }*/
+        vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
 
-    edge1.setLabel("This is an edge");
+    }
 
-    node2.setColor(GraphViewer::GREEN);
+    for (Node<int> *node:parkingNodes) {
+        N &path_node = gv.addNode(node->getInfo(),
+                                   sf::Vector2f(node->getLongitude(), node->getLatitude())); //add nodes from path
+        path_node.setColor(GraphViewer::ORANGE);
+    }
 
-    for(Edge *edge: gv.getEdges())edge->setColor(GraphViewer::YELLOW);
 
-    //gv.setBackground("../TP7_graphviewer/resources/background.png");
+        gv.setBackground("../Mapa da cidade do Porto-20210505/porto_full.png");
 
-    // Create window
-    gv.createWindow(600, 600);
-    // Join viewer thread (blocks till window closed)
-    gv.join();
+        // Create window
+        gv.createWindow(900, 900);
+        // Join viewer thread (blocks till window closed)
+        gv.join();
+
+
+}
+
+void showPath(Path path, GraphViewer*gv) {
+    /*for (Node<int> *node:path.getAllNodes()) {
+        N &path_node = gv->addNode(node->getInfo(),
+                                   sf::Vector2f(node->getLatitude(), node->getLongitude())); //add nodes from path
+        path_node.setColor(GraphViewer::MAGENTA);
+    }*/
+
+   /* for(int i=0;i<path.getAllNodes().size();i++){
+        gv->addEdge(i,)
+    }*/
 }

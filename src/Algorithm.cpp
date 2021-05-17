@@ -9,10 +9,16 @@
 #include "MultiplePath.h"
 #include "Graph.h"
 
+void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
+
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readNodesFile(graph, nodesFile);
     readEdgesFile(graph, false, edgesFile);
     parkingNodes = readParkingFile(graph, parkingFile);
+
+    cout<<parkingNodes.empty()<<endl;
+
+    testMeli(graph,parkingNodes);
 }
 
 Graph<int> Algorithm::getGraph() const {
@@ -31,7 +37,7 @@ void Algorithm::setWeights(float a, float b, float c) {
 }
 
 void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
-
+    auto pair = toVisit[0];
     MultiplePath *stops = dynamic_cast<MultiplePath *>(calculateBestParkEachStop(start, toVisit));
     stops = calculateFinalPath(stops);
     stops->displayPath();
@@ -42,18 +48,20 @@ void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit
 MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
     MultiplePath *stops;
     Node<int> *last = start;
+    last->displayNode();
     for (int i = 0; i < toVisit.size(); i++) {
         auto pair = toVisit[i];
-        if (!pair.first) {
+        if (pair.first == 0) {
             //will just pass by this node
             stops->appendPath(calculateDrivePath(last, pair.second));
             last = pair.second;
-        } else {
+        } else if (pair.first == 1) {
             GeneralPath *toParkInterPark = calculateBestPark(last, pair.second, pair.first);
             stops->appendPath(toParkInterPark);
 
             //Another strategy might take last = pair.second and use multithreading
             last = toParkInterPark->getLast();
+
         }
     }
     return stops;

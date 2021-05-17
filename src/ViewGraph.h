@@ -6,5 +6,4 @@
 #define PROJECT_VIEWGRAPH_H
 
 void testMeli();
-
 #endif //PROJECT_VIEWGRAPH_H

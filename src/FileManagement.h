@@ -40,6 +40,7 @@ void readNodesFile(Graph<T> &graph, string nodesfile) {
         y = stof(line.substr(0, pos));
         Node<T> *nodeToAdd = new Node<T>(id, x, y);
         graph.addVertex(nodeToAdd);
+
     }
     nodes.close();
 }
@@ -107,6 +108,7 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
             if(!graph.replaceVertex(park)){
                 exit(1);
             }
+            parkingNodes.push_back(node);
             delete node;
         }
     }

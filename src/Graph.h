@@ -87,7 +87,7 @@ public:
 
     queue<Vertex<T> *> dijkstraShortestPath(const int &origin, const int &dest);
 
-    Path *getNextClosestParking(Vertex<T> *v, bool reset = false);
+    Path *getNextClosestParking(Node<int> *v, bool reset = false);
 
     Path* aStarShortestPath(const int &origin, const int &dest);
 
@@ -583,12 +583,14 @@ queue<Vertex<T> *> Graph<T>::dijkstraShortestPath(const int &origin, const int &
 }
 
 template<class T>
-Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
+Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset) {
     static MutablePriorityQueue<Vertex<T>> q;
     static Vertex<T> *final;
     queue<Vertex<T> *> path;
     Path *nodePath;
-    Node<T> *node = dynamic_cast<Node<T> *>(v);
+    cout<<"hloololo"<<endl;
+    //Node<T> *node = dynamic_cast<Node<T> *>(v);
+    cout<<"still here"<<endl;
 
 
     if (node->getParking()) {
@@ -599,8 +601,8 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
     if (reset) {
         initializeForShortestPath();
         q = MutablePriorityQueue<Vertex<T>>();
-        v->dist = 0;
-        q.insert(v);
+        node->dist = 0;
+        q.insert(node);
     } else {
 
         while (!q.empty()) {
@@ -631,7 +633,7 @@ Path *Graph<T>::getNextClosestParking(Vertex<T> *v, bool reset) {
     Vertex<T> *previous = final->getPath();
     path.push(previous);
     nodePath = new Path(dynamic_cast<Node<int>*>(final));
-    while (previous != v) {
+    while (previous != node) {
         previous = previous->getPath();
         nodePath->appendPath(dynamic_cast<Node<T>*>(previous));
     }

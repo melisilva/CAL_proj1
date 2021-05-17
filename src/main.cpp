@@ -3,11 +3,10 @@
 #include "time.h"
 #include "Algorithm.h"
 #include "Interface.h"
-#include "ViewGraph.h"
-
 
 
 int main() {
+    //testMeli();
     srand(1); //DEBUGs
     std::cout << "Hello, World!" << std::endl;
     Algorithm algo("../Mapas-20210505/PortugalMaps/Porto/nodes_lat_lon_porto.txt",
@@ -16,6 +15,5 @@ int main() {
 
     Interface<int> interface(algo);
     interface.execute();
-    testMeli();
     return 0;
 }
