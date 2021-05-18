@@ -42,12 +42,12 @@ public:
 using namespace std;
 
 template <class T> class Interface;
-
+void showConnectedNodes(vector<Node<int> *> connectedNodes);
 
 template <class T>
 class Interface{
     Algorithm algo;
-    Node<int> *start, *end;
+    Node<int> *start, *end, *og_point;
     bool parkAtEnd;
     vector<pair<int, Node<int> *>> intermediary;
 public:
@@ -60,6 +60,8 @@ public:
     vector<pair<int, Node<T>*>> chooseIntermediary();
     int getNodeOption();
     void showNodeOptions() const;
+    void showConnectivity() const;
+    void showConnectivityFromPoint();
 
     Node<T>* getNodeID();
     Node<T>* getNodeCoordinates();
@@ -103,6 +105,12 @@ void Interface<T>::execute() {
             case 5:
                 startAlgo();
                 break;
+            case 6:
+                showConnectivity();
+                break;
+            case 7:
+                showConnectivityFromPoint();
+                break;
             default:
                 cout << "Please choose a viable option\n";
         }
@@ -125,6 +133,8 @@ void Interface<T>::displayOptions() const {
     cout << "3 - Choose Intermediary\n";
     cout << "4 - Choose End\n";
     cout << "5 - Calculate Path\n";
+    cout<< "6 - Show Graph Connectivity\n";
+    cout<< "7 - Show Graph Connectivity from chosen point\n";
 }
 
 template <class T>
@@ -133,6 +143,29 @@ void Interface<T>::showNodeOptions() const {
     cout << "1 - Node IDs.\n";
     cout << "2 - (x, y) style coordinates.\n";
     cout << "3 - Random.\n\n";
+}
+
+template <class T>
+void Interface<T>::showConnectivity() const {
+    vector<int> connected= algo.getGraph().dfs();
+    sort(connected.begin(), connected.end());
+    connected.erase(unique(connected.begin(),connected.end()), connected.end());
+    vector<Node<int> *> connectedNodes;
+    for(int i=0;i<connected.size();i++){
+        connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
+    }
+    showConnectedNodes(connectedNodes);
+}
+
+template<class T>
+void Interface<T>::showConnectivityFromPoint()  {
+    og_point=chooseNode();
+    vector<int> connected= algo.getGraph().bfs(og_point);
+    vector<Node<int> *> connectedNodes;
+    for(int i=0;i<connected.size();i++){
+        connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
+    }
+    showConnectedNodes(connectedNodes);
 }
 
 template <class T>
