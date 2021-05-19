@@ -19,25 +19,33 @@ void readNodesFile(Graph<T> &graph, string nodesfile) {
     //node file
     ifstream nodes;
     string line;
+    stringstream ss;
     int numNodes;
 
     nodes.open(nodesfile);
 
     getline(nodes, line);
-    numNodes = stoi(line);
+    ss << line;
+    ss >> numNodes;
 
     for (int i = 0; i < numNodes; i++) {
         getline(nodes, line);
         int id;
         double x, y;
         size_t pos = line.find(',');
-        id = stoi(line.substr(1, pos));
+        ss.clear();
+        ss << line.substr(1, pos);
+        ss >> id;
         line.erase(0, pos + 1);
         pos = line.find(',');
-        x = stof(line.substr(0, pos));
+        ss.clear();
+        ss << line.substr(0, pos);
+        ss >> x;
         line.erase(0, pos + 1);
         pos = line.find(')');
-        y = stof(line.substr(0, pos));
+        ss.clear();
+        ss << line.substr(0, pos);
+        ss >> y;
         Node<T> *nodeToAdd = new Node<T>(id, x, y);
         graph.addVertex(nodeToAdd);
 
@@ -50,19 +58,26 @@ void readEdgesFile(Graph<T> &graph, bool bidir, string edgesfile) {
     //edges file
     ifstream edges;
     string line;
+    stringstream ss;
+    int numEdges;
 
     edges.open(edgesfile);
 
     getline(edges, line);
-    int numEdges = stoi(line);
+    ss << line;
+    ss >> numEdges;
     for (int i = 0; i < numEdges; i++) {
         getline(edges, line);
         int n1, n2;
         size_t pos = line.find(',');
-        n1 = stoi(line.substr(1, pos));
+        ss.clear();
+        ss << line.substr(1, pos);
+        ss >> n1;
         line.erase(0, pos + 1);
         pos = line.find(')');
-        n2 = stoi(line.substr(0, pos));
+        ss.clear();
+        ss << line.substr(0, pos);
+        ss >> n2;
 
         Vertex<T> *v1 = graph.findVertex(n1);
         Vertex<T> *v2 = graph.findVertex(n2);

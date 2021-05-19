@@ -32,6 +32,8 @@ template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;
 
+    void dfsVisit(Vertex<T> *v,  std::vector<T> & res) const;
+
     void dijkstraShortestPath(Vertex<T> *s);
 
     void bellmanFordShortestPath(Vertex<T> *s);
@@ -92,6 +94,10 @@ public:
     Path* aStarShortestPath(const int &origin, const int &dest);
 
     Path* aStarShortestPathwalking(const int &origin, const int &dest);
+
+    vector<T> dfs() const;
+
+    vector<T> bfs(Node<int> *source);
 };
 
 template<class T>
@@ -822,6 +828,60 @@ Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
     }
 
     return path;
+}
+
+
+/*Analyze graph connectivity:
+ * There's two ways:
+ * 1-Using dfs->goes through all the graph's vertexes
+ * 2-Using bfs->goes through only the graph's vertexes that it's possible to reach from the origin vertex */
+
+template <class T>
+std::vector<T> Graph<T>::dfs() const {
+    std::vector<T> res;
+    for (auto v : vertexSet)
+        v->visited = false;
+    for (auto v : vertexSet)
+        if (! v->visited)
+            dfsVisit(v, res);
+    return res;
+}
+
+template <class T>
+void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> & res) const {
+    v->visited = true;
+    res.push_back(v->info);
+    for (auto & e : v->outgoing) {
+        auto w = e->dest;
+        if ( ! w->visited)
+            dfsVisit(w, res);
+    }
+}
+
+template <class T>
+std::vector<T> Graph<T>::bfs(Node<int> *source)  {
+    std::vector<T> res;
+    auto s = findVertex(source->getInfo());
+    if (s == NULL)
+        return res;
+    std::queue<Vertex<T> *> q;
+    for (auto v : vertexSet)
+        v->visited = false;
+    q.push(s);
+    s->visited = true;
+    while (!q.empty()) {
+        auto v = q.front();
+        q.pop();
+        res.push_back(v->info);
+        for (auto & e : v->outgoing) {
+            auto w = e->dest;
+            if ( ! w->visited ) {
+                q.push(w);
+                w->visited = true;
+            }
+        }
+    }
+    return res;
 }
 
 

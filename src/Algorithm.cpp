@@ -9,7 +9,7 @@
 #include "MultiplePath.h"
 #include "Graph.h"
 
-void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
+//void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
 
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readNodesFile(graph, nodesFile);
@@ -18,7 +18,7 @@ Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
 
     cout<<parkingNodes.empty()<<endl;
 
-    testMeli(graph,parkingNodes);
+    //testMeli(graph,parkingNodes);
 }
 
 Graph<int> Algorithm::getGraph() const {
