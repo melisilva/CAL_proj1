@@ -32,7 +32,7 @@ template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;
 
-    void dfsVisit(Vertex<T> *v,  std::vector<T> & res) const;
+    void dfsVisit(Vertex<T> *v, std::vector<T> &res) const;
 
     void dijkstraShortestPath(Vertex<T> *s);
 
@@ -91,9 +91,9 @@ public:
 
     Path *getNextClosestParking(Node<int> *v, bool reset = false);
 
-    Path* aStarShortestPath(const int &origin, const int &dest);
+    Path *aStarShortestPath(const int &origin, const int &dest);
 
-    Path* aStarShortestPathwalking(const int &origin, const int &dest);
+    Path *aStarShortestPathwalking(const int &origin, const int &dest);
 
     vector<T> dfs() const;
 
@@ -594,9 +594,9 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset) {
     static Vertex<T> *final;
     queue<Vertex<T> *> path;
     Path *nodePath;
-    cout<<"hloololo"<<endl;
+    cout << "hloololo" << endl;
     //Node<T> *node = dynamic_cast<Node<T> *>(v);
-    cout<<"still here"<<endl;
+    cout << "still here" << endl;
 
 
     if (node->getParking()) {
@@ -609,48 +609,48 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset) {
         q = MutablePriorityQueue<Vertex<T>>();
         node->dist = 0;
         q.insert(node);
-    } else {
+    }
 
-        while (!q.empty()) {
-            Vertex<T> *temp = q.extractMin();
+    while (!q.empty()) {
+        Vertex<T> *temp = q.extractMin();
 
-            if (dynamic_cast<Node<T> *>(temp)->getParking()) {
-                final = temp;
-                break;
-            }
+        if (dynamic_cast<Node<T> *>(temp)->getParking()) {
+            final = temp;
+            break;
+        }
 
-            for (Edge<T> *edge: temp->getOutgoing()) {
-                Vertex<T> *v = edge->getDest();
-                bool notFound = (v->getDist() == INT_MAX);
+        for (Edge<T> *edge: temp->getOutgoing()) {
+            Vertex<T> *v = edge->getDest();
+            bool notFound = (v->getDist() == INT_MAX);
 
-                if (temp->getDist() + edge->cost < v->getDist()) {
-                    // SHOULD TEST
-                }
+            if (temp->getDist() + edge->cost < v->getDist()) {
+                // SHOULD TEST
                 v->dist = temp->getDist() + edge->cost;
                 v->path = edge;
-                v->pathV = v;
+                v->pathV = edge->getOrig();
                 if (notFound) q.insert(v);
                 else q.decreaseKey(v);
             }
+
         }
+
     }
 
     path.push(final);
     Vertex<T> *previous = final->getPath();
     path.push(previous);
-    nodePath = new Path(dynamic_cast<Node<int>*>(final));
+    nodePath = new Path(dynamic_cast<Node<int> *>(final));
     while (previous != node) {
         previous = previous->getPath();
-        nodePath->appendPath(dynamic_cast<Node<T>*>(previous));
+        nodePath->appendPath(dynamic_cast<Node<T> *>(previous));
     }
     nodePath->setLength(final->dist);
-    return nodePath;
+    return nodePath; //Path from the park to the node given
 
 }
 
-
 template<class T>
-Path * Graph<T>::aStarShortestPath(const int &origin,  const int &dest) {
+Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
     Path *path;
     if (origin == dest) return path;
@@ -688,26 +688,26 @@ Path * Graph<T>::aStarShortestPath(const int &origin,  const int &dest) {
     }
 
 
-    path->appendPath(dynamic_cast<Node<T>*>(final));
+    path->appendPath(dynamic_cast<Node<T> *>(final));
 
     Vertex<T> *previous = final->getPath();
-    path->appendPath(dynamic_cast<Node<T>*>(previous));
+    path->appendPath(dynamic_cast<Node<T> *>(previous));
 
 
     while (previous != orig) {
         previous = previous->getPath();
-        path->appendPath(dynamic_cast<Node<T>*>(previous));
+        path->appendPath(dynamic_cast<Node<T> *>(previous));
     }
 
     return path;
 }
 
 
-template <class T>
-Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
+template<class T>
+Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
-    Path* path;
-    if(origin == dest) return path;
+    Path *path;
+    if (origin == dest) return path;
 
     initializeForShortestPathwalking();
 
@@ -728,27 +728,27 @@ Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
     fQueue.insert(src);
     iQueue.insert(final);
 
-    while(!fQueue.empty() && !iQueue.empty()){
+    while (!fQueue.empty() && !iQueue.empty()) {
         //Forward search
         //Starting by extracting the minimum from forward queue and set vertex as visited by forward search
-        Vertex<T>* fV = fQueue.extractMin();
+        Vertex<T> *fV = fQueue.extractMin();
         fVisited.emplace(fV->getInfo(), true);
 
         //Checks if it has been visited by reverse search, if so the path has been found
-        if(iVisited.count(fV->getInfo())>0){
+        if (iVisited.count(fV->getInfo()) > 0) {
             mid = fV;
             break;
         }
 
         //Explore edges in regular graph
-        for (Edge<T>* e: fV->outgoing){
-            Vertex<T> * v = e->getDest();
+        for (Edge<T> *e: fV->outgoing) {
+            Vertex<T> *v = e->getDest();
             double temp = fV->getDist() + e->getCost() - heuristic(fV, final) + heuristic(v, final);
             bool notFound = (v->getDist() == INT_MAX);
-            if(v->getDist() > temp){
+            if (v->getDist() > temp) {
                 v->dist = temp;
                 v->pathV = fV;
-                if(notFound) fQueue.insert(v);
+                if (notFound) fQueue.insert(v);
                 else
                     fQueue.decreaseKey(v);
             }
@@ -756,26 +756,26 @@ Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
         //Reverse seacrh
         //Starting by extracting the minimum from reverse queue and set vertex as visited by reverse search
-        Vertex<T>* iV = iQueue.extractMin();
+        Vertex<T> *iV = iQueue.extractMin();
         iVisited.emplace(iV->getInfo(), true);
 
         //Checks if it has been visited by forward search, if so the path has been found
-        if(fVisited.count(iV->getInfo())>0){
+        if (fVisited.count(iV->getInfo()) > 0) {
             mid = iV;
             break;
         }
 
 
         //Explore edges in reverse graph
-        for (Edge<T> *e: iV->incoming){
-            Vertex<T> * v = e->getOrig();
+        for (Edge<T> *e: iV->incoming) {
+            Vertex<T> *v = e->getOrig();
 
             double temp = iV->distI + e->getCost() - heuristic(iV, src) + heuristic(v, src);
             bool notFound = (v->distI == INT_MAX);
-            if(v->distI > temp){
+            if (v->distI > temp) {
                 v->distI = temp;
                 v->pathI = iV;
-                if(notFound) iQueue.insert(v);
+                if (notFound) iQueue.insert(v);
                 else
                     iQueue.decreaseKey(v);
             }
@@ -783,20 +783,20 @@ Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
     }
 
     //Verify if alternatives paths are better, not passing through mid vertex
-    queue<Vertex<T>*> aux;
+    queue<Vertex<T> *> aux;
     double f = mid->dist - heuristic(mid, final) + heuristic(mid, src) + mid->distI;
 
-    for (auto node : fVisited){
-        Vertex<T>* temp = findVertex(node.first);
+    for (auto node : fVisited) {
+        Vertex<T> *temp = findVertex(node.first);
 
-        for(Edge<T>* e: temp->outgoing){
+        for (Edge<T> *e: temp->outgoing) {
 
-            Vertex<T>* tent = e->getDest();
-            if(iVisited.count(tent->getInfo()) > 0){
+            Vertex<T> *tent = e->getDest();
+            if (iVisited.count(tent->getInfo()) > 0) {
 
                 double f_temp = temp->getDist() + tent->getDist() + e->getCost() - heuristic(temp, final) - heuristic(tent, src);
 
-                if(f_temp < f){
+                if (f_temp < f) {
                     tent->pathV = temp;
                     mid = tent;
                     f = f_temp;
@@ -807,24 +807,24 @@ Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
     }
 
     //Start to build the final path from mid
-    vector<Vertex<T>*> t;
+    vector<Vertex<T> *> t;
     t.push_back(mid);
-    Vertex<T>* v = mid;
+    Vertex<T> *v = mid;
 
-    while(v->path != NULL){
+    while (v->path != NULL) {
         v = v->pathV;
-        t.emplace(t.begin(),v);
+        t.emplace(t.begin(), v);
     }
 
     v = mid;
 
-    while(v->pathI != NULL){
+    while (v->pathI != NULL) {
         v = v->pathI;
         t.push_back(v);
     }
 
-    for (unsigned i = t.size(); i-- > 0; ){
-        path->appendPath(dynamic_cast<Node<T>*>(t.at(i)));
+    for (unsigned i = t.size(); i-- > 0;) {
+        path->appendPath(dynamic_cast<Node<T> *>(t.at(i)));
     }
 
     return path;
@@ -836,30 +836,30 @@ Path* Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
  * 1-Using dfs->goes through all the graph's vertexes
  * 2-Using bfs->goes through only the graph's vertexes that it's possible to reach from the origin vertex */
 
-template <class T>
+template<class T>
 std::vector<T> Graph<T>::dfs() const {
     std::vector<T> res;
     for (auto v : vertexSet)
         v->visited = false;
     for (auto v : vertexSet)
-        if (! v->visited)
+        if (!v->visited)
             dfsVisit(v, res);
     return res;
 }
 
-template <class T>
-void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> & res) const {
+template<class T>
+void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> &res) const {
     v->visited = true;
     res.push_back(v->info);
-    for (auto & e : v->outgoing) {
+    for (auto &e : v->outgoing) {
         auto w = e->dest;
-        if ( ! w->visited)
+        if (!w->visited)
             dfsVisit(w, res);
     }
 }
 
-template <class T>
-std::vector<T> Graph<T>::bfs(Node<int> *source)  {
+template<class T>
+std::vector<T> Graph<T>::bfs(Node<int> *source) {
     std::vector<T> res;
     auto s = findVertex(source->getInfo());
     if (s == NULL)
@@ -873,9 +873,9 @@ std::vector<T> Graph<T>::bfs(Node<int> *source)  {
         auto v = q.front();
         q.pop();
         res.push_back(v->info);
-        for (auto & e : v->outgoing) {
+        for (auto &e : v->outgoing) {
             auto w = e->dest;
-            if ( ! w->visited ) {
+            if (!w->visited) {
                 q.push(w);
                 w->visited = true;
             }
