@@ -5,7 +5,7 @@
 #include "Path.h"
 
 Path::Path(Node<int> *n): GeneralPath(n){
-    appendPath(n);
+    path.push_back(n);
 }
 
 vector<Node<int> *> Path::getAllNodes() {

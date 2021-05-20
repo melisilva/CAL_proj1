@@ -591,12 +591,9 @@ queue<Vertex<T> *> Graph<T>::dijkstraShortestPath(const int &origin, const int &
 template<class T>
 Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) {
     static MutablePriorityQueue<Vertex<T>> q;
-    static Vertex<T> *final;
-    queue<Vertex<T> *> path;
+    static Vertex<T> *final = nullptr;
+    bool brokeLoop = false;
     Path *nodePath;
-    cout << "hloololo" << endl;
-    //Node<T> *node = dynamic_cast<Node<T> *>(v);
-    cout << "still here" << endl;
 
 
     if (node->getParking()) {
@@ -616,6 +613,7 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
 
         if (dynamic_cast<Node<T> *>(temp)->getParking()) {
             final = temp;
+            brokeLoop = true;
             break;
         }
 
@@ -652,15 +650,16 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
         }
 
     }
-
-    path.push(final);
+    if (!brokeLoop) {
+        //Source is disconnected from any parking, or could not fetch another parking
+        return new Path(node);
+    }
     Vertex<T> *previous = final;
     nodePath = new Path(dynamic_cast<Node<int> *>(final));
-    while (previous != node) {
+    do {
+        nodePath->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->cost);
         previous = previous->getPath();
-        nodePath->appendPath(dynamic_cast<Node<T> *>(previous));
-    }
-    nodePath->setLength(final->dist);
+    } while (previous != node);
     return nodePath; //Path from the park to the node given
 
 }
@@ -684,8 +683,9 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
     q.insert(orig);
 
 
+    Vertex<T> *temp;
     while (!q.empty()) {
-        Vertex<T> *temp = q.extractMin();
+        temp = q.extractMin();
 
         if (temp == final) {
             break;
@@ -694,9 +694,9 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
         for (Edge<T> *edge: temp->getOutgoing()) {
 
             Vertex<T> *v = edge->getDest();
-            Node<T>*tempN = dynamic_cast<Node<T>*>(temp);
-            Node<T>*finalN = dynamic_cast<Node<T>*>(final);
-            Node<T>*vN = dynamic_cast<Node<T>*>(v);
+            Node<T> *tempN = dynamic_cast<Node<T> *>(temp);
+            Node<T> *finalN = dynamic_cast<Node<T> *>(final);
+            Node<T> *vN = dynamic_cast<Node<T> *>(v);
             double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
 
             bool notFound = (v->getDist() == INF);
@@ -712,18 +712,21 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
         }
     }
 
-
+    if (temp != final) {
+        // Couldn't find a path betwee the two
+        return new Path(start);
+    }
 //    path->appendPath(dynamic_cast<Node<T> *>(final));
     path = new Path(dynamic_cast<Node<T> *>(final));
     Vertex<T> *previous = final;
 
 
-    while (previous != orig) {
-        previous = previous->getPath();
+    do {
         path->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->getCost());
-    }
+        previous = previous->getPath();
+    } while (previous != orig);
 
-    return dynamic_cast<Path*>(path->reverse());
+    return dynamic_cast<Path *>(path->reverse());
 }
 
 template<class T>
@@ -745,8 +748,9 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
     q.insert(orig);
 
 
+    Vertex<T> *temp;
     while (!q.empty()) {
-        Vertex<T> *temp = q.extractMin();
+        temp = q.extractMin();
 
         if (temp == final) {
             break;
@@ -755,9 +759,9 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
         for (Edge<T> *edge: temp->getOutgoing()) {
 
             Vertex<T> *v = edge->getDest();
-            Node<T>*tempN = dynamic_cast<Node<T>*>(temp);
-            Node<T>*finalN = dynamic_cast<Node<T>*>(final);
-            Node<T>*vN = dynamic_cast<Node<T>*>(v);
+            Node<T> *tempN = dynamic_cast<Node<T> *>(temp);
+            Node<T> *finalN = dynamic_cast<Node<T> *>(final);
+            Node<T> *vN = dynamic_cast<Node<T> *>(v);
             double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
 
             bool notFound = (v->getDist() == INF);
@@ -774,9 +778,9 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
         for (Edge<T> *edge: temp->getIncoming()) {
 
             Vertex<T> *v = edge->getOrig();
-            Node<T>*tempN = dynamic_cast<Node<T>*>(temp);
-            Node<T>*finalN = dynamic_cast<Node<T>*>(final);
-            Node<T>*vN = dynamic_cast<Node<T>*>(v);
+            Node<T> *tempN = dynamic_cast<Node<T> *>(temp);
+            Node<T> *finalN = dynamic_cast<Node<T> *>(final);
+            Node<T> *vN = dynamic_cast<Node<T> *>(v);
             double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
 
             bool notFound = (v->getDist() == INF);
@@ -793,18 +797,21 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
         }
     }
 
-
+    if (temp != final) {
+        // Couldn't find a path betwee the two
+        return new Path(start);
+    }
 //    path->appendPath(dynamic_cast<Node<T> *>(final));
     path = new Path(dynamic_cast<Node<T> *>(final));
     Vertex<T> *previous = final;
 
 
-    while (previous != orig) {
-        previous = previous->getPath();
+    do {
         path->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->getCost());
-    }
+        previous = previous->getPath();
+    } while (previous != orig);
 
-    return dynamic_cast<Path*>(path->reverse());
+    return dynamic_cast<Path *>(path->reverse());
 }
 
 /*
@@ -957,8 +964,10 @@ std::vector<T> Graph<T>::dfs() const {
 
 template<class T>
 void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> &res) const {
-    v->visited = true;
-    res.push_back(v->info);
+    if (!v->visited) {
+        v->visited = true;
+        res.push_back(v->info);
+    }
     for (auto &e : v->outgoing) {
         auto w = e->dest;
         if (!w->visited)

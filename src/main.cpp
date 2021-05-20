@@ -7,7 +7,7 @@
 
 int main() {
     //testMeli();
-    srand(1); //DEBUGs
+    srand(2); //DEBUGs
     std::cout << "Hello, World!" << std::endl;
     Algorithm algo("../Mapas-20210505/PortugalMaps/Porto/nodes_lat_lon_porto.txt",
               "../Mapas-20210505/PortugalMaps/Porto/edges_porto.txt",

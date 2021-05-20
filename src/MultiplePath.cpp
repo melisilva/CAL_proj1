@@ -8,7 +8,6 @@ MultiplePath::MultiplePath(Node<int> *n) : GeneralPath(n) {
     length = 0;
     carOnly = true;
     walkOnly = true;
-    first = nullptr;
     last = nullptr;
 }
 
