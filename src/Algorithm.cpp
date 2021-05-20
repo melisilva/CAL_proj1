@@ -10,6 +10,7 @@
 #include "Graph.h"
 
 //void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
+void showPath(vector<Node<int> *> path);
 
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readNodesFile(graph, nodesFile);
@@ -43,7 +44,7 @@ void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit
         stops = calculateFinalPath(stops);
     }
     stops->displayPath();
-
+    showPath(stops->getAllNodes());
 }
 
 
