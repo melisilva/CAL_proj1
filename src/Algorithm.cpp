@@ -214,24 +214,24 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
 }
 
 Node<int> *Algorithm::calculateCheapestPark(int time) {
-    auto vertexSet = graph.getVertexSet();
-    std::min_element(
-            vertexSet.begin(),
-            vertexSet.end(),
-            [time](Vertex<int> *v1, Vertex<int> *v2) {
-                return dynamic_cast<Node<int> *>(v1)->getParkingNode()->getPrice(time) < dynamic_cast<Node<int> *>(v2)->getParkingNode()->getPrice(time);
+    Node<int> *cheapest =  *std::min_element(
+            parkingNodes.begin(),
+            parkingNodes.end(),
+            [time](Node<int> *v1, Node<int> *v2) {
+                return v1->getParkingNode()->getPrice(time) < v2->getParkingNode()->getPrice(time);
             }
     );
+    return cheapest;
 }
 
 GeneralPath *Algorithm::calculateDrivePath(Node<int> *from, Node<int> *to) {
-    Path *p = dynamic_cast<Path *>(graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to)));
+    Path *p = dynamic_cast<Path *>(graph.aStarShortestPath(from->getInfo(), to->getInfo()));
     p->setCarOnly(true);
     return p;
 }
 
 GeneralPath *Algorithm::calculateWalkPath(Node<int> *from, Node<int> *to) {
-    Path *p = dynamic_cast<Path *>(graph.aStarShortestPathwalking(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to)));
+    Path *p = dynamic_cast<Path *>(graph.aStarShortestPathwalking(from->getInfo(), to->getInfo()));
     p->setWalkOnly(true);
     return p;
 }

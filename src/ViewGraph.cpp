@@ -35,6 +35,7 @@ void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
                                                  (node->getLatitude() - min_lat) / (max_lat - min_lat) *
                                                  900)); //add nodes from path
 
+
         if(node->getParking()){
             counter++;
             vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue

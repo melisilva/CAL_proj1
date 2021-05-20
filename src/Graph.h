@@ -527,7 +527,7 @@ double Graph<T>::aStar(Graph<T> graph, Vertex<T> *p, Vertex<T> *d) {
 template<class T>
 void Graph<T>::initializeForShortestPath() {
     for (Vertex<T> *v: vertexSet) {
-        v->dist = INT_MAX;
+        v->dist = INF;
         v->pathV = NULL;
         v->queueIndex = 0;
     }
@@ -536,8 +536,8 @@ void Graph<T>::initializeForShortestPath() {
 template<class T>
 void Graph<T>::initializeForShortestPathwalking() {
     for (Vertex<T> *v: vertexSet) {
-        v->dist = INT_MAX;
-        v->distI = INT_MAX;
+        v->dist = INF;
+        v->distI = INF;
         v->queueIndex = 0;
         v->queueIndexI = 0;
         v->pathV = NULL;
@@ -568,7 +568,7 @@ queue<Vertex<T> *> Graph<T>::dijkstraShortestPath(const int &origin, const int &
 
         for (Edge<T> *edge: temp->getAdj()) {
             Vertex<T> *v = edge->getDest();
-            bool notFound = (v->getDist() == INT_MAX);
+            bool notFound = (v->getDist() == INF);
 
             if (relax(temp, v, edge->getWeight())) {
                 if (notFound) q.insert(v);
@@ -621,7 +621,7 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
 
         for (Edge<T> *edge: temp->getOutgoing()) {
             Vertex<T> *v = edge->getDest();
-            bool notFound = (v->getDist() == INT_MAX);
+            bool notFound = (v->getDist() == INF);
 
             if (temp->getDist() + edge->cost < v->getDist()) {
                 // SHOULD TEST
@@ -638,7 +638,7 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
         }
         for (Edge<T> *edge: temp->getIncoming()) {
             Vertex<T> *v = edge->getOrig();
-            bool notFound = (v->getDist() == INT_MAX);
+            bool notFound = (v->getDist() == INF);
 
             if (temp->getDist() + edge->cost < v->getDist()) {
                 // SHOULD TEST
@@ -668,8 +668,11 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
 template<class T>
 Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
-    Path *path;
-    if (origin == dest) return path;
+    Node<int> *start = dynamic_cast<Node<int> *>(findVertex(origin));
+    Path *path = new Path(start);
+    if (origin == dest) {
+        return path;
+    };
 
     initializeForShortestPath();
     Vertex<T> *orig = findVertex(origin);
@@ -683,15 +686,19 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
     while (!q.empty()) {
         Vertex<T> *temp = q.extractMin();
 
-        if (temp == final) break;
+        if (temp == final) {
+            break;
+        }
 
         for (Edge<T> *edge: temp->getOutgoing()) {
 
             Vertex<T> *v = edge->getDest();
+            Node<T>*tempN = dynamic_cast<Node<T>*>(temp);
+            Node<T>*finalN = dynamic_cast<Node<T>*>(final);
+            Node<T>*vN = dynamic_cast<Node<T>*>(v);
+            double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
 
-            double f = temp->getDist() - heuristic(temp, final) + heuristic(v, final) + edge->getCost();
-
-            bool notFound = (v->getDist() == INT_MAX);
+            bool notFound = (v->getDist() == INF);
 
             if (f < v->getDist()) {
                 v->dist = f;
@@ -704,8 +711,8 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
     }
 
 
-    path->appendPath(dynamic_cast<Node<T> *>(final));
-
+//    path->appendPath(dynamic_cast<Node<T> *>(final));
+//verify if the order of the path is the right one and not the inverse
     Vertex<T> *previous = final->getPath();
     path->appendPath(dynamic_cast<Node<T> *>(previous));
 
@@ -722,8 +729,11 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 template<class T>
 Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
-    Path *path;
-    if (origin == dest) return path;
+    Node<int> *start = dynamic_cast<Node<int> *>(findVertex(origin));
+    Path *path = new Path(start);
+    if (origin == dest) {
+        return path;
+    };
 
     initializeForShortestPathwalking();
 
@@ -760,7 +770,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
         for (Edge<T> *e: fV->outgoing) {
             Vertex<T> *v = e->getDest();
             double temp = fV->getDist() + e->getCost() - heuristic(fV, final) + heuristic(v, final);
-            bool notFound = (v->getDist() == INT_MAX);
+            bool notFound = (v->getDist() == INF);
             if (v->getDist() > temp) {
                 v->dist = temp;
                 v->pathV = fV;
@@ -787,7 +797,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
             Vertex<T> *v = e->getOrig();
 
             double temp = iV->distI + e->getCost() - heuristic(iV, src) + heuristic(v, src);
-            bool notFound = (v->distI == INT_MAX);
+            bool notFound = (v->distI == INF);
             if (v->distI > temp) {
                 v->distI = temp;
                 v->pathI = iV;

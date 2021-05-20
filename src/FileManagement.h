@@ -100,6 +100,7 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
         if (node != nullptr) {
             node->setParking();
             int fixedPrice = rand() % 2;
+            fixedPrice = 1; //DEBUG
             if (fixedPrice) {
                 node->setParkingNode(new FixedPriceParking());
             } else {
