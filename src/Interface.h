@@ -45,7 +45,7 @@ using namespace std;
 template<class T>
 class Interface;
 
-void showConnectedNodes(vector<Node<int> *> connectedNodes);
+void showConnectedNodes(vector<Node<int> *> connectedNodes,Graph<int> graph);
 
 template<class T>
 class Interface {
@@ -197,7 +197,7 @@ void Interface<T>::showConnectivity() const {
     for (int i = 0; i < connected.size(); i++) {
         connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
     }
-    showConnectedNodes(connectedNodes);
+    showConnectedNodes(connectedNodes,algo.getGraph());
 }
 
 template<class T>
@@ -208,7 +208,7 @@ void Interface<T>::showConnectivityFromPoint() {
     for (int i = 0; i < connected.size(); i++) {
         connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
     }
-    showConnectedNodes(connectedNodes);
+    showConnectedNodes(connectedNodes,algo.getGraph());
 }
 
 template<class T>

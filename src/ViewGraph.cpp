@@ -39,13 +39,13 @@ void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
 
 
 
-//        if((dynamic_cast <Parking<int>*> (node)) != NULL){
-//            counter++;
-//            vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
-//        }
-//        else{
-//            vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
-//        }
+        /*if((dynamic_cast <Parking<int>*> (node)) != NULL){
+            counter++;
+            vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
+        }
+        else{
+            vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
+        }*/
     }
 
     for (Vertex<int> *vertex: graph.getVertexSet()) {
@@ -118,35 +118,57 @@ void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
 
 }
 
-void showPath(Path path, GraphViewer*gv) {
-    /*for (Node<int> *node:path.getAllNodes()) {
-        N &path_node = gv->addNode(node->getInfo(),
-                                   sf::Vector2f(node->getLatitude(), node->getLongitude())); //add nodes from path
-        path_node.setColor(GraphViewer::MAGENTA);
-    }*/
-
-   /* for(int i=0;i<path.getAllNodes().size();i++){
-        gv->addEdge(i,)
-    }*/
-}
-
-void showConnectedNodes(vector<Node<int> *> connectedNodes){
+void showConnectedNodes(vector<Node<int> *> connectedNodes,Graph<int> graph){
     GraphViewer gv;
-    //Set coordinates of window center
-    //gv->setCenter(sf::Vector2f(450, 450));
+    vector<int> graph_nodes;
     float min_lon = -8.6889783;
     float min_lat=41.1385607;
     float max_lon=-8.5545839;
     float max_lat=41.1858236;
+    int edge_id =0;
 
     for (Node<int> *node:connectedNodes) {
-        cout<<node->getInfo()<<endl;
-        N &path_node = gv.addNode(node->getInfo(),
-                                  sf::Vector2f((node->getLongitude()-min_lon)/(max_lon-min_lon)*900,(node->getLatitude()-min_lat)/(max_lat-min_lat)*900)); //add nodes from path
-        path_node.setColor(GraphViewer::ORANGE);
+        if (find(graph_nodes.begin(), graph_nodes.end(), node->getInfo()) == graph_nodes.end()) {
+            N &path_node = gv.addNode(node->getInfo(),
+                                      sf::Vector2f((node->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
+                                                   (node->getLatitude() - min_lat) / (max_lat - min_lat) *
+                                                   900)); //add nodes from path
+            if(node->getParking()){
+                path_node.setColor(GraphViewer::BLUE);
+            }
+            else{
+                path_node.setColor(GraphViewer::GREEN);
+            }
+
+            graph_nodes.push_back(node->getInfo());
+        }
     }
 
-    gv.setBackground("../Mapa da cidade do Porto-20210505/porto_full.png");
+    for(Node<int>*node:connectedNodes){
+        Vertex<int>*v = graph.findVertex(node->getInfo());
+
+        for(Edge<int> *edge:v->getOutgoing()) {
+            if (find(graph_nodes.begin(), graph_nodes.end(), edge->getOrig()->getInfo()) != graph_nodes.end() &&
+                find(graph_nodes.begin(), graph_nodes.end(), edge->getDest()->getInfo()) != graph_nodes.end()) {
+                E &edge0 = gv.addEdge(edge_id, gv.getNode(edge->getOrig()->getInfo()),
+                                      gv.getNode(edge->getDest()->getInfo()), GraphViewer::Edge::EdgeType::DIRECTED);
+                edge0.setColor(GraphViewer::RED);
+                edge_id++;
+            }
+        }
+
+        for(Edge<int> *edge:v->getIncoming()) {
+            if (find(graph_nodes.begin(), graph_nodes.end(), edge->getOrig()->getInfo()) != graph_nodes.end() &&
+                find(graph_nodes.begin(), graph_nodes.end(), edge->getDest()->getInfo()) != graph_nodes.end()) {
+                E &edge1 = gv.addEdge(edge_id, gv.getNode(edge->getOrig()->getInfo()),
+                                      gv.getNode(edge->getDest()->getInfo()), GraphViewer::Edge::EdgeType::DIRECTED);
+                edge1.setColor(GraphViewer::RED);
+                edge_id++;
+            }
+        }
+    }
+
+    gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
 
     // Create window
     gv.createWindow(900, 900);
@@ -154,10 +176,10 @@ void showConnectedNodes(vector<Node<int> *> connectedNodes){
     gv.join();
 }
 
-void showPath(vector<Node<int> *> path){
+void showPath(vector<Node<int> *> path,Graph<int> graph){
     GraphViewer gv;
-    vector<int> nodes_id;
-    int counter = 0;
+    vector<int> graph_nodes;
+    int edge_id= 0;
     //Set coordinates of window center
     //gv->setCenter(sf::Vector2f(450, 450));
     float min_lon = -8.6889783;
@@ -166,17 +188,49 @@ void showPath(vector<Node<int> *> path){
     float max_lat=41.1858236;
 
     for (Node<int> *node:path) {
-        if (find(nodes_id.begin(), nodes_id.end(), node->getInfo()) == nodes_id.end()) {
+        if (find(graph_nodes.begin(), graph_nodes.end(), node->getInfo()) == graph_nodes.end()) {
             N &path_node = gv.addNode(node->getInfo(),
                                       sf::Vector2f((node->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
                                                    (node->getLatitude() - min_lat) / (max_lat - min_lat) *
                                                    900)); //add nodes from path
-            path_node.setColor(GraphViewer::ORANGE);
-            nodes_id.push_back(node->getInfo());
+            if(node->getParking()){
+                path_node.setColor(GraphViewer::BLUE);
+            }
+            else{
+                path_node.setColor(GraphViewer::GREEN);
+            }
+
+            graph_nodes.push_back(node->getInfo());
         }
     }
 
-    gv.setBackground("../Mapa da cidade do Porto-20210505/porto_full.png");
+
+
+    for(Node<int>*node:path){
+        Vertex<int>*v = graph.findVertex(node->getInfo());
+
+        for(Edge<int> *edge:v->getOutgoing()) {
+            if (find(graph_nodes.begin(), graph_nodes.end(), edge->getOrig()->getInfo()) != graph_nodes.end() &&
+                find(graph_nodes.begin(), graph_nodes.end(), edge->getDest()->getInfo()) != graph_nodes.end()) {
+                E &edge0 = gv.addEdge(edge_id, gv.getNode(edge->getOrig()->getInfo()),
+                                      gv.getNode(edge->getDest()->getInfo()), GraphViewer::Edge::EdgeType::DIRECTED);
+                edge0.setColor(GraphViewer::RED);
+                edge_id++;
+            }
+        }
+
+        for(Edge<int> *edge:v->getIncoming()) {
+            if (find(graph_nodes.begin(), graph_nodes.end(), edge->getOrig()->getInfo()) != graph_nodes.end() &&
+                find(graph_nodes.begin(), graph_nodes.end(), edge->getDest()->getInfo()) != graph_nodes.end()) {
+                E &edge1 = gv.addEdge(edge_id, gv.getNode(edge->getOrig()->getInfo()),
+                                      gv.getNode(edge->getDest()->getInfo()), GraphViewer::Edge::EdgeType::DIRECTED);
+                edge1.setColor(GraphViewer::RED);
+                edge_id++;
+            }
+        }
+    }
+
+    gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
 
     // Create window
     gv.createWindow(900, 900);
