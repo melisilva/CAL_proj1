@@ -51,5 +51,6 @@ GeneralPath * Path::reverse() {
     for(int i = path.size()-1; i >= 0; i--){
         newPath->appendPath(path[i]);
     }
+    newPath->setLength(length);
     return newPath;
 }

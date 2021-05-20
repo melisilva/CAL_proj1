@@ -120,6 +120,7 @@ void Interface<T>::execute() {
                 break;
             case 5:
                 startAlgo();
+                option = 0;
                 break;
             case 6:
                 showConnectivity();

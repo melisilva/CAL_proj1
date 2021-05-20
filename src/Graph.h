@@ -669,8 +669,9 @@ template<class T>
 Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
     Node<int> *start = dynamic_cast<Node<int> *>(findVertex(origin));
-    Path *path = new Path(start);
+    Path *path;
     if (origin == dest) {
+        path = new Path(start);
         return path;
     };
 
@@ -702,6 +703,7 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
             if (f < v->getDist()) {
                 v->dist = f;
+                v->path = edge;
                 v->pathV = temp;
 
                 if (notFound) q.insert(v);
@@ -712,20 +714,100 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
 
 //    path->appendPath(dynamic_cast<Node<T> *>(final));
-//verify if the order of the path is the right one and not the inverse
-    Vertex<T> *previous = final->getPath();
-    path->appendPath(dynamic_cast<Node<T> *>(previous));
+    path = new Path(dynamic_cast<Node<T> *>(final));
+    Vertex<T> *previous = final;
 
 
     while (previous != orig) {
         previous = previous->getPath();
-        path->appendPath(dynamic_cast<Node<T> *>(previous));
+        path->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->getCost());
     }
 
-    return path;
+    return dynamic_cast<Path*>(path->reverse());
 }
 
+template<class T>
+Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
+    Node<int> *start = dynamic_cast<Node<int> *>(findVertex(origin));
+    Path *path;
+    if (origin == dest) {
+        path = new Path(start);
+        return path;
+    };
+
+    initializeForShortestPath();
+    Vertex<T> *orig = findVertex(origin);
+    Vertex<T> *final = findVertex(dest);
+
+    orig->dist = 0;
+    MutablePriorityQueue<Vertex<T>> q;
+    q.insert(orig);
+
+
+    while (!q.empty()) {
+        Vertex<T> *temp = q.extractMin();
+
+        if (temp == final) {
+            break;
+        }
+
+        for (Edge<T> *edge: temp->getOutgoing()) {
+
+            Vertex<T> *v = edge->getDest();
+            Node<T>*tempN = dynamic_cast<Node<T>*>(temp);
+            Node<T>*finalN = dynamic_cast<Node<T>*>(final);
+            Node<T>*vN = dynamic_cast<Node<T>*>(v);
+            double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
+
+            bool notFound = (v->getDist() == INF);
+
+            if (f < v->getDist()) {
+                v->dist = f;
+                v->path = edge;
+                v->pathV = temp;
+
+                if (notFound) q.insert(v);
+                else q.decreaseKey(v);
+            }
+        }
+        for (Edge<T> *edge: temp->getIncoming()) {
+
+            Vertex<T> *v = edge->getOrig();
+            Node<T>*tempN = dynamic_cast<Node<T>*>(temp);
+            Node<T>*finalN = dynamic_cast<Node<T>*>(final);
+            Node<T>*vN = dynamic_cast<Node<T>*>(v);
+            double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
+
+            bool notFound = (v->getDist() == INF);
+
+            if (f < v->getDist()) {
+                // SHOULD TEST
+                v->dist = f;
+                v->path = edge;
+                v->pathV = temp;
+                if (notFound) q.insert(v);
+                else q.decreaseKey(v);
+            }
+
+        }
+    }
+
+
+//    path->appendPath(dynamic_cast<Node<T> *>(final));
+    path = new Path(dynamic_cast<Node<T> *>(final));
+    Vertex<T> *previous = final;
+
+
+    while (previous != orig) {
+        previous = previous->getPath();
+        path->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->getCost());
+    }
+
+    return dynamic_cast<Path*>(path->reverse());
+}
+
+/*
 template<class T>
 Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
@@ -855,7 +937,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
     return path;
 }
-
+*/
 
 /*Analyze graph connectivity:
  * There's two ways:

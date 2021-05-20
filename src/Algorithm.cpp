@@ -46,7 +46,7 @@ void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit
 
 
 MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
-    MultiplePath *stops;
+    MultiplePath *stops = new MultiplePath(start);
     Node<int> *last = start;
     last->displayNode();
     for (int i = 0; i < toVisit.size(); i++) {
@@ -146,9 +146,10 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
     //P3 best park for price
     GeneralPath *pathBetweenP1To = graph.getNextClosestParking(to, true, true);
     GeneralPath *pathBetweenFromP1 = calculateDrivePath(from, pathBetweenP1To->getFirst());
-    GeneralPath *pathBetweenFromP3 = calculateDrivePath(from, calculateCheapestPark(time));
+    Node<int> * P3 = calculateCheapestPark(time);
     GeneralPath *pathBetweenP2From = graph.getNextClosestParking(to, true, false);
-    GeneralPath *pathBetweenFromP2 = calculateDrivePath(from, pathBetweenP2From->getFirst()); //getNextClosestParking might be upgraded to bidirectional. Cant just reverse
+    GeneralPath *pathBetweenFromP2 = pathBetweenP2From->reverse();
+//    GeneralPath *pathBetweenFromP2 = calculateDrivePath(from, pathBetweenP2From->getFirst()); //getNextClosestParking might be upgraded to bidirectional. Cant just reverse
     dynamic_cast<Path *>(pathBetweenP1To)->setWalkOnly(true);
     dynamic_cast<Path *>(pathBetweenFromP2)->setCarOnly(true);
 
@@ -173,7 +174,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
     for (int j = 0; j < parkingNodes.size(); j++) {
 
         thisCost = driveWeight * pathBetweenFromP2->getLength()
-                   + parkWeight * pathBetweenFromP3->getLast()->getParkingNode()->getPrice(time)
+                   + parkWeight * P3->getParkingNode()->getPrice(time)
                    + walkWeight * 2 * to->calcNodeDistance(parkingNodes[j]);
         if (thisCost > minimumCost) {
             //parar algoritmo
@@ -211,6 +212,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         minimumPath->appendPath(pathBetweenNewParkTo);
         minimumPath->appendPath(pathBetweenNewParkTo->reverse());
     }
+    return minimumPath;
 }
 
 Node<int> *Algorithm::calculateCheapestPark(int time) {
@@ -221,6 +223,10 @@ Node<int> *Algorithm::calculateCheapestPark(int time) {
                 return v1->getParkingNode()->getPrice(time) < v2->getParkingNode()->getPrice(time);
             }
     );
+    //DEBUG
+//    auto set = graph.getVertexSet();
+//    auto cheapest2 = *find_if(set.begin(), set.end(), [](Vertex<int>*n1){return n1->getInfo() == 26016895;});
+//    cheapest = dynamic_cast<Node<int>*>(cheapest2);
     return cheapest;
 }
 
