@@ -4,7 +4,9 @@
 
 #include "Path.h"
 
-Path::Path(Node<int> *n): GeneralPath(n){}
+Path::Path(Node<int> *n): GeneralPath(n){
+    appendPath(n);
+}
 
 vector<Node<int> *> Path::getAllNodes() {
     return path;

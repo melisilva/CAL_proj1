@@ -65,7 +65,6 @@ template<class T>
 Vertex<T>::Vertex(T in): info(in) {}
 
 
-
 template<class T>
 void Vertex<T>::addEdge(Edge<T> *e) {
     outgoing.push_back(e);

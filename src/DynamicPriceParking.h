@@ -9,8 +9,7 @@
 #include "cmath"
 #include "Parking.h"
 
-template<class T>
-class DynamicPriceParking : public Parking<T> {
+class DynamicPriceParking : public Parking {
 protected:
     int centsPerHour;
     int occupied;
@@ -18,7 +17,7 @@ protected:
     float maxMult;
 
 public:
-    DynamicPriceParking(const Parking<T> &p) : Parking<T>(p) {
+    DynamicPriceParking() : Parking() {
         centsPerHour = rand() % 200 + 1;
         capacity = rand() % 1000 + 1;
         occupied = rand() % capacity + 1;

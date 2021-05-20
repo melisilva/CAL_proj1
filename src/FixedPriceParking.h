@@ -8,21 +8,21 @@
 #include "stdlib.h  "
 #include "Parking.h"
 
-template<class T>
-class FixedPriceParking : public Parking<T> {
+class FixedPriceParking : public Parking {
 protected:
     int centsPerHour;
 
 public:
-    FixedPriceParking(const Parking<T> &p) : Parking<T>(p) {
-    centsPerHour = rand() % 200 + 1;
+    FixedPriceParking() : Parking() {
+        centsPerHour = rand() % 200 + 1;
     }
+
     bool isFixedPrice() {
         return true;
     };
 
     int getPrice(int time) {
-        return centsPerHour * ((time+59) / 60);
+        return centsPerHour * ((time + 59) / 60);
     };
 };
 

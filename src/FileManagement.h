@@ -13,7 +13,9 @@
 #include "Parking.h"
 #include "FixedPriceParking.h"
 #include "DynamicPriceParking.h"
+
 using namespace std;
+
 template<class T>
 void readNodesFile(Graph<T> &graph, string nodesfile) {
     //node file
@@ -96,24 +98,18 @@ vector<Node<T> *> readParkingFile(Graph<T> &graph, string parkingFile) {
         Node<T> *node = dynamic_cast<Node<T> *>(graph.findVertex(id));
 
         if (node != nullptr) {
-            Node<T> * park;
-            int fixedPrice = rand()%2;
-            if(fixedPrice){
-                park = new FixedPriceParking<T>(*node);
+            node->setParking();
+            int fixedPrice = rand() % 2;
+            if (fixedPrice) {
+                node->setParkingNode(new FixedPriceParking());
+            } else {
+                node->setParkingNode(new DynamicPriceParking());
             }
-            else{
-                park = new DynamicPriceParking<T>(*node);
-            }
-            dynamic_cast<Node<T> *>(park)->setParking();
-            if(!graph.replaceVertex(park)){
-                exit(1);
-            }
-            parkingNodes.push_back(park);
-            delete node;
+            parkingNodes.push_back(node);
         }
     }
     parkingsFile.close();
-                        return parkingNodes;
+    return parkingNodes;
 }
 //
 //template <class T>

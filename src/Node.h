@@ -6,17 +6,21 @@
 #define PROJECT_NODE_H
 
 #include <iostream>
+
 using namespace std;
 
 #include <cmath>
 #include "Vertex.h"
+#include "Parking.h"
 
 template<class T>
 class Node : public Vertex<T> {
 
     double lat, longi;
     bool isParking = false;
+    Parking *parking = nullptr;
 public:
+
     Node(int id, double lat, double longi) : Vertex<T>(id), lat(lat), longi(longi) {}
 
     void displayNode() const {
@@ -48,15 +52,23 @@ public:
         return sqrt(pow((getLatitude() - node->getLatitude()), 2) + pow((getLongitude() - node->getLongitude()), 2));
     }
 
-    double calcNodeDistance(Node<T> *a){
+    double calcNodeDistance(Node<T> *a) {
         return sqrt(pow(a->lat - lat, 2) + pow(a->longi - longi, 2));
     }
 
-    bool operator==(Node<T> *a){
-        if(lat == a->getLatitude() && longi == a->getLongitude()){
+    bool operator==(Node<T> *a) {
+        if (lat == a->getLatitude() && longi == a->getLongitude()) {
             return true;
         }
         return false;
+    }
+
+    void setParkingNode(Parking *park){
+        parking = park;
+    }
+
+    Parking* getParkingNode(){
+        return parking;
     }
 
 };
