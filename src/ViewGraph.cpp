@@ -39,13 +39,13 @@ void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
 
 
 
-        if((dynamic_cast <Parking<int>*> (node)) != NULL){
-            counter++;
-            vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
-        }
-        else{
-            vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
-        }*/
+//        if((dynamic_cast <Parking<int>*> (node)) != NULL){
+//            counter++;
+//            vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
+//        }
+//        else{
+//            vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
+//        }
     }
 
     for (Vertex<int> *vertex: graph.getVertexSet()) {

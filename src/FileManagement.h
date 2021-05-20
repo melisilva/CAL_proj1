@@ -40,7 +40,7 @@ void readNodesFile(Graph<T> &graph, string nodesfile) {
         line.erase(0, pos + 1);
         pos = line.find(')');
         y = stof(line.substr(0, pos));
-        Node<T> *nodeToAdd = new Node<T>(id, x, y);
+        Node<T> *nodeToAdd = new Node<T>(id, y, x);
         graph.addVertex(nodeToAdd);
 
     }

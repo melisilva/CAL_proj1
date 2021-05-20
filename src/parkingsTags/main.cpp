@@ -71,13 +71,13 @@ int main() {
             getline(parkings, line);
             iLine = stringstream(line);
             iLine >> lat;
-            parkingNodes.push_back(new Node(lat, longi));
+            parkingNodes.push_back(new Node(longi, lat));
         }
     }
     nodes_lat_long.get(aux);
     cout << "File closed\n";
 
-    nodes_lat_long.open("../Mapas-20210505/PortugalMaps/Porto/nodes_lat_lon_porto.txt");
+    nodes_lat_long.open("../Mapa da cidade do Porto-20210505/porto_strong_nodes_latlng.txt");
     if (!nodes_lat_long.is_open()) {
         return 1;
     }
@@ -110,7 +110,7 @@ int main() {
         realParkingNodes.insert(realNodes[0]);
     }
 
-    parkingTags.open("../Mapas-20210505/TagExamples/Porto/t12_tags_porto.txt");
+    parkingTags.open("../Mapas-20210505/TagExamples/Porto/t13_tags_porto.txt");
     if (!parkingTags.is_open()) {
         return 1;
     }

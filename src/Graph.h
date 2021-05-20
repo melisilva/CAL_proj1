@@ -528,8 +528,10 @@ template<class T>
 void Graph<T>::initializeForShortestPath() {
     for (Vertex<T> *v: vertexSet) {
         v->dist = INF;
+        v->path = nullptr;
         v->pathV = NULL;
         v->queueIndex = 0;
+        v->visited = false;
     }
 }
 
@@ -540,6 +542,7 @@ void Graph<T>::initializeForShortestPathwalking() {
         v->distI = INF;
         v->queueIndex = 0;
         v->queueIndexI = 0;
+        v->path = nullptr;
         v->pathV = NULL;
         v->pathI = NULL;
     }
@@ -751,6 +754,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
     Vertex<T> *temp;
     while (!q.empty()) {
         temp = q.extractMin();
+        temp->visited = false;
 
         if (temp == final) {
             break;
@@ -764,15 +768,21 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
             Node<T> *vN = dynamic_cast<Node<T> *>(v);
             double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
 
-            bool notFound = (v->getDist() == INF);
+            bool notFound = (v->path == nullptr);
 
             if (f < v->getDist()) {
                 v->dist = f;
                 v->path = edge;
                 v->pathV = temp;
 
-                if (notFound) q.insert(v);
-                else q.decreaseKey(v);
+                if (!v->visited) {
+                    q.insert(v);
+                }
+                else {
+
+                    q.decreaseKey(v);
+                }
+                v->visited = true;
             }
         }
         for (Edge<T> *edge: temp->getIncoming()) {
@@ -783,15 +793,21 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
             Node<T> *vN = dynamic_cast<Node<T> *>(v);
             double f = temp->getDist() - tempN->calcNodeDistance(finalN) + vN->calcNodeDistance(finalN) + edge->getCost();
 
-            bool notFound = (v->getDist() == INF);
+            bool notFound = (v->path == nullptr);
 
             if (f < v->getDist()) {
                 // SHOULD TEST
                 v->dist = f;
                 v->path = edge;
                 v->pathV = temp;
-                if (notFound) q.insert(v);
-                else q.decreaseKey(v);
+                if (!v->visited) {
+                    q.insert(v);
+                }
+                else {
+
+                    q.decreaseKey(v);
+                }
+                v->visited = true;
             }
 
         }
