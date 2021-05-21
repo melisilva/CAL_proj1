@@ -10,7 +10,7 @@
 #include "Graph.h"
 
 //void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
-void showPath(vector<Node<int> *> path,Graph<int> graph);
+void showPath(vector<Node<int> *> path, Graph<int> graph);
 
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readNodesFile(graph, nodesFile);
@@ -45,7 +45,7 @@ void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit
     }
     stops->displayPath();
     cout << "ENDED PROCESSING. WINDOW HAS NOW OPENED\n";
-    showPath(stops->getAllNodes(),graph);
+    showPath(stops->getAllNodes(), graph);
 }
 
 
@@ -93,6 +93,11 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         Node<int> *lastTrueDestiny, *thisTrueDestiny;
         Node<int> *lastPark, *thisPark;
         GeneralPath *lastSubPath = final->getLastSubPath();
+
+        if(lastSubPath->isCarOnly()){
+            final->appendPath(stopPath);
+        }
+
         lastPark = final->getLast();
         lastTrueDestiny = lastSubPath->getFirst();
         thisPark = stopPath->getLast();
@@ -106,7 +111,7 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         firstCost += getCost(dynamic_cast<MultiplePath *>(stopPath));
         if (i < pathStops.size() - 1) {
             GeneralPath *pathFromThisParkToNextPark = dynamic_cast<MultiplePath *>(pathStops[i + 1])->getFirstSubPath();
-            firstCost += getDistancesCost((dynamic_cast<MultiplePath *>(pathFromThisParkToNextPark)));
+            firstCost += getDistancesCost(pathFromThisParkToNextPark);
         }
 
 
@@ -115,6 +120,10 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         double destiniesDist = lastTrueDestiny->calcNodeDistance(thisTrueDestiny);
         double thisDestinyToLastParkDist = thisTrueDestiny->calcNodeDistance(lastPark);
         double parkCost = lastPark->getParkingNode()->getPrice(lastPark->getParkingNode()->getUserTime() + thisPark->getParkingNode()->getUserTime());
+//        double parkCost = 0;
+//        if (lastPark->getParking()) {
+//            parkCost = lastPark->getParkingNode()->getPrice(lastPark->getParkingNode()->getUserTime() + thisPark->getParkingNode()->getUserTime());
+//        }
         if (i < pathStops.size() - 1) {
             parksDist = lastPark->calcNodeDistance(pathStops[i + 1]->getLast());
         }
@@ -221,7 +230,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         }
 
         pathBetweenNewParkTo = calculateWalkPath(parkingNodes[j], to);
-        if(pathBetweenNewParkTo->isEmpty()){
+        if (pathBetweenNewParkTo->isEmpty()) {
             //Couldn't walk to this park from to
             continue;
         }
@@ -234,7 +243,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         }
 
         pathBetweenFromNewPark = calculateDrivePath(from, parkingNodes[j]);
-        if(pathBetweenFromNewPark->isEmpty()){
+        if (pathBetweenFromNewPark->isEmpty()) {
             // Couldn't drive to this park from source
             continue;
         }
@@ -304,9 +313,10 @@ double Algorithm::getParkingCost(GeneralPath *path) {
     double total;
     vector<Node<int> *> nodes = path->getAllNodes();
     vector<Node<int> *> parkingNodes(nodes.size());
-    copy_if(nodes.begin(), nodes.end(), parkingNodes.begin(), [](Node<int> *n) {
+    auto it = copy_if(nodes.begin(), nodes.end(), parkingNodes.begin(), [](Node<int> *n) {
         return n->getParking();
     });
+    parkingNodes.resize(distance(parkingNodes.begin(), it));
     unordered_set<Node<int> *> parkingNodesSet; //hash and comparison not defined. could yield weird errors
     for (auto parkingNode: parkingNodes) {
         parkingNodesSet.insert(parkingNode);
