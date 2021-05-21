@@ -55,5 +55,7 @@ GeneralPath * MultiplePath::reverse() {
     for(int i = fullPath.size()-1; i>=0; i--){
         newPath->appendPath(fullPath[i]->reverse());
     }
+    newPath->setWalkOnly(walkOnly);
+    newPath->setCarOnly(carOnly);
     return newPath;
 }

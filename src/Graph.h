@@ -660,7 +660,7 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
     Vertex<T> *previous = final;
     nodePath = new Path(dynamic_cast<Node<int> *>(final));
     do {
-        nodePath->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->cost);
+        nodePath->appendPath(dynamic_cast<Node<T> *>(previous->getPath()), previous->path->getCost());
         previous = previous->getPath();
     } while (previous != node);
     return nodePath; //Path from the park to the node given
@@ -725,11 +725,12 @@ Path *Graph<T>::aStarShortestPath(const int &origin, const int &dest) {
 
 
     do {
-        path->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->getCost());
+        path->appendPath(dynamic_cast<Node<T> *>(previous->getPath()), previous->path->getCost());
         previous = previous->getPath();
     } while (previous != orig);
-
-    return dynamic_cast<Path *>(path->reverse());
+    Path *finalPath = dynamic_cast<Path *>(path->reverse());
+    delete path;
+    return finalPath;
 }
 
 template<class T>
@@ -823,11 +824,12 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
 
     do {
-        path->appendPath(dynamic_cast<Node<T> *>(previous), previous->path->getCost());
+        path->appendPath(dynamic_cast<Node<T> *>(previous->getPath()), previous->path->getCost());
         previous = previous->getPath();
     } while (previous != orig);
-
-    return dynamic_cast<Path *>(path->reverse());
+    Path *finalPath = dynamic_cast<Path *>(path->reverse());
+    delete path;
+    return finalPath;
 }
 
 /*

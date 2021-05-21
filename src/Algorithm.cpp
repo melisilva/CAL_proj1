@@ -57,7 +57,9 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
         auto pair = toVisit[i];
         if (pair.first == 0) {
             //will just pass by this node without parking
-            stops->appendPath(calculateDrivePath(last, pair.second));
+            MultiplePath *pathToStop = new MultiplePath(last);
+            pathToStop->appendPath(calculateDrivePath(last, pair.second));
+            stops->appendPath(pathToStop);
             last = pair.second;
         } else {
             GeneralPath *toParkInterPark = calculateBestPark(last, pair.second, pair.first);
@@ -79,7 +81,7 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
 MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
     MultiplePath *final = new MultiplePath(stops->getFirst());
     vector<GeneralPath *> pathStops = dynamic_cast<MultiplePath *>(stops)->getPath();
-    final->appendPath(pathStops[0]);
+    final->appendPath(pathStops[0]); //Must go to the first destiny
     for (int i = 1; i < pathStops.size(); i++) {
         auto stopPath = pathStops[i];
         if (stopPath->isCarOnly()) {
@@ -100,7 +102,7 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         //COST TO PARK IN stopPath PARK TOO
         double firstCost = 0;
         GeneralPath *lastPathFromLastTrueDestinyToPark = dynamic_cast<MultiplePath *>(lastSubPath)->getLastSubPath();
-        firstCost += getDistancesCost(dynamic_cast<MultiplePath *>(lastPathFromLastTrueDestinyToPark));
+        firstCost += getDistancesCost(lastPathFromLastTrueDestinyToPark);
         firstCost += getCost(dynamic_cast<MultiplePath *>(stopPath));
         if (i < pathStops.size() - 1) {
             GeneralPath *pathFromThisParkToNextPark = dynamic_cast<MultiplePath *>(pathStops[i + 1])->getFirstSubPath();
@@ -232,7 +234,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         }
 
         pathBetweenFromNewPark = calculateDrivePath(from, parkingNodes[j]);
-        if(pathBetweenFromNewPark){
+        if(pathBetweenFromNewPark->isEmpty()){
             // Couldn't drive to this park from source
             continue;
         }
