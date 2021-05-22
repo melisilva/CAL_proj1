@@ -52,10 +52,14 @@ template<class T>
 class Interface {
     Algorithm algo;
     Node<int> *start, *end, *og_point;
-    bool parkAtEnd;
+    int parkAtEnd;
     vector<pair<int, Node<int> *>> intermediary;
 public:
-    Interface(Algorithm algo) : algo(algo) {}
+    Interface(Algorithm algo) : algo(algo) {
+        start = nullptr;
+        end = nullptr;
+        parkAtEnd = -1;
+    }
 
     void begin();
 
@@ -112,15 +116,6 @@ void Interface<T>::execute() {
             case 1:
                 chooseWeights();
                 break;
-            /*case 2:
-                start = chooseNode();
-                break;
-            case 3:
-                intermediary = chooseIntermediary();
-                break;
-            case 4:
-                end = chooseNode();
-                break;*/
             case 2:
                 startAlgo();
                 option = 0;
@@ -146,7 +141,7 @@ void Interface<T>::execute() {
             case 7:
                 showParkingLots(algo.getGraph());
             default:
-                cout << "Please choose a viable option\n";
+                cout << "Please choose a viable option.\n";
         }
 
     }
@@ -175,9 +170,6 @@ void Interface<T>::displayOptions() const {
     cout << "INPUT YOUR DESIRED OPTION\n";
     cout << "0 - Exit\n";
     cout << "1 - Choose Weights\n";
-   // cout << "2 - Choose Start\n";
-   // cout << "3 - Choose Intermediary\n";
-   // cout << "4 - Choose End\n";
     cout << "2 - Calculate Path\n";
     cout << "3 - Show Graph Connectivity\n";
     cout << "4 - Show Graph Connectivity from chosen point\n";
@@ -232,13 +224,16 @@ int Interface<T>::getNodeOption() {
 template<class T>
 void Interface<T>::chooseWeights() {
     float a, b, c;
-    cout << "Choose weights\n";
-    cout << "Driving distance\n";
+    cout << "CHOOSE WEIGHTS FOR EACH OF THE FOLLOWING:\n";
+    cout << "Driving Distance: ";
     cin >> a;
-    cout << "Parking price\n";
+    cout << endl;
+    cout << "Parking Price: ";
     cin >> b;
-    cout << "Walking distance\n";
+    cout << endl;
+    cout << "Walking Distance: ";
     cin >> c;
+    cout << endl;
     float sum = a + b + c;
     algo.setWeights(a / sum, b / sum, c / sum);
 }
@@ -256,9 +251,7 @@ Node<T> *Interface<T>::getNodeCoordinates() {
         cin >> y;
     }
 
-    Node<T> p(-1, x, y);
-    Node<T> *parkingNode;
-    *parkingNode = p;
+    Node<T> *parkingNode = new Node<T>(-1, x, y);
     vector<Vertex<T> *> realNodes = algo.getGraph().getVertexSet();
     sort(realNodes.begin(),
          realNodes.end(),
@@ -277,8 +270,6 @@ Node<T> *Interface<T>::getNodeID() {
         cin >> x;
     }
     return dynamic_cast<Node<T> *>(algo.getGraph().findVertex(x));
-
-
 }
 
 template<class T>
@@ -306,15 +297,15 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
     string temp = "";
     int answer = 2;
     vector<pair<int, Node<T> *>> midStops;
-    while(cin.fail() || temp != "DONE"){
+    while (cin.fail() || temp != "DONE") {
         cout << "If you wish to add an intermediary, input NEW. Otherwise, input DONE.\n";
         cin >> temp;
         Node<T> *newStop;
 
-        if(temp != "DONE") {
+        if (temp != "DONE") {
             newStop = chooseNode();
             while (answer < 0) {
-                cout << "Do you wish to PASS BY (0) in this stop or PARK AND STOP BY (INPUT THE TIME YOU WISH TO SPEND IN PARK):";
+                cout << "Do you wish to PASS BY (0) in this stop or PARK AND STOP BY (INPUT THE TIME YOU WISH TO SPEND IN PARK): ";
                 cin >> answer;
             }
 
@@ -328,18 +319,24 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
 
 template<class T>
 void Interface<T>::startAlgo() {
-    parkAtEnd = -1;
-    cout<<"Insert your starting point\n";
-    start = chooseNode();
-    cout<<"Insert your intermediary points\n";
-    intermediary = chooseIntermediary();
-    cout<<"Insert your ending point\n";
-    end=chooseNode();
-    while (parkAtEnd < 0) {
-        cout << "INPUT THE TIME YOU WISH TO SPEND IN PARK:";
-        cin >> parkAtEnd;
+
+    while (start == nullptr) {
+        cout << "CHOOSE YOUR STARTING POINT.\n";
+        start = chooseNode();
     }
 
+    cout << "CHOOSE YOUR INTERMEDIARY POINT(S).\n";
+    intermediary = chooseIntermediary();
+
+    while (end == nullptr) {
+        cout << "CHOOSE YOUR ENDING POINT.\n";
+        end = chooseNode();
+    }
+
+    while (parkAtEnd < 0) {
+        cout << "EXPECTED PARKING TIME: ";
+        cin >> parkAtEnd;
+    }
 
     intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
     algo.execute(start, intermediary);
