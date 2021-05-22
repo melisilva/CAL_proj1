@@ -62,24 +62,24 @@ void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
         }
     }
 
-        /*Node<int>*node = dynamic_cast<Node<int> *>(graph.findVertex(122525234));
+    /*Node<int>*node = dynamic_cast<Node<int> *>(graph.findVertex(122525234));
 
 
 
-         N &vertex_node = gv.addNode(node->getInfo(),
-                                     sf::Vector2f((node->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
-                                                  (node->getLatitude() - min_lat) / (max_lat - min_lat) *
+     N &vertex_node = gv.addNode(node->getInfo(),
+                                 sf::Vector2f((node->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
+                                              (node->getLatitude() - min_lat) / (max_lat - min_lat) *
+                                              900)); //add nodes from path
+
+     for(int i=0;i<graph.findVertex(122525234)->getOutgoing().size();i++){
+         Node<int>*node2 = dynamic_cast<Node<int> *>((graph.findVertex(122525234))->getOutgoing()[i]->getDest());
+         N &vertex_node2 = gv.addNode(node2->getInfo(),
+                                     sf::Vector2f((node2->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
+                                                  (node2->getLatitude() - min_lat) / (max_lat - min_lat) *
                                                   900)); //add nodes from path
-
-         for(int i=0;i<graph.findVertex(122525234)->getOutgoing().size();i++){
-             Node<int>*node2 = dynamic_cast<Node<int> *>((graph.findVertex(122525234))->getOutgoing()[i]->getDest());
-             N &vertex_node2 = gv.addNode(node2->getInfo(),
-                                         sf::Vector2f((node2->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
-                                                      (node2->getLatitude() - min_lat) / (max_lat - min_lat) *
-                                                      900)); //add nodes from path
-             E  &edge0 = gv.addEdge(0,vertex_node,vertex_node2,GraphViewer::Edge::EdgeType::DIRECTED);
-             edge0.setColor(GraphViewer::BLUE);
-         }*/
+         E  &edge0 = gv.addEdge(0,vertex_node,vertex_node2,GraphViewer::Edge::EdgeType::DIRECTED);
+         edge0.setColor(GraphViewer::BLUE);
+     }*/
 
 
     /*Node<int>*node2 = dynamic_cast<Node<int> *>(graph.findVertex(138231433));
@@ -91,29 +91,29 @@ void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes) {
 
 
 
-        /*if (find(parkingNodes.begin(), parkingNodes.end(), vertex_node) != parkingNodes.end()) {
-            vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
-        } else {
-            vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
-        }*/
-        //vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
-
-  //  }
-
-   /* for (Node<int> *node:parkingNodes) {
-        N &path_node = gv.addNode(node->getInfo(),
-                                  sf::Vector2f((node->getLongitude()-min_lon)/(max_lon-min_lon)*900,(node->getLatitude()-min_lat)/(max_lat-min_lat)*900)); //add nodes from path
-        path_node.setColor(GraphViewer::ORANGE);
+    /*if (find(parkingNodes.begin(), parkingNodes.end(), vertex_node) != parkingNodes.end()) {
+        vertex_node.setColor(GraphViewer::BLUE); //if node is a park, it will be colored blue
+    } else {
+        vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
     }*/
+    //vertex_node.setColor(GraphViewer::GREEN); //if node isn't a park, it will be colored green
 
-        cout<<counter<<endl;
+    //  }
 
-        gv.setBackground("../Mapa da cidade do Porto-20210505/porto_full.png");
+    /* for (Node<int> *node:parkingNodes) {
+         N &path_node = gv.addNode(node->getInfo(),
+                                   sf::Vector2f((node->getLongitude()-min_lon)/(max_lon-min_lon)*900,(node->getLatitude()-min_lat)/(max_lat-min_lat)*900)); //add nodes from path
+         path_node.setColor(GraphViewer::ORANGE);
+     }*/
 
-        // Create window
-        gv.createWindow(900, 900);
-        // Join viewer thread (blocks till window closed)
-        gv.join();
+    cout<<counter<<endl;
+
+    gv.setBackground("../Mapa da cidade do Porto-20210505/porto_full.png");
+
+    // Create window
+    gv.createWindow(900, 900);
+    // Join viewer thread (blocks till window closed)
+    gv.join();
 
 
 }
@@ -135,9 +135,11 @@ void showConnectedNodes(vector<Node<int> *> connectedNodes,Graph<int> graph){
                                                    900)); //add nodes from path
             if(node->getParking()){
                 path_node.setColor(GraphViewer::BLUE);
+                path_node.setSize(100.0);
             }
             else{
                 path_node.setColor(GraphViewer::GREEN);
+                path_node.setSize(5.0);
             }
 
             graph_nodes.push_back(node->getInfo());
@@ -195,9 +197,11 @@ void showPath(vector<Node<int> *> path,Graph<int> graph){
                                                    900)); //add nodes from path
             if(node->getParking()){
                 path_node.setColor(GraphViewer::BLUE);
+                path_node.setSize(100.0);
             }
             else{
                 path_node.setColor(GraphViewer::GREEN);
+                path_node.setSize(5.0);
             }
 
             graph_nodes.push_back(node->getInfo());
@@ -237,5 +241,4 @@ void showPath(vector<Node<int> *> path,Graph<int> graph){
     // Join viewer thread (blocks till window closed)
     gv.join();
 }
-
 
