@@ -67,12 +67,12 @@ void MutablePriorityQueue<T>::insert(T *x) {
 }
 
 template <class T>
-void MutablePriorityQueue<T>::insertOrDecreaseKey(T *x) {
-	if (x->queueIndex == 0)
-		insert(x);
-	else
-		decreaseKey(x);
-}
+    void MutablePriorityQueue<T>::insertOrDecreaseKey(T *x) {
+        if (x->queueIndex == 0)
+            insert(x);
+        else
+            decreaseKey(x);
+    }
 
 template <class T>
 void MutablePriorityQueue<T>::decreaseKey(T *x) {

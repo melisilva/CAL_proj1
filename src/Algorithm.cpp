@@ -96,6 +96,7 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
 
         if(lastSubPath->isCarOnly()){
             final->appendPath(stopPath);
+            continue;
         }
 
         lastPark = final->getLast();
