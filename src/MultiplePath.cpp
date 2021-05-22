@@ -8,7 +8,6 @@ MultiplePath::MultiplePath(Node<int> *n) : GeneralPath(n) {
     length = 0;
     carOnly = true;
     walkOnly = true;
-    first = nullptr;
     last = nullptr;
 }
 
@@ -56,5 +55,7 @@ GeneralPath * MultiplePath::reverse() {
     for(int i = fullPath.size()-1; i>=0; i--){
         newPath->appendPath(fullPath[i]->reverse());
     }
+    newPath->setWalkOnly(walkOnly);
+    newPath->setCarOnly(carOnly);
     return newPath;
 }

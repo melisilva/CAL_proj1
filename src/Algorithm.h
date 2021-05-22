@@ -18,7 +18,7 @@ class MultiplePath;
 class Algorithm {
     Graph<int> graph;
     vector<Node<int> *> parkingNodes;
-    float driveWeight, parkWeight, walkWeight;
+    float driveWeight = 0.24, parkWeight = 0.01, walkWeight = 0.75;
 public:
     Algorithm(string nodesFile, string edgesFile, string parkingFiles);
 

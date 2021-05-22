@@ -5,16 +5,12 @@
 #ifndef PROJECT_PARKING_H
 #define PROJECT_PARKING_H
 
-#include "Node.h"
 
-template<class T>
-class Parking : public Node<T> {
+class Parking {
 protected:
     bool userWillStop = false;
     int userTime = 0;
 public:
-    Parking(const Node<T> &n) : Node<T>(n) {}
-
     virtual bool isFixedPrice() {};
 
     virtual int getPrice(int time) {};

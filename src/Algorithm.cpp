@@ -9,10 +9,17 @@
 #include "MultiplePath.h"
 #include "Graph.h"
 
+//void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
+void showPath(vector<Node<int> *> path, Graph<int> graph);
+
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     readNodesFile(graph, nodesFile);
     readEdgesFile(graph, false, edgesFile);
     parkingNodes = readParkingFile(graph, parkingFile);
+
+    cout << parkingNodes.empty() << endl;
+
+    //testMeli(graph,parkingNodes);
 }
 
 Graph<int> Algorithm::getGraph() const {
@@ -31,29 +38,41 @@ void Algorithm::setWeights(float a, float b, float c) {
 }
 
 void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
-
+    auto pair = toVisit[0];
     MultiplePath *stops = dynamic_cast<MultiplePath *>(calculateBestParkEachStop(start, toVisit));
-    stops = calculateFinalPath(stops);
+    if (!stops->isEmpty()) {
+        stops = calculateFinalPath(stops);
+    }
     stops->displayPath();
-
+    cout << "ENDED PROCESSING. WINDOW HAS NOW OPENED\n";
+    showPath(stops->getAllNodes(), graph);
 }
 
 
 MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
-    MultiplePath *stops;
+    MultiplePath *stops = new MultiplePath(start);
     Node<int> *last = start;
+    last->displayNode();
     for (int i = 0; i < toVisit.size(); i++) {
         auto pair = toVisit[i];
-        if (!pair.first) {
-            //will just pass by this node
-            stops->appendPath(calculateDrivePath(last, pair.second));
+        if (pair.first == 0) {
+            //will just pass by this node without parking
+            MultiplePath *pathToStop = new MultiplePath(last);
+            pathToStop->appendPath(calculateDrivePath(last, pair.second));
+            stops->appendPath(pathToStop);
             last = pair.second;
         } else {
             GeneralPath *toParkInterPark = calculateBestPark(last, pair.second, pair.first);
+            if (toParkInterPark->isEmpty()) {
+                //Cannot park on that stop, probably means that the stop is disconnected from the rest of the graph
+                // Just ignore it and proceed to the next one
+                continue;
+            }
             stops->appendPath(toParkInterPark);
 
             //Another strategy might take last = pair.second and use multithreading
             last = toParkInterPark->getLast();
+
         }
     }
     return stops;
@@ -62,7 +81,7 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
 MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
     MultiplePath *final = new MultiplePath(stops->getFirst());
     vector<GeneralPath *> pathStops = dynamic_cast<MultiplePath *>(stops)->getPath();
-    final->appendPath(pathStops[0]);
+    final->appendPath(pathStops[0]); //Must go to the first destiny
     for (int i = 1; i < pathStops.size(); i++) {
         auto stopPath = pathStops[i];
         if (stopPath->isCarOnly()) {
@@ -72,22 +91,28 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         }
 
         Node<int> *lastTrueDestiny, *thisTrueDestiny;
-        Parking<int> *lastPark, *thisPark;
+        Node<int> *lastPark, *thisPark;
         GeneralPath *lastSubPath = final->getLastSubPath();
-        lastPark = dynamic_cast<Parking<int> *>(final->getLast());
+
+        if(lastSubPath->isCarOnly()){
+            final->appendPath(stopPath);
+            continue;
+        }
+
+        lastPark = final->getLast();
         lastTrueDestiny = lastSubPath->getFirst();
-        thisPark = dynamic_cast<Parking<int> *>(stopPath->getLast());
+        thisPark = stopPath->getLast();
         thisTrueDestiny = dynamic_cast<MultiplePath *>(stopPath)->getLastSubPath()->getFirst();
 
 
         //COST TO PARK IN stopPath PARK TOO
         double firstCost = 0;
         GeneralPath *lastPathFromLastTrueDestinyToPark = dynamic_cast<MultiplePath *>(lastSubPath)->getLastSubPath();
-        firstCost += getDistancesCost(dynamic_cast<MultiplePath *>(lastPathFromLastTrueDestinyToPark));
+        firstCost += getDistancesCost(lastPathFromLastTrueDestinyToPark);
         firstCost += getCost(dynamic_cast<MultiplePath *>(stopPath));
         if (i < pathStops.size() - 1) {
             GeneralPath *pathFromThisParkToNextPark = dynamic_cast<MultiplePath *>(pathStops[i + 1])->getFirstSubPath();
-            firstCost += getDistancesCost((dynamic_cast<MultiplePath *>(pathFromThisParkToNextPark)));
+            firstCost += getDistancesCost(pathFromThisParkToNextPark);
         }
 
 
@@ -95,7 +120,11 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         double secondCost = 0, parksDist = 0;
         double destiniesDist = lastTrueDestiny->calcNodeDistance(thisTrueDestiny);
         double thisDestinyToLastParkDist = thisTrueDestiny->calcNodeDistance(lastPark);
-        double parkCost = lastPark->getPrice(lastPark->getUserTime() + thisPark->getUserTime());
+        double parkCost = lastPark->getParkingNode()->getPrice(lastPark->getParkingNode()->getUserTime() + thisPark->getParkingNode()->getUserTime());
+//        double parkCost = 0;
+//        if (lastPark->getParking()) {
+//            parkCost = lastPark->getParkingNode()->getPrice(lastPark->getParkingNode()->getUserTime() + thisPark->getParkingNode()->getUserTime());
+//        }
         if (i < pathStops.size() - 1) {
             parksDist = lastPark->calcNodeDistance(pathStops[i + 1]->getLast());
         }
@@ -132,25 +161,51 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
 
 
 GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int time) {
+    //TODO bool to see if it is the destiny and walking distance is halved
     //P1 best park for walking
     //P2 best park for driving
     //P3 best park for price
-    GeneralPath *pathBetweenFromP1 = graph.getNextClosestParking(from, true);
-    GeneralPath *pathBetweenFromP2 = calculateDrivePath(from, calculateCheapestPark(time));
-    GeneralPath *pathBetweenP3To = graph.getNextClosestParking(to, true);
-    GeneralPath *pathBetweenFromP3 = calculateDrivePath(from, pathBetweenP3To->getFirst());
-    dynamic_cast<Path *>(pathBetweenFromP1)->setCarOnly(true);
-    dynamic_cast<Path *>(pathBetweenP3To)->setCarOnly(true);
-    graph.initializeForShortestPath();
+    bool gettingFirstParking = true;
+    GeneralPath *pathBetweenP1To;
+    GeneralPath *pathBetweenFromP1;
+    while (1) {
+        pathBetweenP1To = graph.getNextClosestParking(to, gettingFirstParking, true);
+        if (pathBetweenP1To->isEmpty()) {
+            // The to cannot get to any park on foot
+            return pathBetweenP1To;
+        }
+        pathBetweenFromP1 = calculateDrivePath(from, pathBetweenP1To->getFirst());
+        if (pathBetweenFromP1->isEmpty()) {
+            // Cannot get to that park from the source
+            // Will try to get the next closest parking on foot
+            gettingFirstParking = false;
+            continue;
+        }
+        break;
+    }
+    Node<int> *P3 = calculateCheapestPark(time);
+    GeneralPath *pathBetweenP2From = graph.getNextClosestParking(to, true, false);
+    if (pathBetweenP2From->isEmpty()) {
+        // Cannot get to any park by driving from the source
+        return pathBetweenP2From;
+    }
+    GeneralPath *pathBetweenFromP2 = pathBetweenP2From->reverse();
+//    GeneralPath *pathBetweenFromP2 = calculateDrivePath(from, pathBetweenP2From->getFirst()); //getNextClosestParking might be upgraded to bidirectional. Cant just reverse
+    dynamic_cast<Path *>(pathBetweenP1To)->setWalkOnly(true);
+    dynamic_cast<Path *>(pathBetweenFromP2)->setCarOnly(true);
+
+    graph.initializeForShortestPath(); //Reset changes to vertex variables
+
     sort(parkingNodes.begin(), parkingNodes.end(), [to](Node<int> *n1, Node<int> *n2) {
         return to->calcNodeDistance(n1) < to->calcNodeDistance(n2);
     });
     MultiplePath *minimumPath = new MultiplePath(from);
-    minimumPath->appendPath(pathBetweenFromP3);
-    minimumPath->appendPath(pathBetweenP3To);
-    double minimumCost = getDistancesCost(pathBetweenFromP3)
-                         + dynamic_cast<Parking<int> *>(pathBetweenFromP3->getLast())->getPrice(time)
-                         + getDistancesCost(pathBetweenP3To);
+    minimumPath->appendPath(pathBetweenFromP1);
+    minimumPath->appendPath(pathBetweenP1To);
+    minimumPath->appendPath(pathBetweenP1To->reverse());
+    double minimumCost = getDistancesCost(pathBetweenFromP1)
+                         + (pathBetweenFromP2->getLast())->getParkingNode()->getPrice(time)
+                         + getDistancesCost(pathBetweenP1To) * 2;
 
     cout << "Working till here." << endl;
 
@@ -160,7 +215,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
     for (int j = 0; j < parkingNodes.size(); j++) {
 
         thisCost = driveWeight * pathBetweenFromP2->getLength()
-                   + parkWeight * dynamic_cast<Parking<int> *>(pathBetweenP3To->getFirst())->getPrice(time)
+                   + parkWeight * P3->getParkingNode()->getPrice(time)
                    + walkWeight * 2 * to->calcNodeDistance(parkingNodes[j]);
         if (thisCost > minimumCost) {
             //parar algoritmo
@@ -168,7 +223,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         }
 
         thisCost = driveWeight * (from->calcNodeDistance(parkingNodes[j]))
-                   + parkWeight * dynamic_cast<Parking<int> *>(parkingNodes[j])->getPrice(time)
+                   + parkWeight * (parkingNodes[j])->getParkingNode()->getPrice(time)
                    + walkWeight * 2 * to->calcNodeDistance(parkingNodes[j]);
         if (thisCost > minimumCost) {
             // podemos saltar
@@ -176,8 +231,12 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         }
 
         pathBetweenNewParkTo = calculateWalkPath(parkingNodes[j], to);
+        if (pathBetweenNewParkTo->isEmpty()) {
+            //Couldn't walk to this park from to
+            continue;
+        }
         thisCost = driveWeight * (from->calcNodeDistance(parkingNodes[j]))
-                   + parkWeight * dynamic_cast<Parking<int> *>(parkingNodes[j])->getPrice(time)
+                   + parkWeight * (parkingNodes[j])->getParkingNode()->getPrice(time)
                    + walkWeight * 2 * pathBetweenNewParkTo->getLength();
         if (thisCost > minimumCost) {
             // podemos saltar
@@ -185,8 +244,12 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         }
 
         pathBetweenFromNewPark = calculateDrivePath(from, parkingNodes[j]);
+        if (pathBetweenFromNewPark->isEmpty()) {
+            // Couldn't drive to this park from source
+            continue;
+        }
         thisCost = driveWeight * pathBetweenFromNewPark->getLength();
-        +parkWeight * dynamic_cast<Parking<int> *>(parkingNodes[j])->getPrice(time)
+        +parkWeight * (parkingNodes[j])->getParkingNode()->getPrice(time)
         + walkWeight * 2 * pathBetweenNewParkTo->getLength();
         if (thisCost > minimumCost) {
             // podemos saltar
@@ -198,27 +261,32 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
         minimumPath->appendPath(pathBetweenNewParkTo);
         minimumPath->appendPath(pathBetweenNewParkTo->reverse());
     }
+    return minimumPath;
 }
 
 Node<int> *Algorithm::calculateCheapestPark(int time) {
-    auto vertexSet = graph.getVertexSet();
-    std::min_element(
-            vertexSet.begin(),
-            vertexSet.end(),
-            [time](Vertex<int> *v1, Vertex<int> *v2) {
-                return dynamic_cast<Parking<int> *>(v1)->getPrice(time) < dynamic_cast<Parking<int> *>(v2)->getPrice(time);
+    Node<int> *cheapest = *std::min_element(
+            parkingNodes.begin(),
+            parkingNodes.end(),
+            [time](Node<int> *v1, Node<int> *v2) {
+                return v1->getParkingNode()->getPrice(time) < v2->getParkingNode()->getPrice(time);
             }
     );
+    //DEBUG
+//    auto set = graph.getVertexSet();
+//    auto cheapest2 = *find_if(set.begin(), set.end(), [](Vertex<int>*n1){return n1->getInfo() == 26016895;});
+//    cheapest = dynamic_cast<Node<int>*>(cheapest2);
+    return cheapest;
 }
 
 GeneralPath *Algorithm::calculateDrivePath(Node<int> *from, Node<int> *to) {
-    Path *p = dynamic_cast<Path *>(graph.aStarShortestPath(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to)));
+    Path *p = dynamic_cast<Path *>(graph.aStarShortestPath(from->getInfo(), to->getInfo()));
     p->setCarOnly(true);
     return p;
 }
 
 GeneralPath *Algorithm::calculateWalkPath(Node<int> *from, Node<int> *to) {
-    Path *p = dynamic_cast<Path *>(graph.aStarShortestPathwalking(reinterpret_cast<int &>(from), reinterpret_cast<int &>(to)));
+    Path *p = dynamic_cast<Path *>(graph.aStarShortestPathwalking(from->getInfo(), to->getInfo()));
     p->setWalkOnly(true);
     return p;
 }
@@ -246,15 +314,16 @@ double Algorithm::getParkingCost(GeneralPath *path) {
     double total;
     vector<Node<int> *> nodes = path->getAllNodes();
     vector<Node<int> *> parkingNodes(nodes.size());
-    copy_if(nodes.begin(), nodes.end(), parkingNodes.begin(), [](Node<int> *n) {
-        return dynamic_cast<Parking<int> *>(n) != nullptr;
+    auto it = copy_if(nodes.begin(), nodes.end(), parkingNodes.begin(), [](Node<int> *n) {
+        return n->getParking();
     });
+    parkingNodes.resize(distance(parkingNodes.begin(), it));
     unordered_set<Node<int> *> parkingNodesSet; //hash and comparison not defined. could yield weird errors
     for (auto parkingNode: parkingNodes) {
         parkingNodesSet.insert(parkingNode);
     }
     for (auto parkingNode: parkingNodesSet) {
-        total += dynamic_cast<Parking<int> *>(parkingNode)->getUserCost();
+        total += (parkingNode)->getParkingNode()->getUserCost();
     }
     return total * parkWeight;
 }

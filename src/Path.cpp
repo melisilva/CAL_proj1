@@ -4,7 +4,9 @@
 
 #include "Path.h"
 
-Path::Path(Node<int> *n): GeneralPath(n){}
+Path::Path(Node<int> *n): GeneralPath(n){
+    path.push_back(n);
+}
 
 vector<Node<int> *> Path::getAllNodes() {
     return path;
@@ -36,18 +38,13 @@ double Path::getLength() {
     return this->length;
 }
 
-void Path::setCarOnly(bool isCarOnly) {
-    carOnly = isCarOnly;
-}
-
-void Path::setWalkOnly(bool isWalkOnly) {
-    walkOnly = isWalkOnly;
-}
-
 GeneralPath * Path::reverse() {
     Path *newPath = new Path(last);
-    for(int i = path.size()-1; i >= 0; i--){
+    for(int i = path.size()-2; i >= 0; i--){
         newPath->appendPath(path[i]);
     }
+    newPath->setLength(length);
+    newPath->setWalkOnly(walkOnly);
+    newPath->setCarOnly(carOnly);
     return newPath;
 }

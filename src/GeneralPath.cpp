@@ -32,3 +32,11 @@ bool GeneralPath::isCarOnly() const {
 bool GeneralPath::isWalkOnly() const {
     return walkOnly;
 }
+
+void GeneralPath::setCarOnly(bool isCarOnly) {
+    carOnly = isCarOnly;
+}
+
+void GeneralPath::setWalkOnly(bool isWalkOnly) {
+    walkOnly = isWalkOnly;
+}
