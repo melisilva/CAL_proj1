@@ -85,6 +85,8 @@ public:
 
     int getRandomTime();
 
+    void startAlgoRandom();
+
     void startAlgo();
 };
 
@@ -132,7 +134,7 @@ void Interface<T>::execute() {
             case 5:
                 start = getRandomNode();
                 end = getRandomNode();
-                startAlgo();
+                startAlgoRandom();
                 break;
             case 6:
                 start = getRandomNode();
@@ -140,7 +142,7 @@ void Interface<T>::execute() {
                     intermediary.push_back(make_pair(getRandomTime(), getRandomNode()));
                 }
                 end = getRandomNode();
-                startAlgo();
+                startAlgoRandom();
             case 7:
                 showParkingLots(algo.getGraph());
             default:
@@ -339,6 +341,14 @@ void Interface<T>::startAlgo() {
     }
 
 
+    intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
+    algo.execute(start, intermediary);
+    intermediary.pop_back();
+}
+
+template<class T>
+void Interface<T>::startAlgoRandom() {
+    parkAtEnd = getRandomTime();
     intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
     algo.execute(start, intermediary);
     intermediary.pop_back();
