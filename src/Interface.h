@@ -34,6 +34,7 @@ public:
 
 
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <random>
 #include "Graph.h"
@@ -45,7 +46,8 @@ using namespace std;
 template<class T>
 class Interface;
 
-void showConnectedNodes(vector<Node<int> *> connectedNodes,Graph<int> graph);
+void showConnectedNodes(vector<Node<int> *> connectedNodes, Graph<int> graph);
+
 void showParkingLots(Graph<int> graph);
 
 template<class T>
@@ -53,6 +55,7 @@ class Interface {
     Algorithm algo;
     Node<int> *start, *end, *og_point;
     int parkAtEnd;
+    long long int elapsed;
     vector<pair<int, Node<int> *>> intermediary;
 public:
     Interface(Algorithm algo) : algo(algo) {
@@ -89,9 +92,13 @@ public:
 
     int getRandomTime();
 
+    int getRandomParkingTime();
+
     void startAlgoRandom();
 
     void startAlgo();
+
+    void startPerformanceAnalysis();
 };
 
 
@@ -133,13 +140,18 @@ void Interface<T>::execute() {
                 break;
             case 6:
                 start = getRandomNode();
-                for(int i = 0; i < 10; i++){
+                for (int i = 0; i < 10; i++) {
                     intermediary.push_back(make_pair(getRandomTime(), getRandomNode()));
                 }
                 end = getRandomNode();
                 startAlgoRandom();
+                break;
             case 7:
+                startPerformanceAnalysis();
+                break;
+            case 8:
                 showParkingLots(algo.getGraph());
+                break;
             default:
                 cout << "Please choose a viable option.\n";
         }
@@ -154,15 +166,20 @@ Node<T> *Interface<T>::getRandomNode() {
 }
 
 template<class T>
-int     Interface<T>::getRandomTime() {
+int Interface<T>::getRandomTime() {
     int doesntParkOneInX = 3;
     int meanParkTime = 10;
     int willItNotPark = rand() % doesntParkOneInX;
-    if(willItNotPark){
+    if (willItNotPark) {
         return rand() % 10 + 10;
-    }else{
+    } else {
         return 0;
     }
+}
+
+template<class T>
+int Interface<T>::getRandomParkingTime() {
+    return rand() % 20 + 1;
 }
 
 template<class T>
@@ -175,7 +192,8 @@ void Interface<T>::displayOptions() const {
     cout << "4 - Show Graph Connectivity from chosen point\n";
     cout << "5 - Calculate random Path no intermediary\n";
     cout << "6 - Calculate random Path with intermediary\n";
-    cout << "7 - Show Parking Lots\n";
+    cout << "7 - Run performance analysis\n";
+    cout << "8 - Show Parking Lots\n";
 }
 
 template<class T>
@@ -195,7 +213,7 @@ void Interface<T>::showConnectivity() const {
     for (int i = 0; i < connected.size(); i++) {
         connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
     }
-    showConnectedNodes(connectedNodes,algo.getGraph());
+    showConnectedNodes(connectedNodes, algo.getGraph());
 }
 
 template<class T>
@@ -206,7 +224,7 @@ void Interface<T>::showConnectivityFromPoint() {
     for (int i = 0; i < connected.size(); i++) {
         connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
     }
-    showConnectedNodes(connectedNodes,algo.getGraph());
+    showConnectedNodes(connectedNodes, algo.getGraph());
 }
 
 template<class T>
@@ -241,7 +259,7 @@ void Interface<T>::chooseWeights() {
 template<class T>
 Node<T> *Interface<T>::getNodeCoordinates() {
     double x = -1.0, y = -1.0;
-    while (cin.fail() || x == -1.0){
+    while (cin.fail() || x == -1.0) {
         cout << "Please provide a Latitude coordinate for P: ";
         cin >> x;
     }
@@ -339,7 +357,7 @@ void Interface<T>::startAlgo() {
     }
 
     intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
-    algo.execute(start, intermediary);
+    algo.visualizeExecute(start, intermediary, elapsed);
     intermediary.pop_back();
 }
 
@@ -347,8 +365,41 @@ template<class T>
 void Interface<T>::startAlgoRandom() {
     parkAtEnd = getRandomTime();
     intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
-    algo.execute(start, intermediary);
+    algo.visualizeExecute(start, intermediary, elapsed);
     intermediary.pop_back();
+}
+
+template<class T>
+void Interface<T>:: startPerformanceAnalysis() {
+    ofstream complexities;
+    vector<long long int> averageElapsed;
+    int noIntermediary = 20;
+    int noIterations = 20;
+    for (int i = 0; i < noIntermediary; i++) {
+        long long int sumElapsed = 0;
+        for (int j = 0; j < noIterations; j++) {
+            start = getRandomNode();
+            for (int k = 0; k < i; k++) {
+                intermediary.push_back(make_pair(getRandomParkingTime(), getRandomNode()));
+            }
+            end = getRandomNode();
+            parkAtEnd = getRandomParkingTime();
+            intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
+            algo.execute(start, intermediary, elapsed);
+            sumElapsed += elapsed;
+            intermediary.clear();
+        }
+        sumElapsed /= noIterations;
+        averageElapsed.push_back(sumElapsed);
+    }
+    complexities.open("./complexities.txt");
+    if(!complexities.is_open()){
+        return;
+    }
+    for(int i = 0; i < noIntermediary; i++){
+        complexities << i << "," << averageElapsed[i]<< "\n";
+    }
+    complexities.close();
 }
 
 #endif //PROJECT_Interface<T>_H

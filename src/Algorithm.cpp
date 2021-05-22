@@ -45,7 +45,7 @@ void Algorithm::setWeights(float a, float b, float c) {
     walkWeight = c;
 }
 
-void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
+MultiplePath* Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit, long long int &elapsed) {
     auto startTime = std::chrono::high_resolution_clock::now();
 
     auto pair = toVisit[0];
@@ -54,20 +54,23 @@ void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit
         stops = calculateFinalPath(stops);
     }
     auto finishTime = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+    elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+    return stops;
+}
+
+MultiplePath * Algorithm::visualizeExecute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit, long long int &elapsed) {
+    MultiplePath* stops = execute(start, toVisit, elapsed);
     stops->displayPath();
-    cout << "ENDED PROCESSING. WINDOW HAS NOW OPENED\n";
-    cout << "Time used for reading nodes, edges nad parks " << nodesReadingTime << " " << edgesReadingTime << " " << parksReadingTime << " microseconds\n";
-    cout << "Time used for processing " << elapsed << " microseconds or " << elapsed/ 1000000.0 << " seconds\n";
     fflush(stdout);
     showPath(stops->getAllNodes(), graph);
+    cout << "Time used for reading nodes, edges and parks " << nodesReadingTime << " " << edgesReadingTime << " " << parksReadingTime << " microseconds\n";
+    cout << "Time used for processing " << elapsed << " microseconds or " << elapsed/ 1000000.0 << " seconds\n";
 }
 
 
 MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
     MultiplePath *stops = new MultiplePath(start);
     Node<int> *last = start;
-    last->displayNode();
     for (int i = 0; i < toVisit.size(); i++) {
         auto pair = toVisit[i];
         if (pair.first == 0) {
@@ -84,6 +87,7 @@ MultiplePath *Algorithm::calculateBestParkEachStop(Node<int> *start, vector<pair
                 continue;
             }
             stops->appendPath(toParkInterPark);
+            toParkInterPark->getLast()->getParkingNode()->setUserWillStop(true);
 
             //Another strategy might take last = pair.second and use multithreading
             last = toParkInterPark->getLast();
@@ -105,18 +109,21 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
             continue;
         }
 
-        Node<int> *lastTrueDestiny, *thisTrueDestiny;
-        Node<int> *lastPark, *thisPark;
         GeneralPath *lastSubPath = final->getLastSubPath();
 
         if(lastSubPath->isCarOnly()){
             final->appendPath(stopPath);
             continue;
         }
+        Node<int> *lastTrueDestiny, *thisTrueDestiny;
+        Node<int> *lastPark, *thisPark;
+        double lastParkTime, lastParkCost, thisParkTime;
 
         lastPark = final->getLast();
+        lastParkTime = lastPark->getParkingNode()->getUserTime();
         lastTrueDestiny = lastSubPath->getFirst();
         thisPark = stopPath->getLast();
+        thisParkTime = thisPark->getParkingNode()->getUserTime();
         thisTrueDestiny = dynamic_cast<MultiplePath *>(stopPath)->getLastSubPath()->getFirst();
 
 
@@ -135,7 +142,7 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
         double secondCost = 0, parksDist = 0;
         double destiniesDist = lastTrueDestiny->calcNodeDistance(thisTrueDestiny);
         double thisDestinyToLastParkDist = thisTrueDestiny->calcNodeDistance(lastPark);
-        double parkCost = lastPark->getParkingNode()->getPrice(lastPark->getParkingNode()->getUserTime() + thisPark->getParkingNode()->getUserTime());
+        double parkCost = lastPark->getParkingNode()->getPrice(lastParkTime + thisParkTime);
 //        double parkCost = 0;
 //        if (lastPark->getParking()) {
 //            parkCost = lastPark->getParkingNode()->getPrice(lastPark->getParkingNode()->getUserTime() + thisPark->getParkingNode()->getUserTime());
@@ -168,6 +175,10 @@ MultiplePath *Algorithm::calculateFinalPath(GeneralPath *stops) {
             multipleLastSubPath->removeLastSubPath();
             multipleLastSubPath->appendPath(destiniesPath);
             multipleLastSubPath->appendPath(thisDestinyToLastParkPath);
+
+            lastPark->getParkingNode()->setUserTime(0);
+            lastPark->getParkingNode()->setUserWillStop(false);
+            thisPark->getParkingNode()->setUserTime(lastParkTime + thisParkTime);
         }
     }
     return final;
@@ -221,8 +232,6 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
     double minimumCost = getDistancesCost(pathBetweenFromP1)
                          + (pathBetweenFromP2->getLast())->getParkingNode()->getPrice(time)
                          + getDistancesCost(pathBetweenP1To) * 2;
-
-    cout << "Working till here." << endl;
 
     double thisCost = 0;
     GeneralPath *pathBetweenFromNewPark;

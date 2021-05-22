@@ -12,7 +12,9 @@
 #include "Graph.h"
 
 using namespace std;
+
 class GeneralPath;
+
 class MultiplePath;
 
 
@@ -30,28 +32,28 @@ public:
 
     void setWeights(float a, float b, float c);
 
-    void execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
+    MultiplePath *execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit, long long int &elapsed);
+
+    MultiplePath *visualizeExecute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit, long long int &elapsed);
 
     MultiplePath *calculateBestParkEachStop(Node<int> *start, vector<pair<int, Node<int> *>> toVisit);
 
-    MultiplePath *calculateFinalPath(GeneralPath * stops);
+    MultiplePath *calculateFinalPath(GeneralPath *stops);
 
     GeneralPath *calculateBestPark(Node<int> *from, Node<int> *to, int time);
 
-    Node<int> * calculateCheapestPark(int time);
+    Node<int> *calculateCheapestPark(int time);
 
     GeneralPath *calculateDrivePath(Node<int> *from, Node<int> *to);
 
     GeneralPath *calculateWalkPath(Node<int> *from, Node<int> *to);
 
-    double getCost(MultiplePath * path);
+    double getCost(MultiplePath *path);
 
     double getDistancesCost(GeneralPath *path);
 
     double getParkingCost(GeneralPath *path);
 };
-
-
 
 
 #endif //PROJECT_ALGORITHM_H
