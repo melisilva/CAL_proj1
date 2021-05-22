@@ -242,3 +242,39 @@ void showPath(vector<Node<int> *> path,Graph<int> graph){
     gv.join();
 }
 
+void showParkingLots(Graph<int> graph){
+    GraphViewer gv;
+    vector<int> graph_nodes;
+    float min_lon = -8.6889783;
+    float min_lat=41.1385607;
+    float max_lon=-8.5545839;
+    float max_lat=41.1858236;
+    int edge_id =0;
+
+    for (Vertex<int> *vertex: graph.getVertexSet()) { //graph's nodes/vertexes
+
+        Node<int> *node = dynamic_cast<Node<int> *>(vertex);
+        if(node->getParking()) {
+            N &vertex_node = gv.addNode(node->getInfo(),
+                                        sf::Vector2f((node->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
+                                                     (node->getLatitude() - min_lat) / (max_lat - min_lat) *
+                                                     900)); //add nodes from path
+        vertex_node.setColor(GraphViewer::BLUE);
+        vertex_node.setSize(50.0);
+        vertex_node.setLabel(to_string(vertex_node.getId()));
+        }
+
+
+    }
+
+        gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
+
+
+    // Create window
+    gv.createWindow(900, 900);
+    // Join viewer thread (blocks till window closed)
+    gv.join();
+}
+
+
+

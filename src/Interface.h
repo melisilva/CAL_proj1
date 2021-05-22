@@ -46,6 +46,7 @@ template<class T>
 class Interface;
 
 void showConnectedNodes(vector<Node<int> *> connectedNodes,Graph<int> graph);
+void showParkingLots(Graph<int> graph);
 
 template<class T>
 class Interface {
@@ -109,7 +110,7 @@ void Interface<T>::execute() {
             case 1:
                 chooseWeights();
                 break;
-            case 2:
+            /*case 2:
                 start = chooseNode();
                 break;
             case 3:
@@ -117,29 +118,31 @@ void Interface<T>::execute() {
                 break;
             case 4:
                 end = chooseNode();
-                break;
-            case 5:
+                break;*/
+            case 2:
                 startAlgo();
                 option = 0;
                 break;
-            case 6:
+            case 3:
                 showConnectivity();
                 break;
-            case 7:
+            case 4:
                 showConnectivityFromPoint();
                 break;
-            case 8:
+            case 5:
                 start = getRandomNode();
                 end = getRandomNode();
                 startAlgo();
                 break;
-            case 9:
+            case 6:
                 start = getRandomNode();
                 for(int i = 0; i < 10; i++){
                     intermediary.push_back(make_pair(getRandomTime(), getRandomNode()));
                 }
                 end = getRandomNode();
                 startAlgo();
+            case 7:
+                showParkingLots(algo.getGraph());
             default:
                 cout << "Please choose a viable option\n";
         }
@@ -170,21 +173,22 @@ void Interface<T>::displayOptions() const {
     cout << "INPUT YOUR DESIRED OPTION\n";
     cout << "0 - Exit\n";
     cout << "1 - Choose Weights\n";
-    cout << "2 - Choose Start\n";
-    cout << "3 - Choose Intermediary\n";
-    cout << "4 - Choose End\n";
-    cout << "5 - Calculate Path\n";
-    cout << "6 - Show Graph Connectivity\n";
-    cout << "7 - Show Graph Connectivity from chosen point\n";
-    cout << "8 - Calculate random Path no intermediary\n";
-    cout << "9 - Calculate random Path with intermediary\n";
+   // cout << "2 - Choose Start\n";
+   // cout << "3 - Choose Intermediary\n";
+   // cout << "4 - Choose End\n";
+    cout << "2 - Calculate Path\n";
+    cout << "3 - Show Graph Connectivity\n";
+    cout << "4 - Show Graph Connectivity from chosen point\n";
+    cout << "5 - Calculate random Path no intermediary\n";
+    cout << "6 - Calculate random Path with intermediary\n";
+    cout << "7 - Show Parking Lots\n";
 }
 
 template<class T>
 void Interface<T>::showNodeOptions() const {
     cout << "CHOOSE HOW YOU'LL DO YOUR INPUT\n";
     cout << "1 - Node IDs.\n";
-    cout << "2 - (x, y) style coordinates.\n";
+    cout << "2 - (lat, long) style coordinates.\n";
     cout << "3 - Random.\n\n";
 }
 
@@ -240,13 +244,13 @@ void Interface<T>::chooseWeights() {
 template<class T>
 Node<T> *Interface<T>::getNodeCoordinates() {
     double x = -1.0, y = -1.0;
-    while (cin.fail() || x == -1.0) {
-        cout << "Please provide an X coordinate for P: ";
+    while (cin.fail() || x == -1.0){
+        cout << "Please provide a Latitude coordinate for P: ";
         cin >> x;
     }
 
     while (cin.fail() || y == -1.0) {
-        cout << "Please provide a Y coordinate for P: ";
+        cout << "Please provide a Longitude coordinate for P: ";
         cin >> y;
     }
 
@@ -300,26 +304,41 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
     string temp = "";
     int answer = 2;
     vector<pair<int, Node<T> *>> midStops;
-    do {
+    while(cin.fail() || temp != "DONE"){
         cout << "If you wish to add an intermediary, input NEW. Otherwise, input DONE.\n";
         cin >> temp;
-        Node<T> *newStop = chooseNode();
+        Node<T> *newStop;
 
-        while (answer != 0 && answer != 1) {
-            cout << "Do you wish to PASS BY (0) in this stop or PARK AND STOP BY (1):";
-            cin >> answer;
+        if(temp != "DONE") {
+            newStop = chooseNode();
+            while (answer < 0) {
+                cout << "Do you wish to PASS BY (0) in this stop or PARK AND STOP BY (INPUT THE TIME YOU WISH TO SPEND IN PARK):";
+                cin >> answer;
+            }
+
+            midStops.push_back(make_pair(answer, newStop));
         }
 
-        midStops.push_back(make_pair(answer, newStop));
-    } while (cin.fail() && temp != "DONE");
+
+    }
     return midStops;
 }
 
 template<class T>
 void Interface<T>::startAlgo() {
-    parkAtEnd = 1;
-    cout << "end ";
-    end->displayNode();
+    parkAtEnd = -1;
+    cout<<"Insert your starting point\n";
+    start = chooseNode();
+    cout<<"Insert your intermediary points\n";
+    intermediary = chooseIntermediary();
+    cout<<"Insert your ending point\n";
+    end=chooseNode();
+    while (parkAtEnd < 0) {
+        cout << "INPUT THE TIME YOU WISH TO SPEND IN PARK:";
+        cin >> parkAtEnd;
+    }
+
+
     intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
     algo.execute(start, intermediary);
     intermediary.pop_back();
