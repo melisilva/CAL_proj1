@@ -14,13 +14,20 @@
 void showPath(vector<Node<int> *> path, Graph<int> graph);
 
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
+    auto startTime = std::chrono::high_resolution_clock::now();
     readNodesFile(graph, nodesFile);
+    auto finishTime = std::chrono::high_resolution_clock::now();
+    nodesReadingTime = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    startTime =std::chrono::high_resolution_clock::now();
     readEdgesFile(graph, false, edgesFile);
+    finishTime = std::chrono::high_resolution_clock::now();
+    edgesReadingTime = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    startTime =std::chrono::high_resolution_clock::now();
     parkingNodes = readParkingFile(graph, parkingFile);
-
-    cout << parkingNodes.empty() << endl;
-
-    //testMeli(graph,parkingNodes);
+    finishTime = std::chrono::high_resolution_clock::now();
+    parksReadingTime = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
 }
 
 Graph<int> Algorithm::getGraph() const {
@@ -50,6 +57,7 @@ void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
     stops->displayPath();
     cout << "ENDED PROCESSING. WINDOW HAS NOW OPENED\n";
+    cout << "Time used for reading nodes, edges nad parks " << nodesReadingTime << " " << edgesReadingTime << " " << parksReadingTime << " microseconds\n";
     cout << "Time used for processing " << elapsed << " microseconds or " << elapsed/ 1000000.0 << " seconds\n";
     fflush(stdout);
     showPath(stops->getAllNodes(), graph);

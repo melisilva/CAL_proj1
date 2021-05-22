@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include <chrono>
 #include "Node.h"
 #include "Graph.h"
 
@@ -19,6 +20,7 @@ class Algorithm {
     Graph<int> graph;
     vector<Node<int> *> parkingNodes;
     float driveWeight = 0.24, parkWeight = 0.01, walkWeight = 0.75;
+    long long int edgesReadingTime, nodesReadingTime, parksReadingTime;
 public:
     Algorithm(string nodesFile, string edgesFile, string parkingFiles);
 
