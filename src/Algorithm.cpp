@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <unordered_set>
+#include <chrono>
 #include "Algorithm.h"
 #include "FileManagement.h"
 #include "MultiplePath.h"
@@ -38,13 +39,19 @@ void Algorithm::setWeights(float a, float b, float c) {
 }
 
 void Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit) {
+    auto startTime = std::chrono::high_resolution_clock::now();
+
     auto pair = toVisit[0];
     MultiplePath *stops = dynamic_cast<MultiplePath *>(calculateBestParkEachStop(start, toVisit));
     if (!stops->isEmpty()) {
         stops = calculateFinalPath(stops);
     }
+    auto finishTime = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
     stops->displayPath();
     cout << "ENDED PROCESSING. WINDOW HAS NOW OPENED\n";
+    cout << "Time used for processing " << elapsed << " microseconds or " << elapsed/ 1000000.0 << " seconds\n";
+    fflush(stdout);
     showPath(stops->getAllNodes(), graph);
 }
 
