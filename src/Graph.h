@@ -600,7 +600,7 @@ Path *Graph<T>::getNextClosestParking(Node<int> *node, bool reset, bool onFoot) 
 
 
     if (node->getParking()) {
-        nodePath->appendPath(node);
+        nodePath = new Path(node);
         return nodePath;
     }
 
