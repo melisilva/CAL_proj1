@@ -32,6 +32,7 @@ protected:
     int queueIndexI = 0;
     int low;
     int num;
+    int dfsNumeration;
     Vertex<T>* parent = nullptr;
 
 

@@ -33,7 +33,7 @@ template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;
 
-    void dfsVisit(Vertex<T> *v, std::vector<T> &res) const;
+    void dfsVisit(Vertex<T> *v, std::vector<T> &res, int depth = 0);
 
     void dijkstraShortestPath(Vertex<T> *s);
 
@@ -55,6 +55,7 @@ class Graph {
 
 public:
     int counter = 1;
+    int postOrder = 0;
 
     int art_point = 0;
 
@@ -100,13 +101,17 @@ public:
 
     Path *aStarShortestPathwalking(const int &origin, const int &dest);
 
-    vector<T> dfs() const;
+    vector<T> dfs();
 
-    std::vector<T> dfs_inverted(Vertex<T> * initial);
+    vector<vector<Vertex<T> *>> dfsRegions();
+
+    vector<T> dfs_inverted(Vertex<T> *initial);
 
     vector<T> bfs(Node<int> *source);
 
-    Graph<T>* invert();
+    Graph<T> *invert();
+
+    void orderForDfs(Graph<T> direct);
 
     int findArt(Vertex<T> *v);
 };
@@ -788,8 +793,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
 
                 if (!v->visited) {
                     q.insert(v);
-                }
-                else {
+                } else {
 
                     q.decreaseKey(v);
                 }
@@ -813,8 +817,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
                 v->pathV = temp;
                 if (!v->visited) {
                     q.insert(v);
-                }
-                else {
+                } else {
 
                     q.decreaseKey(v);
                 }
@@ -980,7 +983,7 @@ Path *Graph<T>::aStarShortestPathwalking(const int &origin, const int &dest) {
  * 2-Using bfs->goes through only the graph's vertexes that it's possible to reach from the origin vertex */
 
 template<class T>
-std::vector<T> Graph<T>::dfs() const {
+std::vector<T> Graph<T>::dfs() {
     std::vector<T> res;
     for (auto v : vertexSet)
         v->visited = false;
@@ -990,28 +993,52 @@ std::vector<T> Graph<T>::dfs() const {
     return res;
 }
 
-template <class T>
-std::vector<T>Graph<T>::dfs_inverted(Vertex<T> * initial) {
-    vector<T> res;
-    for(auto vertex: vertexSet){
-        vertex->visited=false;
+template<class T>
+vector<vector<Vertex<T> *>> Graph<T>::dfsRegions() {
+    std::vector<vector<Vertex<T> *>> regions;
+    for (auto v : vertexSet)
+        v->visited = false;
+    for (auto v : vertexSet) {
+        vector<T> res;
+        vector<Vertex<T> *> vert;
+        if (!v->visited) {
+            dfsVisit(v, res);
+            for (auto t: res) {
+                vert.push_back(findVertex(t));
+            }
+            regions.push_back(vert);
+        }
     }
-    dfsVisit(initial,res);
+    return regions;
+}
+
+template<class T>
+std::vector<T> Graph<T>::dfs_inverted(Vertex<T> *initial) {
+    vector<T> res;
+    for (auto vertex: vertexSet) {
+        vertex->visited = false;
+    }
+    dfsVisit(initial, res);
 
     return res;
 }
 
 template<class T>
-void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> &res) const {
-    if (!v->visited) {
-        v->visited = true;
-        res.push_back(v->info);
+void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> &res, int depth) {
+    if (v->visited) {
+        return;
     }
+
+    v->visited = true;
+    res.push_back(v->info);
     for (auto &e : v->outgoing) {
         auto w = e->dest;
         if (!w->visited)
-            dfsVisit(w, res);
+            w->pathV = v;
+        dfsVisit(w, res, ++depth);
     }
+    v->dfsNumeration = postOrder;
+    postOrder++;
 }
 
 template<class T>
@@ -1040,16 +1067,16 @@ std::vector<T> Graph<T>::bfs(Node<int> *source) {
     return res;
 }
 
-template <class T>
-Graph<T>* Graph<T>::invert(){
+template<class T>
+Graph<T> *Graph<T>::invert() {
     Graph<T> *newGraph = new Graph<T>;
     Vertex<T> *vertex;
-    Edge<T>* new_edge;
-    for(auto v: vertexSet) {
+    Edge<T> *new_edge;
+    for (auto v: vertexSet) {
 
         vertex = new Vertex<T>(v->getInfo());
-        for(auto &e : v->incoming){
-            newGraph->addEdge(e->getDest()->getInfo(),e->getOrig()->getInfo(),e->getCapacity(),e->getCost(),e->getFlow());
+        for (auto &e : v->incoming) {
+            newGraph->addEdge(e->getDest()->getInfo(), e->getOrig()->getInfo(), e->getCapacity(), e->getCost(), e->getFlow());
         }
         newGraph->addVertex(vertex);
 
@@ -1059,26 +1086,35 @@ Graph<T>* Graph<T>::invert(){
     return newGraph;
 }
 
-template <class T>
-int Graph<T>::findArt(Vertex<T> *v){
-    v->visited=true;
-    v->low=counter++;
-    v->num=v->low;
+template<class T>
+void Graph<T>::orderForDfs(Graph<T> direct) {
+    for (auto v : direct.getVertexSet()) {
+        findVertex(v->getInfo())->dfsNumeration = v->dfsNumeration;
+    }
+    sort(vertexSet.begin(), vertexSet.end(), [](Vertex<T> *v1, Vertex<T> *v2) {
+        return v1->dfsNumeration > v2->dfsNumeration;
+    });
+}
+
+template<class T>
+int Graph<T>::findArt(Vertex<T> *v) {
+    v->visited = true;
+    v->low = counter++;
+    v->num = v->low;
 
     for (auto &e : v->outgoing) {
         auto w = e->dest;
-        if (!w->visited){
+        if (!w->visited) {
             w->parent = v;
             findArt(w);
-            v->low=min(v->low,w->low);
-            if(w->low>=v->num){
-                cout<<v->getInfo()<<" is an Articulation Point"<<endl;
+            v->low = min(v->low, w->low);
+            if (w->low >= v->num) {
+                cout << v->getInfo() << " is an Articulation Point" << endl;
                 art_point++;
             }
-        }
-        else{
-            if(v->parent != w){
-                v->low = min(v->low,w->num);
+        } else {
+            if (v->parent != w) {
+                v->low = min(v->low, w->num);
             }
         }
 

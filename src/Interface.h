@@ -51,7 +51,7 @@ void showConnectedNodes(vector<Node<int> *> connectedNodes, Graph<int> graph);
 
 void showParkingLots(Graph<int> graph);
 
-void twoPoints(Node<int>* v1, Node<int>*v2);
+void twoPoints(Node<int> *v1, Node<int> *v2);
 
 template<class T>
 class Interface {
@@ -156,8 +156,8 @@ void Interface<T>::execute() {
                 showParkingLots(algo.getGraph());
                 break;
             case 9:
-                point1=chooseNode();
-                point2=chooseNode();
+                point1 = chooseNode();
+                point2 = chooseNode();
                 twoPoints(point1, point2);
             default:
                 cout << "Please choose a viable option.\n";
@@ -201,7 +201,7 @@ void Interface<T>::displayOptions() const {
     cout << "6 - Calculate random Path with intermediary\n";
     cout << "7 - Run performance analysis\n";
     cout << "8 - Show Parking Lots\n";
-    cout<< "9 - See two points\n";
+    cout << "9 - See two points\n";
 }
 
 template<class T>
@@ -214,28 +214,42 @@ void Interface<T>::showNodeOptions() const {
 
 template<class T>
 void Interface<T>::showConnectivity() const {
-    for(auto v:algo.getGraph().getVertexSet()){
-        for(auto e:v->getIncoming()){
-            cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
-        }
-    }
-    vector<int> first = algo.getGraph().dfs();
-    cout<<first.size()<<endl;
+//    for(auto v:algo.getGraph().getVertexSet()){
+//        for(auto e:v->getIncoming()){
+//            cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
+//        }
+//    }
+    cout << "Calculating connectivity\n";
+    fflush(stdout);
+    auto direct = algo.getGraph();
+    vector<int> first =direct.dfs();
+    cout << first.size() << endl;
     //Graph<int>*inverted=algo.getGraph().invert();
     Graph<int> inverted;
     readNodesFile(inverted, "../Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt");
     readInvertedEdgesFile(inverted, false, "../Mapa da cidade do Porto-20210505/porto_full_edges.txt");
 
-   cout<<"INVERTED"<<endl;
-    for(auto v:inverted.getVertexSet()){
-        cout<<v->getOutgoing().size()<<endl;
-       for(auto e:v->getIncoming()){
-           cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
-       }
+    cout << "INVERTED" << endl;
+    fflush(stdout);
+//    for(auto v:inverted.getVertexSet()){
+//        cout<<v->getOutgoing().size()<<endl;
+//       for(auto e:v->getIncoming()){
+//           cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
+//       }
+//    }
+    inverted.orderForDfs(direct);
+    cout << first.at(first.size() - 1) << endl;
+    auto regions = inverted.dfsRegions();
+    int noTrees = 0;
+    vector<vector<Vertex<T> *>> trees;
+    for (auto v: inverted.getVertexSet()) {
+        if (v->getPath() == nullptr) {
+            // This is the root of a tree
+            noTrees++;
+        }
     }
-
-   cout<<first.at(first.size()-1)<<endl;
-   //vector<int>second = inverted->dfs();
+    cout << "There are " << regions.size() << "strongly connex components\n";
+    cout << "There are " << noTrees << " strongly connex components\n";
 
 
     /*Vertex<T>  *initial = inverted.findVertex(first.at(first.size()-1));
@@ -261,7 +275,7 @@ void Interface<T>::showConnectivity() const {
     }
     showConnectedNodes(connectedNodes, algo.getGraph());
 */
-//   cout<<algo.getGraph().findArt(algo.getGraph().findVertex(1))<<endl;
+   cout<<algo.getGraph().findArt(algo.getGraph().findVertex(1))<<endl;
 
 
 }
@@ -420,7 +434,7 @@ void Interface<T>::startAlgoRandom() {
 }
 
 template<class T>
-void Interface<T>:: startPerformanceAnalysis() {
+void Interface<T>::startPerformanceAnalysis() {
     ofstream complexities;
     vector<long long int> averageElapsed;
     int startIntermediary = 0;
@@ -444,11 +458,11 @@ void Interface<T>:: startPerformanceAnalysis() {
         averageElapsed.push_back(sumElapsed);
     }
     complexities.open("./complexities.txt");
-    if(!complexities.is_open()){
+    if (!complexities.is_open()) {
         return;
     }
-    for(int i = startIntermediary; i < noIntermediary; i++){
-        complexities << i << "," << averageElapsed[i-startIntermediary]<< "\n";
+    for (int i = startIntermediary; i < noIntermediary; i++) {
+        complexities << i << "," << averageElapsed[i - startIntermediary] << "\n";
     }
     complexities.close();
 }
