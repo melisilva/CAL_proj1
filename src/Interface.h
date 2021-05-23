@@ -437,10 +437,15 @@ void Interface<T>:: startPerformanceAnalysis() {
             algo.execute(start, intermediary, elapsed);
             sumElapsed += elapsed;
             intermediary.clear();
+            cout << "Iteration " << j << '\n';
+            fflush(stdout);
         }
         sumElapsed /= noIterations;
         averageElapsed.push_back(sumElapsed);
+        cout << "No intermediary " << i << "\n";
+        fflush(stdout);
     }
+    cout << "Writing to file\n";
     complexities.open("./complexities.txt");
     if(!complexities.is_open()){
         return;
@@ -449,6 +454,7 @@ void Interface<T>:: startPerformanceAnalysis() {
         complexities << i << "," << averageElapsed[i]<< "\n";
     }
     complexities.close();
+    cout << "Complexity analysis done\n";
 }
 
 #endif //PROJECT_Interface<T>_H
