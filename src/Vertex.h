@@ -30,6 +30,9 @@ protected:
     double distI;
     int queueIndex = 0; // required by MutablePriorityQueue
     int queueIndexI = 0;
+    int low;
+    int num;
+    Vertex<T>* parent = nullptr;
 
 
     Vertex<T> *pathV = nullptr;

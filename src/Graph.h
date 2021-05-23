@@ -28,6 +28,7 @@ class Vertex;
 template<class T>
 class Graph;
 
+
 template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;
@@ -53,6 +54,10 @@ class Graph {
     int **P = nullptr; //path
 
 public:
+    int counter = 1;
+
+    int art_point = 0;
+
     Vertex<T> *findVertex(const T &inf) const;
 
     int findVertexIdx(const T &id) const;
@@ -97,7 +102,13 @@ public:
 
     vector<T> dfs() const;
 
+    std::vector<T> dfs_inverted(Vertex<T> * initial);
+
     vector<T> bfs(Node<int> *source);
+
+    Graph<T>* invert();
+
+    int findArt(Vertex<T> *v);
 };
 
 template<class T>
@@ -292,7 +303,6 @@ bool Graph<T>::findAugmentationPath(Vertex<T> *s, Vertex<T> *t) {
  */
 template<class T>
 void Graph<T>::testAndVisit(queue<Vertex<T> *> &q, Edge<T> *e, Vertex<T> *w, double residual) {
-    // TODO: adapt in order to use only edges with null cost
     if (!w->visited && residual > 0) {
         w->visited = true;
         w->path = e;
@@ -980,6 +990,17 @@ std::vector<T> Graph<T>::dfs() const {
     return res;
 }
 
+template <class T>
+std::vector<T>Graph<T>::dfs_inverted(Vertex<T> * initial) {
+    vector<T> res;
+    for(auto vertex: vertexSet){
+        vertex->visited=false;
+    }
+    dfsVisit(initial,res);
+
+    return res;
+}
+
 template<class T>
 void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> &res) const {
     if (!v->visited) {
@@ -1017,6 +1038,53 @@ std::vector<T> Graph<T>::bfs(Node<int> *source) {
         }
     }
     return res;
+}
+
+template <class T>
+Graph<T>* Graph<T>::invert(){
+    Graph<T> *newGraph = new Graph<T>;
+    Vertex<T> *vertex;
+    Edge<T>* new_edge;
+    for(auto v: vertexSet) {
+
+        vertex = new Vertex<T>(v->getInfo());
+        for(auto &e : v->incoming){
+            newGraph->addEdge(e->getDest()->getInfo(),e->getOrig()->getInfo(),e->getCapacity(),e->getCost(),e->getFlow());
+        }
+        newGraph->addVertex(vertex);
+
+    }
+
+
+    return newGraph;
+}
+
+template <class T>
+int Graph<T>::findArt(Vertex<T> *v){
+    v->visited=true;
+    v->low=counter++;
+    v->num=v->low;
+
+    for (auto &e : v->outgoing) {
+        auto w = e->dest;
+        if (!w->visited){
+            w->parent = v;
+            findArt(w);
+            v->low=min(v->low,w->low);
+            if(w->low>=v->num){
+                cout<<v->getInfo()<<" is an Articulation Point"<<endl;
+                art_point++;
+            }
+        }
+        else{
+            if(v->parent != w){
+                v->low = min(v->low,w->num);
+            }
+        }
+
+    }
+    return art_point;
+
 }
 
 

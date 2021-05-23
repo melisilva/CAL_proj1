@@ -5,7 +5,7 @@
 #ifndef PROJECT_FIXEDPRICEPARKING_H
 #define PROJECT_FIXEDPRICEPARKING_H
 
-#include "stdlib.h  "
+#include <stdlib.h>
 #include "Parking.h"
 
 class FixedPriceParking : public Parking {
