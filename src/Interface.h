@@ -58,7 +58,7 @@ class Interface {
     Algorithm algo;
     Node<int> *start, *end, *og_point, *point1, *point2;
     int parkAtEnd;
-    long long int elapsed;
+    long long int elapsed, ps_reading, pf_reading, espinho_reading, penafiel_reading;
     vector<pair<int, Node<int> *>> intermediary;
 public:
     Interface(Algorithm algo) : algo(algo) {
@@ -102,6 +102,8 @@ public:
     void startAlgo();
 
     void startPerformanceAnalysis();
+
+    void comparisonBFS_DFS();
 };
 
 
@@ -156,9 +158,11 @@ void Interface<T>::execute() {
                 showParkingLots(algo.getGraph());
                 break;
             case 9:
-                point1 = chooseNode();
-                point2 = chooseNode();
+                point1=chooseNode();
+                point2=chooseNode();
                 twoPoints(point1, point2);
+            case 10:
+                comparisonBFS_DFS();
             default:
                 cout << "Please choose a viable option.\n";
         }
@@ -201,7 +205,8 @@ void Interface<T>::displayOptions() const {
     cout << "6 - Calculate random Path with intermediary\n";
     cout << "7 - Run performance analysis\n";
     cout << "8 - Show Parking Lots\n";
-    cout << "9 - See two points\n";
+    cout<< "9 - See two points\n";
+    cout<< "10 - Comparison BFS and DFS\n";
 }
 
 template<class T>
@@ -214,32 +219,25 @@ void Interface<T>::showNodeOptions() const {
 
 template<class T>
 void Interface<T>::showConnectivity() const {
-//    for(auto v:algo.getGraph().getVertexSet()){
-//        for(auto e:v->getIncoming()){
-//            cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
-//        }
-//    }
-    cout << "Number of articulation points " << algo.getGraph().findArt(algo.getGraph().findVertex(1)) << endl;
-    cout << "Calculating connectivity\n";
     fflush(stdout);
-    auto direct = algo.getGraph();
+    Graph<int>direct;
+    readNodesFile(direct, "../Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt");
+    readEdgesFile(direct, false, "../Mapa da cidade do Porto-20210505/porto_full_edges.txt");
+
+    cout << "Number of articulation points " << direct.findArt(direct.findVertex(1)) << endl;
+    cout << "Calculating connectivity\n";
+
+
     vector<int> first = direct.dfs();
-    cout << first.size() << endl;
-    //Graph<int>*inverted=algo.getGraph().invert();
+
     Graph<int> inverted;
     readNodesFile(inverted, "../Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt");
     readInvertedEdgesFile(inverted, false, "../Mapa da cidade do Porto-20210505/porto_full_edges.txt");
 
-    cout << "INVERTED" << endl;
+
     fflush(stdout);
-//    for(auto v:inverted.getVertexSet()){
-//        cout<<v->getOutgoing().size()<<endl;
-//       for(auto e:v->getIncoming()){
-//           cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
-//       }
-//    }
+
     inverted.orderForDfs(direct);
-    cout << first.at(first.size() - 1) << endl;
     auto regions = inverted.dfsRegions();
     int noTrees = 0;
     vector<vector<Vertex<T> *>> trees;
@@ -249,34 +247,21 @@ void Interface<T>::showConnectivity() const {
             noTrees++;
         }
     }
-    cout << "There are " << regions.size() << "strongly connex components\n";
+    cout << "There are " << regions.size() << " strongly connex components\n";
     cout << "There are " << noTrees << " strongly connex components\n";
 
-
-    /*Vertex<T>  *initial = inverted.findVertex(first.at(first.size()-1));
-    vector<int> second = inverted.dfs_inverted(initial);
-    cout<<second.size()<<endl;
-    vector<int> connected;
-    for(auto v:first) {
-        vector<int>::iterator it = find (second.begin(), second.end(), v);
-        if (it != second.end()){
-            connected.push_back(v);
-        }
+    vector<int>connected;
+    for(int i=0;i<regions.size();i++){
+            connected.push_back(regions[i][0]->getInfo());
     }
-
-
-
 
     sort(connected.begin(), connected.end());
     connected.erase(unique(connected.begin(), connected.end()), connected.end());
     vector<Node<int> *> connectedNodes;
     for (int i = 0; i < connected.size(); i++) {
-
-        connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
+        connectedNodes.push_back(dynamic_cast<Node<int> *>(direct.findVertex(connected[i])));
     }
-    showConnectedNodes(connectedNodes, algo.getGraph());
-*/
-
+    showConnectedNodes(connectedNodes, direct);
 
 }
 
@@ -465,6 +450,62 @@ void Interface<T>::startPerformanceAnalysis() {
         complexities << i << "," << averageElapsed[i - startIntermediary] << "\n";
     }
     complexities.close();
+}
+
+template<class T>
+void Interface<T>::comparisonBFS_DFS(){
+    Graph<int> espinho_strong, penafiel_strong, porto_full;
+    auto startTime = std::chrono::high_resolution_clock::now();
+    algo.getGraph().dfs();
+    auto finishTime = std::chrono::high_resolution_clock::now();
+    ps_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    readNodesFile(espinho_strong, "../Mapa da cidade do Porto-20210505/espinho_strong_nodes_latlng.txt");
+    readEdgesFile(espinho_strong, false, "../Mapa da cidade do Porto-20210505/espinho_strong_edges.txt");
+    startTime =std::chrono::high_resolution_clock::now();
+    espinho_strong.dfs();
+    finishTime = std::chrono::high_resolution_clock::now();
+    espinho_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    readNodesFile(penafiel_strong, "../Mapa da cidade do Porto-20210505/penafiel_strong_nodes_latlng.txt");
+    readEdgesFile(penafiel_strong, false, "../Mapa da cidade do Porto-20210505/penafiel_strong_edges.txt");
+    startTime =std::chrono::high_resolution_clock::now();
+    penafiel_strong.dfs();
+    finishTime = std::chrono::high_resolution_clock::now();
+    penafiel_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    readNodesFile(porto_full, "../Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt");
+    readEdgesFile(porto_full, false, "../Mapa da cidade do Porto-20210505/porto_full_edges.txt");
+    startTime =std::chrono::high_resolution_clock::now();
+    porto_full.dfs();
+    finishTime = std::chrono::high_resolution_clock::now();
+    pf_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    cout << "Time used for transversing graphs DFS " << ps_reading <<" " << pf_reading << " " << espinho_reading << " "<< penafiel_reading<<" microseconds\n";
+
+    startTime = std::chrono::high_resolution_clock::now();
+    algo.getGraph().bfs(dynamic_cast<Node<T> *>(algo.getGraph().getVertexSet().at(0)));
+    finishTime = std::chrono::high_resolution_clock::now();
+    ps_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    startTime =std::chrono::high_resolution_clock::now();
+    espinho_strong.bfs(dynamic_cast<Node<T> *>(espinho_strong.getVertexSet().at(0)));
+    finishTime = std::chrono::high_resolution_clock::now();
+    espinho_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    startTime =std::chrono::high_resolution_clock::now();
+    penafiel_strong.bfs(dynamic_cast<Node<T> *>(penafiel_strong.getVertexSet().at(0)));
+    finishTime = std::chrono::high_resolution_clock::now();
+    penafiel_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    startTime =std::chrono::high_resolution_clock::now();
+    porto_full.bfs(dynamic_cast<Node<T> *>(porto_full.getVertexSet().at(0)));
+    finishTime = std::chrono::high_resolution_clock::now();
+    pf_reading = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count();
+
+    cout << "Time used for transversing graphs BFS " << ps_reading << " " << pf_reading << " " << espinho_reading << " "<< penafiel_reading<<" microseconds\n";
+
+
 }
 
 #endif //PROJECT_Interface<T>_H
