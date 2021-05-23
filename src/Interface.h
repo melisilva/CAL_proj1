@@ -219,10 +219,11 @@ void Interface<T>::showConnectivity() const {
 //            cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
 //        }
 //    }
+    cout << "Number of articulation points " << algo.getGraph().findArt(algo.getGraph().findVertex(1)) << endl;
     cout << "Calculating connectivity\n";
     fflush(stdout);
     auto direct = algo.getGraph();
-    vector<int> first =direct.dfs();
+    vector<int> first = direct.dfs();
     cout << first.size() << endl;
     //Graph<int>*inverted=algo.getGraph().invert();
     Graph<int> inverted;
@@ -275,7 +276,6 @@ void Interface<T>::showConnectivity() const {
     }
     showConnectedNodes(connectedNodes, algo.getGraph());
 */
-   cout<<algo.getGraph().findArt(algo.getGraph().findVertex(1))<<endl;
 
 
 }
