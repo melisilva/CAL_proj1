@@ -36,10 +36,10 @@ void readNodesFile(Graph<T> &graph, string nodesfile) {
         id = stoi(line.substr(1, pos));
         line.erase(0, pos + 1);
         pos = line.find(',');
-        x = stof(line.substr(0, pos));
+        x = stod(line.substr(0, pos));
         line.erase(0, pos + 1);
         pos = line.find(')');
-        y = stof(line.substr(0, pos));
+        y = stod(line.substr(0, pos));
         Node<T> *nodeToAdd = new Node<T>(id, y, x);
         graph.addVertex(nodeToAdd);
 

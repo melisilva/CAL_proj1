@@ -373,9 +373,10 @@ template<class T>
 void Interface<T>:: startPerformanceAnalysis() {
     ofstream complexities;
     vector<long long int> averageElapsed;
+    int startIntermediary = 0;
     int noIntermediary = 20;
     int noIterations = 20;
-    for (int i = 0; i < noIntermediary; i++) {
+    for (int i = startIntermediary; i < noIntermediary; i++) {
         long long int sumElapsed = 0;
         for (int j = 0; j < noIterations; j++) {
             start = getRandomNode();
@@ -401,8 +402,8 @@ void Interface<T>:: startPerformanceAnalysis() {
     if(!complexities.is_open()){
         return;
     }
-    for(int i = 0; i < noIntermediary; i++){
-        complexities << i << "," << averageElapsed[i]<< "\n";
+    for(int i = startIntermediary; i < noIntermediary; i++){
+        complexities << i << "," << averageElapsed[i-startIntermediary]<< "\n";
     }
     complexities.close();
     cout << "Complexity analysis done\n";
