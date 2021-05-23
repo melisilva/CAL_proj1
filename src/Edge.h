@@ -31,6 +31,8 @@ public:
 
     double getCost() const;
 
+    double getCapacity() const;
+
     Vertex<T> *getOrig();
 
     Vertex<T> *getDest();
@@ -43,6 +45,11 @@ Edge<T>::Edge(Vertex<T> *o, Vertex<T> *d, double capacity, double cost, double f
 template<class T>
 double Edge<T>::getFlow() const {
     return this->flow;
+}
+
+template<class T>
+double Edge<T>::getCapacity() const {
+    return this->capacity;
 }
 
 template<class T>

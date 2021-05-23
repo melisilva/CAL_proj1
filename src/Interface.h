@@ -40,6 +40,7 @@ public:
 #include "Graph.h"
 #include "Node.h"
 #include "Algorithm.h"
+#include "FileManagement.h"
 
 using namespace std;
 
@@ -50,10 +51,12 @@ void showConnectedNodes(vector<Node<int> *> connectedNodes, Graph<int> graph);
 
 void showParkingLots(Graph<int> graph);
 
+void twoPoints(Node<int>* v1, Node<int>*v2);
+
 template<class T>
 class Interface {
     Algorithm algo;
-    Node<int> *start, *end, *og_point;
+    Node<int> *start, *end, *og_point, *point1, *point2;
     int parkAtEnd;
     long long int elapsed;
     vector<pair<int, Node<int> *>> intermediary;
@@ -152,6 +155,10 @@ void Interface<T>::execute() {
             case 8:
                 showParkingLots(algo.getGraph());
                 break;
+            case 9:
+                point1=chooseNode();
+                point2=chooseNode();
+                twoPoints(point1, point2);
             default:
                 cout << "Please choose a viable option.\n";
         }
@@ -206,14 +213,56 @@ void Interface<T>::showNodeOptions() const {
 
 template<class T>
 void Interface<T>::showConnectivity() const {
-    vector<int> connected = algo.getGraph().dfs();
+    for(auto v:algo.getGraph().getVertexSet()){
+        for(auto e:v->getIncoming()){
+            cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
+        }
+    }
+    vector<int> first = algo.getGraph().dfs();
+    cout<<first.size()<<endl;
+    //Graph<int>*inverted=algo.getGraph().invert();
+    Graph<int> inverted;
+    readNodesFile(inverted, "../Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt");
+    readInvertedEdgesFile(inverted, false, "../Mapa da cidade do Porto-20210505/porto_full_edges.txt");
+
+   cout<<"INVERTED"<<endl;
+    for(auto v:inverted.getVertexSet()){
+        cout<<v->getOutgoing().size()<<endl;
+       for(auto e:v->getIncoming()){
+           cout<<e->getOrig()->getInfo()<<" "<<e->getDest()->getInfo()<<endl;
+       }
+    }
+
+   cout<<first.at(first.size()-1)<<endl;
+   //vector<int>second = inverted->dfs();
+
+
+    /*Vertex<T>  *initial = inverted.findVertex(first.at(first.size()-1));
+    vector<int> second = inverted.dfs_inverted(initial);
+    cout<<second.size()<<endl;
+    vector<int> connected;
+    for(auto v:first) {
+        vector<int>::iterator it = find (second.begin(), second.end(), v);
+        if (it != second.end()){
+            connected.push_back(v);
+        }
+    }
+
+
+
+
     sort(connected.begin(), connected.end());
     connected.erase(unique(connected.begin(), connected.end()), connected.end());
     vector<Node<int> *> connectedNodes;
     for (int i = 0; i < connected.size(); i++) {
+
         connectedNodes.push_back(dynamic_cast<Node<int> *>(algo.getGraph().findVertex(connected[i])));
     }
     showConnectedNodes(connectedNodes, algo.getGraph());
+*/
+//   cout<<algo.getGraph().findArt(algo.getGraph().findVertex(1))<<endl;
+
+
 }
 
 template<class T>

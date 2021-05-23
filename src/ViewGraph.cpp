@@ -242,6 +242,45 @@ void showPath(vector<Node<int> *> path,Graph<int> graph){
     gv.join();
 }
 
+void twoPoints(Node<int>* v1, Node<int>*v2) {
+    GraphViewer gv;
+    vector<int> graph_nodes;
+    float min_lon = -8.6889783;
+    float min_lat=41.1385607;
+    float max_lon=-8.5545839;
+    float max_lat=41.1858236;
+
+
+
+    Node<int> *node1 = dynamic_cast<Node<int> *>(v1);
+            N &vertex_node1 = gv.addNode(node1->getInfo(),
+                                        sf::Vector2f((node1->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
+                                                     (node1->getLatitude() - min_lat) / (max_lat - min_lat) *
+                                                     900)); //add nodes from path
+    vertex_node1.setColor(GraphViewer::GREEN);
+    vertex_node1.setSize(50.0);
+
+    Node<int> *node2 = dynamic_cast<Node<int> *>(v2);
+    N &vertex_node2 = gv.addNode(node2->getInfo(),
+                                 sf::Vector2f((node2->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
+                                              (node2->getLatitude() - min_lat) / (max_lat - min_lat) *
+                                              900)); //add nodes from path
+    vertex_node2.setColor(GraphViewer::RED);
+    vertex_node2.setSize(50.0);
+
+
+
+
+
+    gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
+
+
+    // Create window
+    gv.createWindow(900, 900);
+    // Join viewer thread (blocks till window closed)
+    gv.join();
+}
+
 void showParkingLots(Graph<int> graph){
     GraphViewer gv;
     vector<int> graph_nodes;
