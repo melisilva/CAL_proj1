@@ -192,8 +192,8 @@ void showParkingLots(Graph<int> graph){
                                         sf::Vector2f((node->getLongitude() - min_lon) / (max_lon - min_lon) * 900,
                                                      (node->getLatitude() - min_lat) / (max_lat - min_lat) *
                                                      900)); //add nodes from path
-        vertex_node.setColor(GraphViewer::BLUE);
-        vertex_node.setSize(20.0);
+        vertex_node.setColor(GraphViewer::CYAN);
+        vertex_node.setSize(40.0);
         vertex_node.setLabel(to_string(vertex_node.getId()));
         }
 
