@@ -387,18 +387,17 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
 template<class T>
 void Interface<T>::startAlgo() {
 
-    while (start == nullptr) {
+
         cout << "CHOOSE YOUR STARTING POINT.\n";
         start = chooseNode();
-    }
+
 
     cout << "CHOOSE YOUR INTERMEDIARY POINT(S).\n";
     intermediary = chooseIntermediary();
 
-    while (end == nullptr) {
         cout << "CHOOSE YOUR ENDING POINT.\n";
         end = chooseNode();
-    }
+
 
     while (parkAtEnd < 0) {
         cout << "EXPECTED PARKING TIME: ";

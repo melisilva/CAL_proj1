@@ -23,6 +23,7 @@ class Algorithm {
     vector<Node<int> *> parkingNodes;
     float driveWeight = 0.24, parkWeight = 0.01, walkWeight = 0.75;
     long long int edgesReadingTime, nodesReadingTime, parksReadingTime;
+    double total_price = 0;
 public:
     Algorithm(string nodesFile, string edgesFile, string parkingFiles);
 

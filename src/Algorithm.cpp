@@ -60,7 +60,9 @@ MultiplePath* Algorithm::execute(Node<int> *start, vector<pair<int, Node<int> *>
 
 MultiplePath * Algorithm::visualizeExecute(Node<int> *start, vector<pair<int, Node<int> *>> toVisit, long long int &elapsed) {
     MultiplePath* stops = execute(start, toVisit, elapsed);
-    stops->displayPath();
+    //stops->displayPath();
+    cout<<"Total price of the trip is "<<total_price<<endl;
+    total_price=0;
     fflush(stdout);
     showPath(stops->getAllNodes(), graph);
     cout << "Time used for reading nodes, edges and parks " << nodesReadingTime << " " << edgesReadingTime << " " << parksReadingTime << " microseconds\n";
@@ -280,6 +282,7 @@ GeneralPath *Algorithm::calculateBestPark(Node<int> *from, Node<int> *to, int ti
             continue;
         }
         minimumCost = thisCost;
+        total_price+=minimumCost;
         minimumPath = new MultiplePath(from);
         minimumPath->appendPath(pathBetweenFromNewPark);
         minimumPath->appendPath(pathBetweenNewParkTo);
