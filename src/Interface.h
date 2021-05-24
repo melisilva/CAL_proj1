@@ -5,32 +5,6 @@
 
 #ifndef PROJECT_Interface_H
 #define PROJECT_Interface_H
-/*
-#include "Node.h"
-#include "Algorithm.h"
-template <class T>
-class Interface{
-    Algorithm algo;
-    Node<int> *start, *end;
-    bool parkAtEnd;
-    vector<pair<int, Node<int> *>> intermediary;
-public:
-    Interface(Algorithm algo): algo(algo){}
-    void begin();
-    void execute();
-    void displayOptions() const;
-    void chooseWeights();
-    Node<T>* chooseNode() const;
-    vector<pair<int, Node<T>*>> chooseIntermediary() const;
-    int getNodeOption();
-    void showNodeOptions() const;
-    double calcNodeDistance(Node<T> a, Node<T> b);
-    Node<T>* getNodeID() const;
-    Node<T>* getNodeCoordinates();
-    Node<T>* getRandomNode() const;
-    void startAlgo();
-};
-*/
 
 
 #include <iostream>
@@ -41,17 +15,13 @@ public:
 #include "Node.h"
 #include "Algorithm.h"
 #include "FileManagement.h"
+#include "ViewGraph.h"
 
 using namespace std;
 
 template<class T>
 class Interface;
 
-void showConnectedNodes(vector<Node<int> *> connectedNodes, Graph<int> graph);
-
-void showParkingLots(Graph<int> graph);
-
-void twoPoints(Node<int> *v1, Node<int> *v2);
 
 template<class T>
 class Interface {
@@ -239,8 +209,16 @@ void Interface<T>::showConnectivity() const {
 
     inverted.orderForDfs(direct);
     auto regions = inverted.dfsRegions();
-
+    int noTrees = 0;
+    vector<vector<Vertex<T> *>> trees;
+    for (auto v: inverted.getVertexSet()) {
+        if (v->getPath() == nullptr) {
+            // This is the root of a tree
+            noTrees++;
+        }
+    }
     cout << "There are " << regions.size() << " strongly connex components\n";
+    cout << "There are " << noTrees << " strongly connex components\n";
     sort(regions.begin(), regions.end(), [](const vector<Vertex<T>*> v1, const vector<Vertex<T>*>v2){ return v1.size() > v2.size();});
     for(auto region: regions){
         if(region.size() > 100){
@@ -252,7 +230,18 @@ void Interface<T>::showConnectivity() const {
         }
     }
     cout << "Other regions are strongly connected but with a reduced amount of vertices\n";
-
+//    vector<int>connected;
+//    for(int i=0;i<regions.size();i++){
+//            connected.push_back(regions[i][0]->getInfo());
+//    }
+//
+//    sort(connected.begin(), connected.end());
+//    connected.erase(unique(connected.begin(), connected.end()), connected.end());
+//    vector<Node<int> *> connectedNodes;
+//    for (int i = 0; i < connected.size(); i++) {
+//        connectedNodes.push_back(dynamic_cast<Node<int> *>(direct.findVertex(connected[i])));
+//    }
+//    showConnectedNodes(connectedNodes, direct);
 
 }
 

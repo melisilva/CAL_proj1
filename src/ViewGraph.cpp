@@ -64,7 +64,6 @@ void showConnectedNodes(vector<Node<int> *> connectedNodes,Graph<int> graph){
         }
     }
 
-   // gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
 
     // Create window
     gv.createWindow(900, 900);
@@ -76,8 +75,6 @@ void showPath(vector<Node<int> *> path,Graph<int> graph){
     GraphViewer gv;
     vector<int> graph_nodes;
     int edge_id= 0;
-    //Set coordinates of window center
-    //gv->setCenter(sf::Vector2f(450, 450));
     float min_lon = -8.6889783;
     float min_lat=41.1385607;
     float max_lon=-8.5545839;
@@ -128,7 +125,6 @@ void showPath(vector<Node<int> *> path,Graph<int> graph){
         }
     }
 
-    //gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
 
     // Create window
     gv.createWindow(900, 900);
@@ -163,12 +159,6 @@ void twoPoints(Node<int>* v1, Node<int>*v2) {
     vertex_node2.setSize(10.0);
 
 
-
-
-
-   // gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
-
-
     // Create window
     gv.createWindow(900, 900);
     // Join viewer thread (blocks till window closed)
@@ -199,8 +189,6 @@ void showParkingLots(Graph<int> graph){
 
 
     }
-
-        //gv.setBackground("../Mapa da cidade do Porto-20210505/porto_strong_component.png");
 
 
     // Create window

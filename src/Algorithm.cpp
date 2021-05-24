@@ -9,9 +9,7 @@
 #include "FileManagement.h"
 #include "MultiplePath.h"
 #include "Graph.h"
-
-//void testMeli(Graph<int>graph, vector<Node<int> *> parkingNodes);
-void showPath(vector<Node<int> *> path, Graph<int> graph);
+#include "ViewGraph.h"
 
 Algorithm::Algorithm(string nodesFile, string edgesFile, string parkingFile) {
     auto startTime = std::chrono::high_resolution_clock::now();
