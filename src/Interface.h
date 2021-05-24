@@ -249,19 +249,29 @@ void Interface<T>::showConnectivity() const {
     }
     cout << "There are " << regions.size() << " strongly connex components\n";
     cout << "There are " << noTrees << " strongly connex components\n";
-
-    vector<int>connected;
-    for(int i=0;i<regions.size();i++){
-            connected.push_back(regions[i][0]->getInfo());
+    sort(regions.begin(), regions.end(), [](const vector<Vertex<T>*> v1, const vector<Vertex<T>*>v2){ return v1.size() > v2.size();});
+    for(auto region: regions){
+        if(region.size() > 100){
+            vector<Node<T>*> nodesRegion;
+            for(auto v: region){
+                nodesRegion.push_back(dynamic_cast<Node<int> *>(v));
+            }
+            showConnectedNodes(nodesRegion, direct);
+        }
     }
-
-    sort(connected.begin(), connected.end());
-    connected.erase(unique(connected.begin(), connected.end()), connected.end());
-    vector<Node<int> *> connectedNodes;
-    for (int i = 0; i < connected.size(); i++) {
-        connectedNodes.push_back(dynamic_cast<Node<int> *>(direct.findVertex(connected[i])));
-    }
-    showConnectedNodes(connectedNodes, direct);
+    cout << "Other regions are strongly connected but with a reduced amount of vertices\n";
+//    vector<int>connected;
+//    for(int i=0;i<regions.size();i++){
+//            connected.push_back(regions[i][0]->getInfo());
+//    }
+//
+//    sort(connected.begin(), connected.end());
+//    connected.erase(unique(connected.begin(), connected.end()), connected.end());
+//    vector<Node<int> *> connectedNodes;
+//    for (int i = 0; i < connected.size(); i++) {
+//        connectedNodes.push_back(dynamic_cast<Node<int> *>(direct.findVertex(connected[i])));
+//    }
+//    showConnectedNodes(connectedNodes, direct);
 
 }
 
