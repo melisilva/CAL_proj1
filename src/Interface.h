@@ -194,7 +194,10 @@ void Interface<T>::showConnectivity() const {
     readNodesFile(direct, "../Mapa da cidade do Porto-20210505/porto_full_nodes_latlng.txt");
     readEdgesFile(direct, false, "../Mapa da cidade do Porto-20210505/porto_full_edges.txt");
 
-    cout << "Number of articulation points " << direct.findArt(direct.findVertex(1)) << endl;
+    int arti_points = direct.findArt(direct.findVertex(1));
+
+    cout << endl;
+    cout << "Number of articulation points " << arti_points << endl;
     cout << "Calculating connectivity\n";
 
 
@@ -230,18 +233,6 @@ void Interface<T>::showConnectivity() const {
         }
     }
     cout << "Other regions are strongly connected but with a reduced amount of vertices\n";
-//    vector<int>connected;
-//    for(int i=0;i<regions.size();i++){
-//            connected.push_back(regions[i][0]->getInfo());
-//    }
-//
-//    sort(connected.begin(), connected.end());
-//    connected.erase(unique(connected.begin(), connected.end()), connected.end());
-//    vector<Node<int> *> connectedNodes;
-//    for (int i = 0; i < connected.size(); i++) {
-//        connectedNodes.push_back(dynamic_cast<Node<int> *>(direct.findVertex(connected[i])));
-//    }
-//    showConnectedNodes(connectedNodes, direct);
 
 }
 
@@ -312,11 +303,18 @@ Node<T> *Interface<T>::getNodeCoordinates() {
 template<class T>
 Node<T> *Interface<T>::getNodeID() {
     int x = -1;
+    Vertex<T>* v;
     while (cin.fail() || x == -1) {
         cout << "Please provide an ID: ";
         cin >> x;
+        v = algo.getGraph().findVertex(x);
+        if(v == nullptr){
+            x = -1;
+            cout << "Invalid ID" <<endl;
+        }
     }
-    return dynamic_cast<Node<T> *>(algo.getGraph().findVertex(x));
+
+    return dynamic_cast<Node<T> *>(v);
 }
 
 template<class T>
@@ -342,7 +340,7 @@ Node<T> *Interface<T>::chooseNode() {
 template<class T>
 vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
     string temp = "";
-    int answer = 2;
+    int answer = -2;
     vector<pair<int, Node<T> *>> midStops;
     while (cin.fail() || temp != "DONE") {
         cout << "If you wish to add an intermediary, input NEW. Otherwise, input DONE.\n";
@@ -357,6 +355,7 @@ vector<pair<int, Node<T> *>> Interface<T>::chooseIntermediary() {
             }
 
             midStops.push_back(make_pair(answer, newStop));
+	    answer = -2;
         }
 
 
@@ -385,6 +384,7 @@ void Interface<T>::startAlgo() {
     }
 
     intermediary.push_back(pair<int, Node<int> *>(parkAtEnd, end));
+    parkAtEnd = -1;
     algo.visualizeExecute(start, intermediary, elapsed);
     intermediary.pop_back();
 }
@@ -405,8 +405,10 @@ void Interface<T>::startPerformanceAnalysis() {
     int noIntermediary = 20;
     int noIterations = 20;
     for (int i = startIntermediary; i < noIntermediary; i++) {
+        cout << "Intermediary " << i << endl;
         long long int sumElapsed = 0;
         for (int j = 0; j < noIterations; j++) {
+            cout << "Iteration " << j << endl;
             start = getRandomNode();
             for (int k = 0; k < i; k++) {
                 intermediary.push_back(make_pair(getRandomParkingTime(), getRandomNode()));

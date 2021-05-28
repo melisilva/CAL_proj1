@@ -110,7 +110,7 @@ int main() {
         realParkingNodes.insert(realNodes[0]);
     }
 
-    parkingTags.open("../Mapas-20210505/TagExamples/Porto/t13_tags_porto.txt");
+    parkingTags.open("../Parking Tags/t13_tags_porto.txt");
     if (!parkingTags.is_open()) {
         return 1;
     }

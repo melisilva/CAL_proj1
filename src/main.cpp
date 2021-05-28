@@ -6,12 +6,11 @@
 
 
 int main() {
-    //testMeli();
-    srand(1); //DEBUGs
+    srand(time(NULL)); 
     std::cout << "Hello, World!" << std::endl;
     Algorithm algo("../Mapa da cidade do Porto-20210505/porto_strong_nodes_latlng.txt",
                    "../Mapa da cidade do Porto-20210505/porto_strong_edges.txt",
-                   "../Mapas-20210505/TagExamples/Porto/t13_tags_porto.txt");
+                   "../Parking Tags/t13_tags_porto.txt");
 
     Interface<int> interface(algo);
     interface.execute();
